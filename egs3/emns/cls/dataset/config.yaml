@@ -1,0 +1,71 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # EMNS is distributed as WebM recordings plus one pipe-separated metadata
+  # file. Point `EMNS` at a directory holding `cleaned_webm/` and
+  # `metadata.csv`, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: EMNS
+  dataset_path: download
+  audio_subdir: cleaned_webm
+  metadata_name: metadata.csv
+
+  # Download --------------------------------------------------------------
+  # OpenSLR 136 publishes raw and silence-trimmed variants; the trimmed one is
+  # used here. The archive is `.tar.xz`, which `espnet3.utils.download_utils`
+  # cannot open, so `prepare_source` extracts it itself.
+  base_url: https://www.openslr.org/resources/136/
+  archive_name: cleaned_webm.tar.xz
+  remove_archive: true
+
+  # Metadata --------------------------------------------------------------
+  # Rows marked `Needs Updating` have no recording: 1205 rows describe 1181
+  # files, and the 24 missing ones are exactly those. `audio_recording` points
+  # at `wavs/...` even though the files live under `cleaned_webm/`, so only the
+  # file name is used.
+  csv_delimiter: "|"
+  status_column: status
+  status_keep: Complete
+  audio_column: audio_recording
+  emotion_column: emotion
+  id_column: id
+
+  emotion_map:
+    Angry: angry
+    Disgust: disgust
+    Excited: excited
+    Happy: happy
+    Neutral: neutral
+    Sad: sad
+    Sarcastic: sarcastic
+    Surprised: surprise
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` transcodes every recording to 16 kHz mono WAV. Set `EMNS_OUTPUT`
+  # to keep those files outside the recipe.
+  output_env_var: EMNS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+  # Split -----------------------------------------------------------------
+  # EMNS has a single speaker, so a speaker-independent split is impossible and
+  # the partition is stratified by emotion instead. Utterances are sorted by id
+  # and dealt out with a seeded shuffle, so the split is reproducible from the
+  # corpus alone. Test holds 20% because each emotion contributes only ~150
+  # utterances; a smaller share makes per-class recall too coarse to read.
+  split_seed: 0
+  split_ratios:
+    valid: 0.2
+    test: 0.2
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
