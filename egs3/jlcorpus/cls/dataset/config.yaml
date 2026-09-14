@@ -1,0 +1,83 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The corpus ships one flat directory of 44.1 kHz mono WAV named
+  # `<gender><speaker>_<emotion>_<sentence><session>_<repetition>.wav`, each
+  # with a sidecar .txt holding the prompt. The labels come from the file
+  # names; no annotation file is read. Point `JLCORPUS` at a directory holding
+  # `audio_subdir`, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: JLCORPUS
+  dataset_path: download
+  audio_subdir: Raw JL corpus (unchecked and unannotated)/JL(wav+txt)
+
+  # Download --------------------------------------------------------------
+  # The GitHub repository holds only the supporting documents -- the audio is
+  # too large for it -- so the corpus comes from Kaggle, which needs an API
+  # token. `egs2/l3das22/enh1/local/data.sh` fetches its corpus the same way.
+  kaggle_dataset: tli725/jl-corpus
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # Five primary emotions and five secondary ones, 240 utterances each. The
+  # secondary set is what this corpus exists for, so `all` is the default; use
+  # `primary` to line the labels up with a corpus that has only the basic
+  # emotions.
+  #
+  #   all | primary | secondary
+  emotion_set: all
+
+  primary_emotions:
+    angry: angry
+    excited: excited
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  secondary_emotions:
+    anxious: anxious
+    apologetic: apologetic
+    assertive: assertive
+    concerned: concerned
+    encouraging: encouraging
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. The corpus has four speakers holding 600
+  # utterances each, 60 per emotion, so the counts cannot favour one choice
+  # over another; the test speaker is named here so it can be changed.
+  #
+  # Holding out one speaker leaves the test split single-gendered. Listing one
+  # speaker of each gender fixes that but cuts training from 1440 utterances to
+  # 960, which is the worse trade with only four speakers.
+  #
+  # TODO(itoten): Run all four speakers as folds and report the mean, which is
+  # what a corpus this small really calls for.
+  test_speakers:
+    - male2
+
+  # Validation is drawn from the remaining speakers rather than held out whole,
+  # because holding out a second speaker would leave two for training.
+  # Utterances are sorted by id before a seeded shuffle, so the draw depends on
+  # the corpus and `split_seed` alone.
+  valid_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The corpus is 44.1 kHz, so `build()` resamples every recording to 16 kHz
+  # and writes it under `wav_subdir`. Set `JLCORPUS_OUTPUT` to keep those files
+  # outside the recipe.
+  output_env_var: JLCORPUS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
