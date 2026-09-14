@@ -1,0 +1,60 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # CREMA-D ships one flat directory of 16 kHz mono WAV files named
+  # `<actor>_<sentence>_<emotion>_<intensity>.wav`, so the labels come from the
+  # file names and no annotation file is read. Point `CREMAD` at a directory
+  # that already holds `AudioWAV`, or let the recipe download into
+  # `<recipe_dir>/download`.
+  source_env_var: CREMAD
+  dataset_path: download
+  audio_subdir: AudioWAV
+
+  # Download --------------------------------------------------------------
+  # The corpus lives in a GitHub repository; `prepare_source()` clones it
+  # shallowly because the WAV files are not published as a single archive.
+  repo_url: https://github.com/CheyneyComputerScience/CREMA-D.git
+
+  # Build outputs ---------------------------------------------------------
+  # The audio is already 16 kHz mono, so `build()` only writes manifests and
+  # leaves the WAV files where they are. Set `CREMAD_OUTPUT` to keep the
+  # manifests outside the recipe.
+  output_env_var: CREMAD_OUTPUT
+  data_path: data
+  sampling_rate: 16000
+
+  # `EMO_CODES` maps the three-letter code in each file name to the label
+  # written into the manifest.
+  emotion_codes:
+    ANG: angry
+    DIS: disgust
+    FEA: fear
+    HAP: happy
+    NEU: neutral
+    SAD: sad
+
+  # Speaker-independent split ---------------------------------------------
+  # CREMA-D publishes no official partition. Speaker IDs are sorted and dealt
+  # out in this order, which keeps the split reproducible from the corpus
+  # alone. The counts have to add up to the 91 actors; a mismatch is an error
+  # rather than a silent reassignment.
+  #
+  # TODO(itoten): Replace the counts with explicit per-split speaker ids, so a
+  # published partition can be reproduced. Sort order says nothing about the
+  # 48/43 male/female balance, which a hand-built fold can preserve.
+  split_speaker_counts:
+    train: 71
+    valid: 10
+    test: 10
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
