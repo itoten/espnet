@@ -117,6 +117,53 @@ def resolve_data_root(recipe_root: Path) -> Path:
     return recipe_root / _CFG["data_path"]
 
 
+def _require_git_lfs() -> None:
+    """Fail early when git-lfs is missing.
+
+    The corpus tracks every ``*.wav`` through Git LFS, so a clone without the
+    extension installed produces pointer files that still carry the ``.wav``
+    name. Nothing downstream would notice until the audio is read.
+
+    Raises:
+        RuntimeError: If ``git lfs`` is unavailable.
+    """
+    try:
+        subprocess.run(
+            ["git", "lfs", "version"],
+            check=True,
+            capture_output=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+        raise RuntimeError(
+            "git-lfs is required to download CREMA-D: the corpus stores its "
+            "audio in Git LFS, and a clone without it yields pointer files "
+            "named *.wav. Install it (https://git-lfs.com) and retry, or set "
+            f"${_CFG['source_env_var']} to a corpus copy you already have."
+        ) from exc
+
+
+def _assert_real_audio(audio_dir: Path) -> None:
+    """Check that the WAV files are audio rather than Git LFS pointers.
+
+    Args:
+        audio_dir: Directory holding the corpus audio.
+
+    Raises:
+        RuntimeError: If the first file is not RIFF-headed.
+    """
+    sample = next(iter(sorted(audio_dir.glob("*.wav"))), None)
+    if sample is None:
+        return
+    with sample.open("rb") as fh:
+        header = fh.read(4)
+    if header != b"RIFF":
+        raise RuntimeError(
+            f"{sample} is not a WAV file (header {header!r}). Git LFS content "
+            "was probably not fetched; run `git lfs pull` inside "
+            f"{audio_dir.parent}."
+        )
+
+
 def _clone_repository(destination: Path) -> None:
     """Shallow-clone the CREMA-D repository into ``destination``.
 
@@ -124,11 +171,13 @@ def _clone_repository(destination: Path) -> None:
         destination: Directory to clone into.
 
     Raises:
+        RuntimeError: If git-lfs is unavailable.
         subprocess.CalledProcessError: If the clone fails.
     """
+    _require_git_lfs()
     destination.parent.mkdir(parents=True, exist_ok=True)
     url = str(_CFG["repo_url"])
-    logger.info("Cloning CREMA-D (about 600 MB of audio) from %s", url)
+    logger.info("Cloning CREMA-D (about 600 MB of LFS audio) from %s", url)
     subprocess.run(
         ["git", "clone", "--depth", "1", url, str(destination)],
         check=True,
@@ -274,6 +323,7 @@ class CremaDBuilder(DatasetBuilder):
         """
         recipe_root = Path(recipe_dir).resolve()
         audio_dir = resolve_source_root(recipe_root, source_dir)
+        _assert_real_audio(audio_dir)
         data_root = resolve_data_root(recipe_root)
 
         entries = []
