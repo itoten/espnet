@@ -1,0 +1,70 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The corpus is one flat directory of 48 kHz mono WAV whose names carry
+  # everything: `<gender>_<speaker no>_<name>_S_<sentence>_<EMOTION>_<take>.wav`.
+  # No annotation file is read. Point `SUBESCO` at a directory holding the
+  # recordings, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: SUBESCO
+  dataset_path: download
+  # The archive unpacks into this subdirectory; both layouts are accepted.
+  archive_subdir: SUBESCO
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 4526477 (DOI 10.5281/zenodo.4526477), CC-BY-4.0. Zenodo
+  # publishes the checksum, so the archive is verified before it is unpacked.
+  base_url: https://zenodo.org/api/records/4526477/files/
+  archive_name: SUBESCO.zip
+  archive_md5: 13d702cf944bf54d70d66bffc036ed7a
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The corpus already writes the short forms the other recipes use, so this
+  # only lowercases them.
+  emotion_map:
+    ANGRY: angry
+    DISGUST: disgust
+    FEAR: fear
+    HAPPY: happy
+    NEUTRAL: neutral
+    SAD: sad
+    SURPRISE: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published: the corpus paper describes the recordings and a
+  # listening test, and defines no train/test division.
+  #
+  # Speaker numbers restart within each gender, so `F_01` and `M_01` are two
+  # different people. The counts below are **per gender**, which keeps the
+  # split balanced by construction -- 10 female and 10 male speakers, dealt out
+  # in numeric order within each. The counts have to account for all ten of
+  # each; a mismatch is an error rather than a silent reassignment.
+  #
+  # Each speaker recorded five takes of every sentence-emotion pairing, so the
+  # split has to work on whole speakers: splitting utterances would scatter
+  # near-identical takes across train and test.
+  split_speaker_counts_per_gender:
+    train: 6
+    valid: 2
+    test: 2
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The corpus is 48 kHz 32-bit, so `build()` resamples every recording to
+  # 16 kHz 16-bit mono and writes it under `wav_subdir`. Set `SUBESCO_OUTPUT`
+  # to keep those files outside the recipe.
+  output_env_var: SUBESCO_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
