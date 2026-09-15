@@ -1,0 +1,68 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The corpus ships 16 kHz mono WAV named after the recording timestamp, so
+  # the labels come from `metadata/`, not from the file names. Point
+  # `EMOZIONALMENTE` at a directory holding `audio/` and `metadata/`, or let
+  # the recipe download into `<recipe_dir>/download`.
+  source_env_var: EMOZIONALMENTE
+  dataset_path: download
+  # The archive unpacks into this subdirectory; both layouts are accepted.
+  archive_subdir: emozionalmente
+  audio_subdir: audio
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 12616095 (DOI 10.5281/zenodo.12616095), CC-BY-4.0. Zenodo
+  # publishes the checksum, so the archive is verified before it is unpacked.
+  base_url: https://zenodo.org/api/records/12616095/files/
+  archive_name: emozionalmente.zip
+  archive_md5: 398c6502dd2b0e1e810f927c12897547
+  remove_archive: true
+
+  # Metadata --------------------------------------------------------------
+  # The split files carry the label as well as the membership, so they are the
+  # only tables the build reads. `samples.csv` holds the same rows without the
+  # split, `users.csv` the speaker demographics, and `evaluations.csv` the five
+  # listener judgements per recording -- none of which the manifest needs.
+  split_tables:
+    train: metadata/split/train.csv
+    valid: metadata/split/dev.csv
+    test: metadata/split/test.csv
+  file_column: file_name
+  emotion_column: emotion_expressed
+
+  # The corpus names the Big Six plus neutrality; these are the short forms the
+  # other recipes use.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    fear: fear
+    joy: happy
+    neutrality: neutral
+    sadness: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # The corpus publishes a speaker-independent train/dev/test split, stratified
+  # by emotion, gender and age, and it is read from those tables rather than
+  # rebuilt here. 431 speakers, none shared between splits.
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The audio is already 16 kHz mono, so `build()` only writes manifests and
+  # leaves the WAV files where the corpus was unpacked. Set
+  # `EMOZIONALMENTE_OUTPUT` to keep the manifests outside the recipe.
+  output_env_var: EMOZIONALMENTE_OUTPUT
+  data_path: data
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
