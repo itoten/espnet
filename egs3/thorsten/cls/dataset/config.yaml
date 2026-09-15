@@ -1,0 +1,78 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One directory per emotion, holding 22.05 kHz mono WAV named after a hash of
+  # the sentence, plus a pipe-separated table mapping each hash to its German
+  # text. The same 300 hashes appear under every emotion: one speaker read the
+  # same sentences eight times over. Point `THORSTEN` at a directory holding
+  # those folders, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: THORSTEN
+  dataset_path: download
+  # The archive unpacks into this subdirectory; both layouts are accepted.
+  archive_subdir: thorsten-emotional_v02
+  metadata_name: thorsten-emotional-metadata.csv
+  csv_delimiter: "|"
+
+  # Download --------------------------------------------------------------
+  # OpenSLR 110, CC0. The corpus is also on Zenodo (10.5281/zenodo.5525023),
+  # whose metadata field says CC-BY-4.0 while its own description, OpenSLR and
+  # the GitHub repository all say CC0; the field looks like a slip. Only Zenodo
+  # publishes a checksum, and the OpenSLR copy is byte-identical to it, so that
+  # digest is used to verify this download.
+  base_url: https://openslr.trmal.net/resources/110/
+  archive_name: thorsten-emotional_v02.tgz
+  archive_md5: f19585f3759c6d026757c46024a37aa4
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The directory names, used as they are. Three of the eight are speaking
+  # styles rather than emotions -- and `drunk` was recorded sober, "just
+  # pronounced that way" -- but renaming or dropping them here would be this
+  # recipe deciding what the corpus means. Merging labels across corpora is a
+  # cross-corpus decision, not a per-recipe one.
+  emotions:
+    - amused
+    - angry
+    - disgusted
+    - drunk
+    - neutral
+    - sleepy
+    - surprised
+    - whisper
+
+  # Split -----------------------------------------------------------------
+  # One speaker, so a speaker-independent split cannot be built and **scores
+  # from this recipe are speaker-dependent**.
+  #
+  # The split works on sentences instead. All eight recordings of a sentence go
+  # to the same split, because splitting recordings would put the same German
+  # text in both training and test -- the model would be scored on sentences it
+  # had already heard, just spoken differently.
+  #
+  # Sentences are sorted by hash before a seeded shuffle, so the partition
+  # depends on the corpus and `split_seed` alone.
+  split_sentence_counts:
+    valid: 60
+    test: 60
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The corpus is 22.05 kHz, so `build()` resamples every recording to 16 kHz
+  # and writes it under `wav_subdir`. Set `THORSTEN_OUTPUT` to keep those files
+  # outside the recipe.
+  output_env_var: THORSTEN_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
