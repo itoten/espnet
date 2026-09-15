@@ -1,0 +1,91 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The corpus is a tree of AVI files, `subject <n>/<emotion>/sentence <m>/`,
+  # and the audio lives inside them. Labels and speakers come from the
+  # directory names rather than the file names, which are not consistent: 23
+  # files carry a typo (`s16_su_3avi.avi`, `s_3_ha_1.avi`), while every
+  # directory name is regular. Point `ENTERFACE05` at a directory holding the
+  # `subject *` folders, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: ENTERFACE05
+  dataset_path: download
+  # The archive may unpack into a folder of its own; both layouts are accepted.
+  archive_subdir: enterface database
+
+  # Download --------------------------------------------------------------
+  # The corpus has to be fetched by hand. Its site serves the archive over
+  # HTTPS but sends only its own certificate, without the intermediate that
+  # signs it, so the chain cannot be verified: browsers paper over this by
+  # fetching the missing certificate themselves, but curl, urllib and every
+  # other ordinary client refuse the connection. Plain HTTP redirects to
+  # HTTPS, so there is no way around it from a script.
+  #
+  # Download it from https://enterface.net/enterface05/emotion.html in a
+  # browser and drop it in $ENTERFACE05, unpacked or still zipped --
+  # `prepare_source` extracts the archive when it finds one.
+  # `egs2/l3das22/enh1` asks for its corpus by hand in the same way.
+  archive_name: project2_database.zip
+
+  # Labels ----------------------------------------------------------------
+  # The six emotion directory names, mapped to the short forms the other
+  # recipes use. This is the same label set as CREMA-D except for `surprise`.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    fear: fear
+    happiness: happy
+    sadness: sad
+    surprise: surprise
+
+  # Two of the 44 subject directories are not part of the corpus: the corpus
+  # page reports 42 subjects, and exactly 42 directories hold the expected 30
+  # recordings. Subject 6 is unsegmented -- its six files run 56 to 107
+  # seconds, a whole session per emotion, against 1.1 to 5.4 seconds everywhere
+  # else -- and subject 23 is missing three recordings.
+  #
+  # Subject 6 is worth naming here rather than leaving to `remove_long_short`:
+  # that filter runs on train and valid but not on test, so whether those
+  # session recordings get scored would depend on where they landed.
+  exclude_speakers:
+    - 6
+    - 23
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Speaker ids are sorted numerically and dealt out
+  # in this order, which keeps the split reproducible from the corpus alone.
+  # The counts have to add up to the 42 speakers left after
+  # `exclude_speakers`; a mismatch is an error rather than a silent
+  # reassignment.
+  #
+  # The corpus has enough speakers for a speaker-independent validation split,
+  # unlike the four-speaker recipes here.
+  #
+  # TODO(itoten): Deal the speakers out by something better than sort order.
+  # The distribution carries no per-speaker metadata -- no gender, no
+  # nationality, nothing but the recordings -- so there is nothing here to
+  # balance against, and subject numbering may follow the recording order.
+  split_speaker_counts:
+    train: 32
+    valid: 5
+    test: 5
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The AVI files carry 48 kHz stereo PCM, so `build()` extracts the audio and
+  # writes 16 kHz mono WAV under `wav_subdir`. Set `ENTERFACE05_OUTPUT` to keep
+  # those files outside the recipe.
+  output_env_var: ENTERFACE05_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
