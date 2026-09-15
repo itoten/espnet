@@ -25,7 +25,9 @@ the MD5 the record publishes before it is unpacked.
 **The corpus publishes a speaker-independent train/dev/test split**, stratified
 by emotion, gender and age, and the recipe reads it from
 `metadata/split/*.csv` rather than rebuilding it. Nothing about the partition
-is decided here.
+is decided here. It is the split the paper evaluates on — "these splits are
+shared as part of the dataset for reproducibility" — so the numbers below and
+the paper's are measured on the same test set.
 
 | split | speakers | utterances |
 |---|---|---|
@@ -104,11 +106,12 @@ The model over-predicts `angry` and `sad` and under-predicts `disgust` and
 `fear` — **the same two classes listeners find hardest**, which suggests the
 errors follow the ambiguity in the labels rather than a modelling failure.
 
-Two reference points. Listeners score 66.4 % UAR on the same labels. The
-corpus authors fine-tuned wav2vec 2.0 and report 82.45 % UAR in a
-speaker-independent setting, so the 73.0 % here sits between the two; this
-recipe freezes its frontend and trains a small encoder on top rather than
-fine-tuning, and nothing has been tuned per corpus.
+Two reference points, both on this same test set. Listeners score 66.4 % UAR
+on the same labels. The corpus authors report 82.45 % UAR, so the 73.0 % here
+sits between the two. The gap to the paper is in the model, not the data: they
+fine-tune wav2vec 2.0 end to end and tune the learning rate with Optuna against
+the dev set, where this recipe freezes WavLM, trains a Transformer encoder on
+top, and reuses the MELD recipe's hyperparameters unchanged.
 
 ## Notes
 
