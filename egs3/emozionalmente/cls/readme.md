@@ -1,7 +1,7 @@
 # Emozionalmente speech emotion recognition recipe
 
 Classifies each utterance into one of seven emotions (`angry`, `disgust`,
-`fear`, `happy`, `neutral`, `sad`, `surprise`) with a frozen
+`fear`, `joy`, `neutral`, `sad`, `surprise`) with a frozen
 [WavLM Base+](https://github.com/microsoft/unilm/tree/master/wavlm) frontend,
 a Transformer encoder and a linear head.
 
@@ -9,7 +9,10 @@ a Transformer encoder and a linear head.
 utterances crowdsourced from 431 non-professional actors, each reading from the
 same 18 sentences. It is already 16 kHz mono WAV, so `create_dataset` converts
 nothing and only writes the manifests. Labels come from the metadata: the file
-names are recording timestamps and carry no information.
+names are recording timestamps and carry no information. Only the word form is
+normalised -- `anger` to `angry`, `sadness` to `sad` -- so no label is replaced
+by a different word; `joy` stays `joy` rather than becoming `happy`, because
+deciding that two corpora mean the same thing belongs to cross-corpus work.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.

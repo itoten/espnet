@@ -30,13 +30,16 @@ builder:
   file_column: file_name
   emotion_column: emotion_expressed
 
-  # The corpus names the Big Six plus neutrality; these are the short forms the
-  # other recipes use.
+  # The corpus names the Big Six plus neutrality. Only the word form is
+  # normalised here -- `anger` to `angry`, `sadness` to `sad` -- so the labels
+  # match the other recipes without any of them being replaced by a different
+  # word. `joy` stays `joy`: it is not `happy`, and deciding that two corpora
+  # mean the same thing belongs to cross-corpus work, not to a recipe.
   emotion_map:
     anger: angry
     disgust: disgust
     fear: fear
-    joy: happy
+    joy: joy
     neutrality: neutral
     sadness: sad
     surprise: surprise

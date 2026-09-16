@@ -22,8 +22,10 @@ builder:
   data_path: data
   sampling_rate: 16000
 
-  # `EMO_CODES` maps the three-letter code in each file name to the label
-  # written into the manifest.
+  # The file names carry three-letter codes, not words, so they have to be
+  # expanded into something. The expansions are the corpus's own emotion names
+  # in the short form the other recipes use; no label is replaced by a
+  # different word.
   emotion_codes:
     ANG: angry
     DIS: disgust

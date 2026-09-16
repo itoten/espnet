@@ -41,9 +41,9 @@ builder:
   # already have.
   ambiguous: all
 
-  # EmoDB labels its emotions in full; the other recipes use the short forms,
-  # so they are mapped here to keep a cross-corpus label set consistent.
-  # `boredom` has no counterpart elsewhere and is kept as is.
+  # EmoDB names its emotions in full. Only the word form is normalised --
+  # `anger` to `angry`, `sadness` to `sad` -- so no label is replaced by a
+  # different word. `boredom` is already in that form and is kept as is.
   emotion_map:
     anger: angry
     boredom: boredom

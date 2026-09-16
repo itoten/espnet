@@ -26,8 +26,9 @@ builder:
   archive_name: project2_database.zip
 
   # Labels ----------------------------------------------------------------
-  # The six emotion directory names, mapped to the short forms the other
-  # recipes use. This is the same label set as CREMA-D except for `surprise`.
+  # The six emotion directory names, with only their word form normalised --
+  # `anger` to `angry`, `sadness` to `sad` -- so no label is replaced by a
+  # different word. Same label set as CREMA-D except for `surprise`.
   emotion_map:
     anger: angry
     disgust: disgust
