@@ -1,0 +1,107 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One flat directory of WAV named after a serial number, so nothing can be
+  # read off a file name: `Data.xlsx` is the only link between a recording and
+  # its emotion and speaker. Point `QUECHUA` at a directory holding `Audios/`
+  # and `Data/`, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: QUECHUA
+  dataset_path: download
+  audio_subdir: Audios
+  metadata_name: Data/Data/Data.xlsx
+  # The table lives on the second sheet; the first only repeats the durations.
+  metadata_sheet: 2
+
+  # Download --------------------------------------------------------------
+  # figshare 20292516 (DOI 10.6084/m9.figshare.20292516.v4), CC BY 4.0.
+  # figshare publishes the checksum, so the archive is verified before it is
+  # unpacked.
+  download_url: https://ndownloader.figshare.com/files/37361143
+  archive_name: Quechua_Collao_Corpus.zip
+  archive_md5: d15b88841c6e27e99ee8b58b23ea6834
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # Nine emotions, written as the table writes them. Two are spelled two ways
+  # -- `anger`/`angry` and `boredom`/`bored` -- for the same emotion, which
+  # would otherwise become four classes for two. The majority spelling wins;
+  # this is fixing a data-entry inconsistency, not renaming a label.
+  emotion_aliases:
+    angry: anger
+    bored: boredom
+
+  emotions:
+    - anger
+    - boredom
+    - calm
+    - excited
+    - fear
+    - happy
+    - neutral
+    - sadness
+    - sleepy
+
+  # Metadata repairs ------------------------------------------------------
+  # Two rows lost the `a` from their speaker id because the file name they were
+  # derived from is malformed (`6-N093..wav`, `2_N 089.wav`). Both are
+  # `neutral`, and a6 and a2 are each one `neutral` short without them.
+  fix_actor:
+    "14197": a6
+    "20888": a2
+
+  # `Data.xlsx` gives 42 `happy` recordings to a4 that belong to a5: script
+  # items H001-H042 appear twice under a4 and are missing from a5 entirely, and
+  # the `Actor` column agrees with the file name because it was derived from
+  # it, so the two columns are wrong together.
+  #
+  # Each of the 42 script items has exactly two recordings, one per speaker, so
+  # the question is which of the two is a5's. They were told apart with an LDA
+  # over WavLM layers trained on the two speakers' other eight emotions: the
+  # classifier is right on all 376 held-out `happy` recordings whose speaker is
+  # known, and the assignment does not change when the reference set is rebuilt
+  # without any one emotion, or halved. It was then confirmed by listening to
+  # all 42 pairs, and the Audio ids corroborate it -- every id assigned to a5
+  # falls below 13633 and every id left with a4 above 13703.
+  #
+  # **This is a reconstruction, not something the corpus states.** Empty the
+  # list to use the table as published.
+  reassign_to_a5: [
+    10071, 10077, 10093, 10165, 10248, 10249, 10296, 10386, 10463, 10534,
+    10553, 10785, 10795, 10916, 10945, 10995, 11019, 11039, 11079, 11095,
+    11201, 11253, 11454, 11586, 11615, 11689, 11749, 11821, 11844, 11862,
+    12042, 12053, 12067, 12198, 12408, 12450, 12767, 12841, 12895, 13153,
+    13382, 13633
+  ]
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. After the repairs above the corpus is an even
+  # grid -- 6 speakers x 9 emotions x 230 script items -- so speakers are dealt
+  # out in order and every split comes out balanced across emotions.
+  #
+  # TODO(itoten): The distribution carries no speaker demographics, so there is
+  # nothing here to balance the split against, and one speaker each for
+  # validation and test makes both noisy.
+  split_speaker_counts:
+    train: 4
+    valid: 1
+    test: 1
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are mostly 44.1 kHz mono, but seven are 16 kHz and four are
+  # 48 kHz stereo, so `build()` puts all of them through ffmpeg to 16 kHz mono.
+  output_env_var: QUECHUA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
