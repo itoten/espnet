@@ -1,0 +1,87 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # MSP-Podcast is released under a licence agreement with UT Dallas, so this
+  # recipe never downloads it: point `MSPPODCAST` at a copy you already have.
+  # `labels_consensus.csv` carries everything the manifests need -- label,
+  # speaker, gender, attributes and the published partition -- so it is the
+  # only table read.
+  source_env_var: MSPPODCAST
+  dataset_path: download
+  audio_subdir: Audios
+  labels_csv: Labels/Labels/labels_consensus.csv
+  request_url: https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html
+
+  # Labels ----------------------------------------------------------------
+  # The eight categories of the Interspeech 2025 SER challenge, which drops
+  # `O` (the annotator wrote their own class) and `X` (no plurality winner
+  # among the annotators). Those two are not emotions but states of the
+  # annotation, and they are a fifth of the corpus.
+  #
+  #   "classifying speech samples into one of eight distinct emotional
+  #    categories: anger, happiness, sadness, fear, surprise, contempt,
+  #    disgust, and neutral"   -- Naini et al., Interspeech 2025
+  #
+  # The codes come from `readme.txt`; expanding them is forced because the
+  # table stores single letters, and the expansions are the corpus's own names
+  # in the short form the other recipes use.
+  emotion_codes:
+    A: angry
+    C: contempt
+    D: disgust
+    F: fear
+    H: happy
+    N: neutral
+    S: sad
+    U: surprise
+
+  # Anything outside `emotion_codes` is dropped. Listing the codes here rather
+  # than dropping silently means an unexpected one is an error, not a loss.
+  drop_codes:
+    - O
+    - X
+
+  # One row of the table names a recording the release does not ship,
+  # `MSP-PODCAST_1909_1017.wav` (Test1, happy): podcast 1909 has 650 rows and
+  # 649 files. It is skipped rather than raising, because the copy is otherwise
+  # complete and one missing recording should not stop anyone from running the
+  # recipe -- but the allowance is written down, so a copy that is actually
+  # broken still fails.
+  max_missing_audio: 1
+
+  # Split -----------------------------------------------------------------
+  # The corpus publishes the partition in the `Split_Set` column, and it is
+  # read from there. Test1 is the test split; Test2 is scored alongside it
+  # (see `conf/inference.yaml`) rather than replacing it, because the two are
+  # differently skewed -- Test2 is 58 % neutral against Test1's 34 %.
+  #
+  # Test3 is not usable here: its labels are withheld for the challenge's
+  # submission interface, so it appears in neither the table nor the manifests.
+  split_map:
+    train: Train
+    valid: Development
+    test: Test1
+    test2: Test2
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+    test2: manifest/test2.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # Nearly all of the audio is already 16 kHz mono, but not quite all, so
+  # `build()` puts every recording through ffmpeg. Set `MSPPODCAST_OUTPUT` to
+  # keep the converted audio outside the recipe; it runs to roughly 47 GB.
+  output_env_var: MSPPODCAST_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; the test splits stay
+  # unfiltered so the reported scores cover all of them.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
+    test2: manifest/test2.tsv
