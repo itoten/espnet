@@ -29,10 +29,6 @@ pack:
   # The TEMPLATE default writes to `demo/` under the recipe, which is not
   # covered by `.gitignore`'s `egs*/*/*/exp` rule. Keep it beside `model_pack`.
   out_dir: ${exp_dir}/demo
-  # Neither of these reaches a plain espnet install: s3prl is declared only
-  # under the `s2st` extras, and torcheval -- which
-  # `espnet2.cls.espnet_model.ESPnetClassificationModel` hard-requires -- is not
-  # declared anywhere in `pyproject.toml`.
   # `train` carries hydra and omegaconf, which espnet3 imports at module
   # level. The other two are named here rather than taken from the `cls`
   # extra, because a Space installs espnet from master, where that extra does
