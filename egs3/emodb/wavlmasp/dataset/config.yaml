@@ -1,0 +1,86 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # EmoDB 2.0 ships 16 kHz mono WAV under `wav/` plus audformat metadata saved
+  # as plain CSV, so the tables are read with the standard library and `audb`
+  # is not a dependency. Point `EMODB` at a directory holding `wav/` and the
+  # `db.*.csv` tables, or let the recipe download into `<recipe_dir>/download`.
+  source_env_var: EMODB
+  dataset_path: download
+  # The archive unpacks into this subdirectory; both layouts are accepted.
+  archive_subdir: emodb_2.0
+  audio_subdir: wav
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 17651657 (DOI 10.5281/zenodo.17651657), CC-BY-4.0. The
+  # archive is a zip, which `espnet3.utils.download_utils` cannot open, so
+  # `prepare_source` extracts it itself.
+  base_url: https://zenodo.org/records/17651657/files/
+  archive_name: emodb_2.0.zip
+  remove_archive: true
+
+  # Metadata --------------------------------------------------------------
+  # `db.files.csv` carries the speaker, the emotion tables carry the label.
+  # The `.gold_standard` tables hold the 535 utterances that at least 80 % of
+  # the raters agreed on; `ambiguous` holds the 281 that they did not.
+  files_table: db.files.csv
+  speaker_table: db.speaker.csv
+  train_table: db.emotion.categories.train.gold_standard.csv
+  test_table: db.emotion.categories.test.gold_standard.csv
+  ambiguous_table: db.emotion.categories.ambiguous.csv
+
+  # What to do with the 281 utterances that fewer than 80 % of the raters
+  # agreed on. This recipe is for EmoDB 2.0, so the default uses all of it.
+  # `none` reproduces the 535-utterance corpus that earlier releases shipped
+  # and that published EmoDB numbers describe; see `readme.md`.
+  #
+  #   all:   every split, the whole of version 2.0
+  #   train: training only, leaving valid and test on the gold standard
+  #   none:  gold standard only
+  #
+  # They are placed by speaker, so no split ever gains a speaker it did not
+  # already have.
+  ambiguous: all
+
+  # EmoDB names its emotions in full. Only the word form is normalised --
+  # `anger` to `angry`, `sadness` to `sad` -- so no label is replaced by a
+  # different word. `boredom` is already in that form and is kept as is.
+  emotion_map:
+    anger: angry
+    boredom: boredom
+    disgust: disgust
+    fear: fear
+    happiness: happy
+    neutral: neutral
+    sadness: sad
+
+  # Split -----------------------------------------------------------------
+  # The official partition is speaker independent: 6 speakers for training and
+  # 4 for evaluation. It is read from the corpus tables rather than repeated
+  # here, so the recipe cannot drift from it, and test is never touched.
+  #
+  # No validation split is published, so one training speaker is held out.
+  # Speaker 13 has the most even label distribution of the six and is the only
+  # one with more than two disgust recordings.
+  valid_speakers:
+    - 13
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The audio is already 16 kHz mono, so `build()` only writes manifests and
+  # leaves the WAV files where the corpus was unpacked. Set `EMODB_OUTPUT` to
+  # keep the manifests outside the recipe.
+  output_env_var: EMODB_OUTPUT
+  data_path: data
+  sampling_rate: 16000
+
+dataset:
+  # Train and valid read the `remove_long_short` output; test stays unfiltered
+  # so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
