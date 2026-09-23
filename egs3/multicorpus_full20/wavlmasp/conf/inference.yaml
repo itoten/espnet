@@ -1,0 +1,50 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Common usage:
+#   python run.py --stages infer \
+#       --training_config conf/training.yaml \
+#       --inference_config conf/inference.yaml
+#
+# `run.py` copies `exp_tag` / `exp_dir` from the training config.
+#
+# `data_dir` is not one of the fields `run.py` copies from the training
+# config, so it needs the same override `conf/metrics.yaml` and
+# `conf/publication.yaml` already carry -- without it this fell back to
+# TEMPLATE's literal `./data` default and `infer` could not find
+# `token_list`.
+data_dir: ${oc.env:MULTICORPUS_FULL20_OUTPUT,./data}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# Every corpus's own test split, plus MSP-Podcast's Test1/Test2, mirroring
+# `conf/training.yaml`'s `dataset.test`.
+dataset:
+  test:
+    - {name: cremad,           data_src_args: {split: cremad}}
+    - {name: emns,              data_src_args: {split: emns}}
+    - {name: emodb,             data_src_args: {split: emodb}}
+    - {name: emozionalmente,    data_src_args: {split: emozionalmente}}
+    - {name: enterface05,       data_src_args: {split: enterface05}}
+    - {name: jlcorpus,          data_src_args: {split: jlcorpus}}
+    - {name: meld,              data_src_args: {split: meld}}
+    - {name: quechua,           data_src_args: {split: quechua}}
+    - {name: subesco,           data_src_args: {split: subesco}}
+    - {name: thorsten,          data_src_args: {split: thorsten}}
+    - {name: msppodcast_test,   data_src_args: {split: msppodcast_test}}
+    - {name: msppodcast_test2,  data_src_args: {split: msppodcast_test2}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# `valid.acc.ave_1best.pth` is written by ESPnet3's checkpoint-averaging
+# callback as `{best_model_criterion monitor}.ave_{nbest}best.pth`.
+model:
+  _target_: src.inference.EmotionClassification
+  train_config: ${exp_dir}/config.yaml
+  model_file: ${exp_dir}/valid.acc.ave_1best.pth
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output

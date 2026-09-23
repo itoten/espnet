@@ -128,3 +128,20 @@ tools/condarc
 tools/lightning_constraints.txt
 tools/versa
 tools/ParallelWaveGAN
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+pixi.lock
+pixi.toml
+.gitattributes
+
+.agent/
+
+# `egs*/*/*/data*` above also matches `dataset/`, which holds recipe source.
+# Re-include it by extension so `__pycache__` stays ignored.
+!egs3/*/*/dataset/
+!egs3/*/*/dataset/*.py
+!egs3/*/*/dataset/*.yaml
+
+# Test artifact: test_model_with_optim_scheduler.py writes here instead of tmp_path
+test_utils/espnet3/tb/

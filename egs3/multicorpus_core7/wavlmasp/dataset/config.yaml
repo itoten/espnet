@@ -1,0 +1,76 @@
+builder:
+  # Corpora merged into one training set -----------------------------------
+  # Each entry's `data_src` points at that corpus's own `esp2_cls` recipe, so
+  # this recipe reuses its download/conversion logic unchanged; only the
+  # manifests are recombined here. See `multicorpus_ser_plan.md` §3 for why
+  # the merge happens at this layer instead of in `dataset.train`.
+  train_corpora:
+    - name: cremad
+      data_src: cremad/esp2_cls
+    - name: emns
+      data_src: emns/esp2_cls
+    - name: emodb
+      data_src: emodb/esp2_cls
+    - name: emozionalmente
+      data_src: emozionalmente/esp2_cls
+    - name: enterface05
+      data_src: enterface05/esp2_cls
+    - name: jlcorpus
+      data_src: jlcorpus/esp2_cls
+    - name: meld
+      data_src: meld/esp2_cls
+    - name: quechua
+      data_src: quechua/esp2_cls
+    - name: subesco
+      data_src: subesco/esp2_cls
+    - name: thorsten
+      data_src: thorsten/esp2_cls
+
+  # Corpora scored but never trained on. MSP-Podcast contributes two test
+  # splits (Test1 and Test2), so both are listed explicitly.
+  eval_only_corpora:
+    - name: msppodcast
+      data_src: msppodcast/esp2_cls
+      splits: [test, test2]
+
+  # core7: only the 7 classes shared with the IS2025 baseline survive: every
+  # other label a corpus carries (`excited`, `boredom`, `calm`, `sleepy`,
+  # `amused`, `drunk`, `whisper`, `sarcastic`, JL-Corpus's secondary emotions,
+  # and MSP-Podcast's `contempt`) is dropped, row and all. The `full20`
+  # sibling recipe keeps them instead; the two are compared against each
+  # other on purpose. See `label_inventory.md` and `multicorpus_ser_plan.md`.
+  #
+  # The `anger`/`joy`/`sadness`/`surprised`/`disgusted` entries are spelling
+  # fixes (MELD, Emozionalmente, Quechua, Thorsten each use one), not a
+  # category merge.
+  label_map:
+    angry: angry
+    anger: angry
+    happy: happy
+    joy: happy
+    sad: sad
+    sadness: sad
+    surprise: surprise
+    surprised: surprise
+    fear: fear
+    disgust: disgust
+    disgusted: disgust
+    neutral: neutral
+
+  # Where the corpus-specific `_espnet3` build lives. Point at a directory
+  # holding this recipe's merged manifests, or let it default under the
+  # recipe. The wav files themselves stay wherever each corpus's own
+  # `<CORPUS>_OUTPUT` points; only the merged manifests live here.
+  output_env_var: MULTICORPUS_CORE7_OUTPUT
+  data_path: data
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  # Train and valid read the `remove_long_short` output; every test split
+  # stays unfiltered so reported scores cover each test set in full.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv

@@ -1,0 +1,174 @@
+##########################################################
+#                    TRAINING SETTING                    #
+##########################################################
+# Quick usage:
+#   python run.py --stages create_dataset --training_config conf/training.yaml
+#   python run.py --stages remove_long_short prepare_labels collect_stats train \
+#       --training_config conf/training.yaml
+#
+##########################################################
+#                  SYSTEM AND PATH SETTING               #
+##########################################################
+# Left empty on purpose. Without it ESPnet3 instantiates `model` through Hydra
+# instead of routing it to an ESPnet2 task, which is what this system needs: its
+# model is its own, not one of ESPnet2's registry entries.
+task:
+
+# `dataset/builder.py` writes the merged manifests here; the WAV files stay
+# wherever each corpus's own `<CORPUS>_OUTPUT` points.
+data_dir: ${oc.env:MSPPODCAST_WAVLMASP_OUTPUT,./data}
+exp_tag: train_wavlmasp_msppodcast
+
+##########################################################
+#              LONG/SHORT FILTERING SETTING              #
+##########################################################
+# Test splits are left unfiltered so reported scores cover each test set in
+# full; only MSP-Podcast's own train/valid go through this filter here, since
+# it is the only training corpus. `min_wav_duration` matches
+# `multicorpus_core7`/`multicorpus_full20`'s: WavLM's internal SpecAugment
+# mask requires at least 11 conv-output frames (`mask_time_length: 10`,
+# checked with the loaded encoder config), which is roughly a 0.22s clip at
+# 16kHz/wavlm-large's stride. The merged multicorpus training set crashed at
+# 0.1s (the single-corpus EmoDB default this recipe family started from) on
+# a handful of very short MELD clips; 0.5s clears the requirement with a
+# comfortable margin and is kept here too, even though MSP-Podcast alone may
+# not need it, for the two recipes to stay directly comparable.
+remove_long_short:
+  min_wav_duration: 0.5
+  max_wav_duration: 30
+  splits:
+    - train
+    - valid
+  save_path: ${data_dir}/manifest_filtered
+  manifest_paths:
+    train: ${data_dir}/manifest/train.tsv
+    valid: ${data_dir}/manifest/valid.tsv
+
+##########################################################
+#                  LABEL INVENTORY SETTING               #
+##########################################################
+# Built from the filtered training manifest. `dataset/config.yaml`'s
+# `label_map` restricts labels to the same core7 set the multicorpus recipes
+# use, so this should always come out to exactly 7 classes; `create_dataset`
+# logs a kept/dropped breakdown if that ever looks wrong.
+prepare_labels:
+  save_path: ${data_dir}
+  filename: token_list
+  weights_filename: class_weights
+  manifest_path: ${data_dir}/manifest_filtered/train.tsv
+  add_symbol:
+    - "<unk>:-1"
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+dataset:
+  train:
+    - data_src_args:
+        split: train
+  valid:
+    - data_src_args:
+        split: valid
+  test:
+    - name: cremad
+      data_src_args: {split: cremad}
+    - name: emns
+      data_src_args: {split: emns}
+    - name: emodb
+      data_src_args: {split: emodb}
+    - name: emozionalmente
+      data_src_args: {split: emozionalmente}
+    - name: enterface05
+      data_src_args: {split: enterface05}
+    - name: jlcorpus
+      data_src_args: {split: jlcorpus}
+    - name: meld
+      data_src_args: {split: meld}
+    - name: quechua
+      data_src_args: {split: quechua}
+    - name: subesco
+      data_src_args: {split: subesco}
+    - name: thorsten
+      data_src_args: {split: thorsten}
+    - name: msppodcast
+      data_src_args: {split: msppodcast}
+    - name: msppodcast_test2
+      data_src_args: {split: msppodcast_test2}
+  preprocessor:
+    _target_: espnet2.train.preprocessor.CommonPreprocessor
+    fs: 16000
+    text_name: label
+    token_type: word
+    token_list: ${data_dir}/token_list
+
+##########################################################
+#                      MODEL SETTING                     #
+##########################################################
+model:
+  _target_: espnet3.systems.wavlmasp.model.WavlmAspModel
+  encoder:
+    _target_: transformers.AutoModel.from_pretrained
+    pretrained_model_name_or_path: microsoft/wavlm-large
+  # Same core7 class set as the multicorpus recipes: angry/sad/happy/
+  # surprise/fear/disgust/neutral. `token_list` ends with `<unk>`, not a class.
+  num_classes: 7
+  head_size: 1024
+  head_layers: 1
+  dropout: 0.5
+  class_weights: ${data_dir}/class_weights
+  normalize:
+    _target_: espnet3.systems.wavlmasp.model.WaveformNormalize
+    stats_file: ${stats_dir}/train/feats_stats.npz
+
+##########################################################
+#                  OPTIMIZATION SETTING                  #
+##########################################################
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 1.0e-5
+
+best_model_criterion:
+  - - valid/acc
+    - 1
+    - max
+
+seed: 0
+
+##########################################################
+#                   DATALOADER SETTING                   #
+##########################################################
+dataloader:
+  train:
+    iter_factory:
+      batches:
+        type: folded
+        batch_size: 8
+        fold_lengths: [160000]
+        sort_in_batch: descending
+        sort_batch: descending
+  valid:
+    iter_factory:
+      batches:
+        fold_lengths: [160000]
+        sort_in_batch: descending
+        sort_batch: descending
+
+##########################################################
+#                     TRAINER SETTING                    #
+##########################################################
+trainer:
+  devices: 1
+  num_nodes: 1
+  gradient_clip_val: 5.0
+  max_epochs: 30
+  # The paper trains at a batch of 32. The encoder is fine-tuned in full, so
+  # the batch is split and accumulated to fit.
+  accumulate_grad_batches: 4
+
+  callbacks:
+    - _target_: lightning.pytorch.callbacks.EarlyStopping
+      monitor: valid/acc
+      mode: max
+      patience: 5
+
+fit: {}

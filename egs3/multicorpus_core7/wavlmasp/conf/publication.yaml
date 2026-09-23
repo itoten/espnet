@@ -1,0 +1,23 @@
+##########################################################
+#                  PUBLICATION SETTING                   #
+##########################################################
+# Common usage:
+#   python run.py --stages pack_model   --training_config conf/training.yaml --publication_config conf/publication.yaml
+#   python run.py --stages upload_model --training_config conf/training.yaml --publication_config conf/publication.yaml
+
+data_dir: ${oc.env:MULTICORPUS_CORE7_OUTPUT,./data}
+
+pack_model:
+  exclude:
+    - inference
+    - inference_*
+    - demo
+    - last.ckpt
+    - "**/step*.ckpt"
+    - "**/epoch*.ckpt"
+    - "**/*.log"
+    - "**/tensorboard/**"
+    - "**/wandb/**"
+
+upload_model:
+  hf_repo: espnet/multicorpus_core7_wavlmasp

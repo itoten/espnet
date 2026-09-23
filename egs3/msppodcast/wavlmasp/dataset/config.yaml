@@ -1,0 +1,82 @@
+builder:
+  # MSP-Podcast is the only training corpus here: an in-domain reference for
+  # how much cross-corpus training (`multicorpus_core7`/`multicorpus_full20`)
+  # costs or gains relative to training on the target domain alone. Its own
+  # `test` split becomes this recipe's "msppodcast" test entry, exactly like
+  # every other corpus's own test split does in the multicorpus recipes.
+  train_corpora:
+    - name: msppodcast
+      data_src: msppodcast/esp2_cls
+
+  # Everything scored but never trained on: MSP-Podcast's own Test2 (its
+  # `esp2_cls` recipe defines two test splits, but only one is picked up
+  # automatically per corpus in `train_corpora`, so Test2 is named here
+  # explicitly under a distinct key), plus the same nine corpora
+  # `multicorpus_core7`/`multicorpus_full20` train on, read here as
+  # evaluation-only so the exact same 12 test sets are scored across all
+  # three recipes.
+  eval_only_corpora:
+    - name: msppodcast_test2
+      data_src: msppodcast/esp2_cls
+      splits: [test2]
+    - name: cremad
+      data_src: cremad/esp2_cls
+      splits: [test]
+    - name: emns
+      data_src: emns/esp2_cls
+      splits: [test]
+    - name: emodb
+      data_src: emodb/esp2_cls
+      splits: [test]
+    - name: emozionalmente
+      data_src: emozionalmente/esp2_cls
+      splits: [test]
+    - name: enterface05
+      data_src: enterface05/esp2_cls
+      splits: [test]
+    - name: jlcorpus
+      data_src: jlcorpus/esp2_cls
+      splits: [test]
+    - name: meld
+      data_src: meld/esp2_cls
+      splits: [test]
+    - name: quechua
+      data_src: quechua/esp2_cls
+      splits: [test]
+    - name: subesco
+      data_src: subesco/esp2_cls
+      splits: [test]
+    - name: thorsten
+      data_src: thorsten/esp2_cls
+      splits: [test]
+
+  # Same core7 label set as the multicorpus recipes (angry/sad/happy/
+  # surprise/fear/disgust/neutral), so macro-F1 is comparable across all
+  # three recipes without a label-space mismatch. `contempt` is dropped here
+  # too, even though MSP-Podcast is the one corpus that has it, for that
+  # comparability -- not because it is out of scope for this corpus alone.
+  label_map:
+    angry: angry
+    anger: angry
+    happy: happy
+    joy: happy
+    sad: sad
+    sadness: sad
+    surprise: surprise
+    surprised: surprise
+    fear: fear
+    disgust: disgust
+    disgusted: disgust
+    neutral: neutral
+
+  output_env_var: MSPPODCAST_WAVLMASP_OUTPUT
+  data_path: data
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
