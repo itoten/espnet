@@ -12,12 +12,29 @@ import torch
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
+from espnet2.utils.yaml_no_alias_safe_dump import yaml_no_alias_safe_dump
 from espnet3.components.modeling.lightning_module import ESPnetLightningModule
 from espnet3.components.trainers.trainer import ESPnet3LightningTrainer
 from espnet3.parallel.parallel import set_parallel
 from espnet3.utils.task_utils import get_espnet_model, save_espnet_config
 
 logger = logging.getLogger(__name__)
+
+
+def _save_resolved_config(config: DictConfig, output_dir: str) -> None:
+    """Save the fully resolved training config as ``<output_dir>/config.yaml``.
+
+    Used when ``config.task`` is unset, so the model is built directly via
+    Hydra instead of through :func:`save_espnet_config`'s ESPnet2 task path.
+    A system's own ``conf/inference.yaml`` (e.g.
+    ``espnet3.systems.wavlmasp``) still expects a config at this path to
+    rebuild the model for inference, so one needs to be written either way.
+    """
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    resolved = OmegaConf.to_container(config, resolve=True)
+    with open(output_path / "config.yaml", "w", encoding="utf-8") as f:
+        f.write(yaml_no_alias_safe_dump(resolved, indent=4, sort_keys=False))
 
 
 def _instantiate_model(config: DictConfig) -> Any:
@@ -96,6 +113,8 @@ def train(config: DictConfig) -> None:
     task = config.get("task")
     if task:
         save_espnet_config(task, config, config.exp_dir)
+    else:
+        _save_resolved_config(config, config.exp_dir)
 
     trainer = _build_trainer(config)
 

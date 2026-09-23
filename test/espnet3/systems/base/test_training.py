@@ -112,6 +112,29 @@ def test_train_saves_config_and_calls_fit(tmp_path, monkeypatch):
     assert calls["save"] == ("asr", str(tmp_path / "exp"))
 
 
+def test_train_without_task_still_writes_config_yaml(tmp_path, monkeypatch):
+    # A system that builds its model directly via Hydra (`task` unset, e.g.
+    # espnet3.systems.wavlmasp) still needs `<exp_dir>/config.yaml`: its own
+    # `conf/inference.yaml` reloads that file to rebuild the model. Without
+    # this, `task`-less systems trained fine but could never run `infer`.
+    cfg = OmegaConf.create(
+        {
+            "exp_dir": str(tmp_path / "exp"),
+            "model": {"_target_": "dummy.Target", "num_classes": 7},
+            "fit": {},
+        }
+    )
+    trainer = DummyTrainer()
+    monkeypatch.setattr(train_mod, "_build_trainer", lambda _cfg: trainer)
+
+    train_mod.train(cfg)
+
+    config_path = tmp_path / "exp" / "config.yaml"
+    assert config_path.is_file()
+    saved = OmegaConf.load(config_path)
+    assert saved.model.num_classes == 7
+
+
 def test_instantiate_model_without_task_calls_instantiate(monkeypatch):
     cfg = OmegaConf.create(
         {
