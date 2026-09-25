@@ -131,17 +131,24 @@ trainer:
   devices: 1
   num_nodes: 1
   gradient_clip_val: 5.0
-  max_epochs: 30
+  # 403 training utterances at effective batch 32 is ~13 updates/epoch;
+  # 30 epochs (the original default) stopped training at ~350 total
+  # updates, well short of convergence. 231 epochs targets ~3000 updates,
+  # matching the other single-corpus wavlmasp recipes; see
+  # espnet_work/per_corpus_baseline_plan.md §4.
+  max_epochs: 231
   # The paper trains at a batch of 32. The encoder is fine-tuned in full, so
   # the batch is split and accumulated to fit.
   accumulate_grad_batches: 4
 
   # ESPnet2 stops on `valid/loss`, but this recipe selects checkpoints on
   # `valid/acc`; watching the same value keeps the best epoch from being cut off.
+  # patience raised from 5 to 15 alongside max_epochs, so early stopping
+  # doesn't fire before the larger epoch budget can be used.
   callbacks:
     - _target_: lightning.pytorch.callbacks.EarlyStopping
       monitor: valid/acc
       mode: max
-      patience: 5
+      patience: 15
 
 fit: {}

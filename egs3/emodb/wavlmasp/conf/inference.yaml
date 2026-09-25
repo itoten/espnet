@@ -7,6 +7,13 @@
 #       --inference_config conf/inference.yaml
 #
 # `run.py` copies `exp_tag` / `exp_dir` from the training config.
+#
+# `data_dir` is not one of the fields `run.py` copies from the training
+# config, so it needs the same override `conf/metrics.yaml` and
+# `conf/publication.yaml` already carry -- without it this fell back to
+# TEMPLATE's literal `./data` default and `infer` could not find
+# `token_list`. See espnet_work/multicorpus_ser_report.md §6.2.
+data_dir: ${oc.env:EMODB_OUTPUT,./data}
 
 ##########################################################
 #                    DATASET DEFINITION                  #
