@@ -1,0 +1,32 @@
+##########################################################
+#                      DEMO SETTING                      #
+##########################################################
+model:
+  dir_or_tag: espnet/emns_wavlmasp
+  trust_user_code: true
+
+ui:
+  title: emns speech emotion recognition demo
+  outputs:
+    - key: hyp
+      type: text
+      label: "Emotion"
+
+pack:
+  out_dir: ${exp_dir}/demo
+  requirements:
+    - espnet[train] @ git+https://github.com/espnet/espnet.git
+    - espnet-s3prl>=2026.5.14
+    - torcheval>=0.0.7
+  readme_context:
+    python_version: "3.12"
+    emoji: "\U0001f3ad"
+    tags: |-
+      - espnet
+      - espnet3
+      - gradio
+      - audio-classification
+      - speech-emotion-recognition
+
+upload_demo:
+  hf_repo: espnet/emns_wavlmasp

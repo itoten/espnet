@@ -1,0 +1,140 @@
+##########################################################
+#                    TRAINING SETTING                    #
+##########################################################
+# Quick usage:
+#   python run.py --stages create_dataset --training_config conf/training.yaml
+#   python run.py --stages remove_long_short prepare_labels collect_stats train \
+#       --training_config conf/training.yaml
+#
+##########################################################
+#                  SYSTEM AND PATH SETTING               #
+##########################################################
+task:
+
+data_dir: ${oc.env:EMNS_WAVLMASP_OUTPUT,./data}
+exp_tag: train_wavlmasp_emns
+
+##########################################################
+#              LONG/SHORT FILTERING SETTING              #
+##########################################################
+# `min_wav_duration: 0.5` matches the multicorpus recipes: WavLM's internal
+# SpecAugment mask needs at least 11 conv-output frames, roughly a 0.22s
+# clip at 16kHz/wavlm-large's stride; 0.5s clears that with margin. See
+# espnet_work/multicorpus_ser_report.md §6.1 for how this was found.
+remove_long_short:
+  min_wav_duration: 0.5
+  max_wav_duration: 30
+  splits:
+    - train
+    - valid
+  save_path: ${data_dir}/manifest_filtered
+  manifest_paths:
+    train: ${data_dir}/manifest/train.tsv
+    valid: ${data_dir}/manifest/valid.tsv
+
+##########################################################
+#                  LABEL INVENTORY SETTING               #
+##########################################################
+prepare_labels:
+  save_path: ${data_dir}
+  filename: token_list
+  weights_filename: class_weights
+  manifest_path: ${data_dir}/manifest_filtered/train.tsv
+  add_symbol:
+    - "<unk>:-1"
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+dataset:
+  train:
+    - data_src_args:
+        split: train
+  valid:
+    - data_src_args:
+        split: valid
+  test:
+    - name: emns
+      data_src_args: {split: emns}
+  preprocessor:
+    _target_: espnet2.train.preprocessor.CommonPreprocessor
+    fs: 16000
+    text_name: label
+    token_type: word
+    token_list: ${data_dir}/token_list
+
+##########################################################
+#                      MODEL SETTING                     #
+##########################################################
+model:
+  _target_: espnet3.systems.wavlmasp.model.WavlmAspModel
+  encoder:
+    _target_: transformers.AutoModel.from_pretrained
+    pretrained_model_name_or_path: microsoft/wavlm-large
+  # emns's native label set (8 classes). `token_list` ends
+  # with `<unk>`, not a class.
+  num_classes: 8
+  head_size: 1024
+  head_layers: 1
+  dropout: 0.5
+  class_weights: ${data_dir}/class_weights
+  normalize:
+    _target_: espnet3.systems.wavlmasp.model.WaveformNormalize
+    stats_file: ${stats_dir}/train/feats_stats.npz
+
+##########################################################
+#                  OPTIMIZATION SETTING                  #
+##########################################################
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 1.0e-5
+
+best_model_criterion:
+  - - valid/acc
+    - 1
+    - max
+
+seed: 0
+
+##########################################################
+#                   DATALOADER SETTING                   #
+##########################################################
+dataloader:
+  train:
+    iter_factory:
+      batches:
+        type: folded
+        batch_size: 8
+        fold_lengths: [160000]
+        sort_in_batch: descending
+        sort_batch: descending
+  valid:
+    iter_factory:
+      batches:
+        fold_lengths: [160000]
+        sort_in_batch: descending
+        sort_batch: descending
+
+##########################################################
+#                     TRAINER SETTING                    #
+##########################################################
+# `max_epochs`/`patience` are scaled so the optimizer sees at least ~3000
+# updates even for this corpus's small training set (effective batch size
+# batch_size(8) * accumulate_grad_batches(4) = 32); see
+# espnet_work/per_corpus_baseline_plan.md §4 for the derivation. EmoDB's
+# earlier run at the single-corpus recipes' original default (max_epochs 30,
+# patience 5) stopped after ~350 updates, well short of convergence.
+trainer:
+  devices: 1
+  num_nodes: 1
+  gradient_clip_val: 5.0
+  max_epochs: 131
+  accumulate_grad_batches: 4
+
+  callbacks:
+    - _target_: lightning.pytorch.callbacks.EarlyStopping
+      monitor: valid/acc
+      mode: max
+      patience: 15
+
+fit: {}

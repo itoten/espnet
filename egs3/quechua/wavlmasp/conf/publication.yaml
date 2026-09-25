@@ -1,0 +1,19 @@
+##########################################################
+#                  PUBLICATION SETTING                   #
+##########################################################
+data_dir: ${oc.env:QUECHUA_WAVLMASP_OUTPUT,./data}
+
+pack_model:
+  exclude:
+    - inference
+    - inference_*
+    - demo
+    - last.ckpt
+    - "**/step*.ckpt"
+    - "**/epoch*.ckpt"
+    - "**/*.log"
+    - "**/tensorboard/**"
+    - "**/wandb/**"
+
+upload_model:
+  hf_repo: espnet/quechua_wavlmasp

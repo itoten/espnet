@@ -1,0 +1,36 @@
+builder:
+  # jlcorpus is the only training corpus here: an in-domain baseline for how
+  # jlcorpus's own emotions are learned alone, to compare against
+  # `multicorpus_full20`'s jlcorpus test score (same native labels, same
+  # test set, only the training data -- solo vs. 10-corpus merge -- differs).
+  train_corpora:
+    - name: jlcorpus
+      data_src: jlcorpus/esp2_cls
+
+  # Every native label jlcorpus carries, kept as its own class (identity
+  # mapping; a few are spelling fixes so the class names match
+  # `multicorpus_full20`'s). See espnet_work/label_inventory.md for the
+  # source counts.
+  label_map:
+    angry: angry
+    anxious: anxious
+    apologetic: apologetic
+    assertive: assertive
+    concerned: concerned
+    encouraging: encouraging
+    excited: excited
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  output_env_var: JLCORPUS_WAVLMASP_OUTPUT
+  data_path: data
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv

@@ -1,0 +1,33 @@
+builder:
+  # subesco is the only training corpus here: an in-domain baseline for how
+  # subesco's own emotions are learned alone, to compare against
+  # `multicorpus_full20`'s subesco test score (same native labels, same
+  # test set, only the training data -- solo vs. 10-corpus merge -- differs).
+  train_corpora:
+    - name: subesco
+      data_src: subesco/esp2_cls
+
+  # Every native label subesco carries, kept as its own class (identity
+  # mapping; a few are spelling fixes so the class names match
+  # `multicorpus_full20`'s). See espnet_work/label_inventory.md for the
+  # source counts.
+  label_map:
+    angry: angry
+    disgust: disgust
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprise: surprise
+
+  output_env_var: SUBESCO_WAVLMASP_OUTPUT
+  data_path: data
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv

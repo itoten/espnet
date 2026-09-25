@@ -1,0 +1,28 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# `run.py` copies `exp_tag` / `exp_dir` from the training config.
+#
+# `data_dir` is not one of the fields `run.py` copies from the training
+# config, so it needs the same override `conf/metrics.yaml` and
+# `conf/publication.yaml` already carry.
+data_dir: ${oc.env:THORSTEN_WAVLMASP_OUTPUT,./data}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+dataset:
+  test:
+    - {name: thorsten, data_src_args: {split: thorsten}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+model:
+  _target_: src.inference.EmotionClassification
+  train_config: ${exp_dir}/config.yaml
+  model_file: ${exp_dir}/valid.acc.ave_1best.pth
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output
