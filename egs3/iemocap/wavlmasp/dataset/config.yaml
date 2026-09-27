@@ -1,0 +1,48 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The official release: labels from `Session*/dialog/EmoEvaluation/*.txt`,
+  # audio from `Session*/sentences/wav/<dialog>/<turn>.wav`.
+  source_env_var: IEMOCAP
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Needs a signed release agreement (https://sail.usc.edu/iemocap/), so it is
+  # not downloaded here. Point `IEMOCAP` at a copy holding `Session1`-`Session5`.
+
+  # Labels ----------------------------------------------------------------
+  # `happy` and `excited` stay separate classes. Codes not listed here
+  # (`fru`, `sur`, `dis`, `oth`, `xxx`) are dropped. Scripted and improvised
+  # dialogs are both used.
+  emotion_map:
+    ang: angry
+    hap: happy
+    exc: excited
+    sad: sad
+    neu: neutral
+    fea: fear
+
+  # Split -----------------------------------------------------------------
+  # Utterances are split at random within each label; sessions and speakers
+  # are not held out, so every split shares all ten speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  output_env_var: IEMOCAP_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
