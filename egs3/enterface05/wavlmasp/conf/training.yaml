@@ -11,7 +11,7 @@
 ##########################################################
 task:
 
-data_dir: ${oc.env:ENTERFACE05_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:ENTERFACE05_OUTPUT,./data}
 exp_tag: train_wavlmasp_enterface05
 
 ##########################################################
@@ -55,7 +55,7 @@ dataset:
         split: valid
   test:
     - name: enterface05
-      data_src_args: {split: enterface05}
+      data_src_args: {split: test}
   preprocessor:
     _target_: espnet2.train.preprocessor.CommonPreprocessor
     fs: 16000
