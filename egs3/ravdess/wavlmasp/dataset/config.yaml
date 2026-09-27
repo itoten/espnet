@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Actor_NN/03-01-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`.
+  source_env_var: RAVDESS
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 1188976, CC BY-NC-SA 4.0. Only the speech, audio-only archive.
+  base_url: https://zenodo.org/api/records/1188976/files
+  archive_name: Audio_Speech_Actors_01-24.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's 2-digit emotion code to manifest label.
+  emotion_map:
+    "01": neutral
+    "02": calm
+    "03": happy
+    "04": sad
+    "05": angry
+    "06": fear
+    "07": disgust
+    "08": surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; actors are not held out, so every split shares all 24 actors.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz and five are stereo, so `build()` converts all of
+  # them to 16 kHz mono.
+  output_env_var: RAVDESS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
