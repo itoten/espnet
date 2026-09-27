@@ -21,7 +21,7 @@ each other, not run in isolation. See `espnet_work/multicorpus_ser_plan.md`.
 
 ## How the merge works
 
-Each corpus is prepared by its own `esp2_cls` recipe (download, conversion,
+Each corpus is prepared by its own `wavlmasp` recipe (download, conversion,
 its own train/valid/test split) exactly as if it were used on its own —
 `dataset/builder.py` here only reads those recipes' manifests, applies
 `dataset/config.yaml`'s `label_map`, and writes:

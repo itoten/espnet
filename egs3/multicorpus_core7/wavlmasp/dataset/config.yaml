@@ -1,36 +1,36 @@
 builder:
   # Corpora merged into one training set -----------------------------------
-  # Each entry's `data_src` points at that corpus's own `esp2_cls` recipe, so
+  # Each entry's `data_src` points at that corpus's own `wavlmasp` recipe, so
   # this recipe reuses its download/conversion logic unchanged; only the
   # manifests are recombined here. See `multicorpus_ser_plan.md` §3 for why
   # the merge happens at this layer instead of in `dataset.train`.
   train_corpora:
     - name: cremad
-      data_src: cremad/esp2_cls
+      data_src: cremad/wavlmasp
     - name: emns
-      data_src: emns/esp2_cls
+      data_src: emns/wavlmasp
     - name: emodb
-      data_src: emodb/esp2_cls
+      data_src: emodb/wavlmasp
     - name: emozionalmente
-      data_src: emozionalmente/esp2_cls
+      data_src: emozionalmente/wavlmasp
     - name: enterface05
-      data_src: enterface05/esp2_cls
+      data_src: enterface05/wavlmasp
     - name: jlcorpus
-      data_src: jlcorpus/esp2_cls
+      data_src: jlcorpus/wavlmasp
     - name: meld
-      data_src: meld/esp2_cls
+      data_src: meld/wavlmasp
     - name: quechua
-      data_src: quechua/esp2_cls
+      data_src: quechua/wavlmasp
     - name: subesco
-      data_src: subesco/esp2_cls
+      data_src: subesco/wavlmasp
     - name: thorsten
-      data_src: thorsten/esp2_cls
+      data_src: thorsten/wavlmasp
 
   # Corpora scored but never trained on. MSP-Podcast contributes two test
   # splits (Test1 and Test2), so both are listed explicitly.
   eval_only_corpora:
     - name: msppodcast
-      data_src: msppodcast/esp2_cls
+      data_src: msppodcast/wavlmasp
       splits: [test, test2]
 
   # core7: only the 7 classes shared with the IS2025 baseline survive: every
