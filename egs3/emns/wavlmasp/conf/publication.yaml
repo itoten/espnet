@@ -1,7 +1,7 @@
 ##########################################################
 #                  PUBLICATION SETTING                   #
 ##########################################################
-data_dir: ${oc.env:EMNS_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:EMNS_OUTPUT,./data}
 
 pack_model:
   exclude:
