@@ -1,0 +1,67 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<speaker>_<Emotion>/*.wav`, one directory per downloaded archive. The file
+  # names carry neither speaker nor emotion, so the directory name is the label.
+  source_env_var: EMOVDB
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # OpenSLR SLR115. Non-commercial use only (terms in the EmoV-DB repository's
+  # LICENSE.md). `josh` has no Angry or Disgusted archive.
+  base_url: https://www.openslr.org/resources/115
+  archive_names:
+    - bea_Amused.tar.gz
+    - bea_Angry.tar.gz
+    - bea_Disgusted.tar.gz
+    - bea_Neutral.tar.gz
+    - bea_Sleepy.tar.gz
+    - jenie_Amused.tar.gz
+    - jenie_Angry.tar.gz
+    - jenie_Disgusted.tar.gz
+    - jenie_Neutral.tar.gz
+    - jenie_Sleepy.tar.gz
+    - josh_Amused.tar.gz
+    - josh_Neutral.tar.gz
+    - josh_Sleepy.tar.gz
+    - sam_Amused.tar.gz
+    - sam_Angry.tar.gz
+    - sam_Disgusted.tar.gz
+    - sam_Neutral.tar.gz
+    - sam_Sleepy.tar.gz
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # Directory emotion (lower-cased) to manifest label.
+  emotion_map:
+    amused: amused
+    angry: angry
+    disgusted: disgust
+    neutral: neutral
+    sleepy: sleepy
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out, so every split shares all four speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings mix 44.1 kHz and 16 kHz, so `build()` resamples all of them.
+  output_env_var: EMOVDB_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
