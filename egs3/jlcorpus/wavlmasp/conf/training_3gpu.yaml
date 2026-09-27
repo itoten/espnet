@@ -15,7 +15,7 @@
 ##########################################################
 task:
 
-data_dir: ${oc.env:JLCORPUS_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:JLCORPUS_OUTPUT,./data}
 exp_tag: train_wavlmasp_jlcorpus
 
 ##########################################################
@@ -59,7 +59,7 @@ dataset:
         split: valid
   test:
     - name: jlcorpus
-      data_src_args: {split: jlcorpus}
+      data_src_args: {split: test}
   preprocessor:
     _target_: espnet2.train.preprocessor.CommonPreprocessor
     fs: 16000

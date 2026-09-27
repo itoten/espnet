@@ -1,32 +1,52 @@
 # jlcorpus speech emotion recognition (single-corpus baseline)
 
 Trains `wavlmasp` (fine-tuned WavLM Large + attentive statistics pooling +
-FC head) on jlcorpus alone, and scores it on jlcorpus's own test split.
-Labels are jlcorpus's native set (10 classes), the same
-set `egs3/multicorpus_full20/wavlmasp` uses for jlcorpus's test scoring, so
-the two are directly comparable: same labels, same test data, the only
-difference is whether training data came from jlcorpus alone or from the
-ten-corpus merge. See `espnet_work/per_corpus_baseline_plan.md`.
+FC head) on jlcorpus alone, and scores it on jlcorpus's own test split (10
+native classes).
 
-`max_epochs` (67) and `EarlyStopping.patience` (15) are
-scaled up from the multicorpus recipes' defaults so the optimizer sees at
-least ~3000 updates despite this corpus's smaller training set (see the
-plan doc §4 for the derivation); the multicorpus defaults left EmoDB
-under-trained at ~350 updates.
+[JL-Corpus](https://github.com/tli725/JL-Corpus) is New Zealand English read
+by four actors; five of its ten emotions are the usual primary ones, the
+other five secondary (`anxious`/`apologetic`/`assertive`/`concerned`/
+`encouraging`). The label comes from the file name; no annotation file is
+read. The audio is 44.1 kHz, so `create_dataset` resamples it to 16 kHz.
+
+The corpus is distributed on
+[Kaggle](https://www.kaggle.com/datasets/tli725/jl-corpus), which needs an API
+token (`pip install kaggle`, then a token from
+https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
+`$KAGGLE_API_TOKEN`). `JLCORPUS` points at an existing corpus tree, or where
+to download it to.
+
+The corpus publishes no partition, and it has four speakers. One is held out
+for test; validation is drawn from the remaining three, because a second
+held-out speaker would leave two for training.
 
 ## Quick start
 
 ```bash
+# 1) Write the manifests
 python run.py --stages create_dataset remove_long_short prepare_labels \
     --training_config conf/training.yaml
-python run.py --stages collect_stats train \
+
+# 2) Collect feature statistics
+python run.py --stages collect_stats \
     --training_config conf/training.yaml
-python run.py --stages infer measure \
+
+# 3) Train
+python run.py --stages train \
+    --training_config conf/training.yaml
+
+# 4) Infer
+python run.py --stages infer \
+    --training_config conf/training.yaml \
+    --inference_config conf/inference.yaml
+
+# 5) Score
+python run.py --stages measure \
     --training_config conf/training.yaml \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
 
-`JLCORPUS_OUTPUT` must already point at jlcorpus's own prepared
-data (same as `egs3/jlcorpus/esp2_cls`); `JLCORPUS_WAVLMASP_OUTPUT` controls where this
-recipe's own filtered manifests and label list are written.
+`JLCORPUS_OUTPUT` must already point at the prepared data; `create_dataset`
+writes it there if it does not.
