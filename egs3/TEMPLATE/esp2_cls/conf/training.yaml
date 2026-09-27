@@ -22,8 +22,8 @@
 ##########################################################
 #                  SYSTEM AND PATH SETTING               #
 ##########################################################
-num_device: 1
-num_nodes: 1
+num_device: ${oc.decode:${oc.env:NUM_DEVICE,1}}
+num_nodes: ${oc.decode:${oc.env:NUM_NODES,1}}
 
 # Optional ESPnet task class path used by `get_espnet_model(...)`.
 # Classification recipes normally set this to `espnet2.tasks.cls.CLSTask`.

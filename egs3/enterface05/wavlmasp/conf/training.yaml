@@ -125,8 +125,8 @@ dataloader:
 # earlier run at the single-corpus recipes' original default (max_epochs 30,
 # patience 5) stopped after ~350 updates, well short of convergence.
 trainer:
-  devices: 1
-  num_nodes: 1
+  devices: ${num_device}
+  num_nodes: ${num_nodes}
   gradient_clip_val: 5.0
   max_epochs: 100
   accumulate_grad_batches: 4

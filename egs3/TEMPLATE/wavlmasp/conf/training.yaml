@@ -22,8 +22,8 @@
 ##########################################################
 #                  SYSTEM AND PATH SETTING               #
 ##########################################################
-num_device: 1
-num_nodes: 1
+num_device: ${oc.decode:${oc.env:NUM_DEVICE,1}}
+num_nodes: ${oc.decode:${oc.env:NUM_NODES,1}}
 
 # Optional ESPnet task class path used by `get_espnet_model(...)`.
 # Classification recipes normally set this to `espnet2.tasks.cls.CLSTask`.
@@ -187,7 +187,9 @@ trainer:
     - _target_: lightning.pytorch.loggers.TensorBoardLogger
       save_dir: ${exp_dir}/tensorboard
       name: tb_logger
-  strategy: auto
+  # WavLM's LayerDrop skips random layers each step, so DDP must tolerate
+  # parameters that received no gradient.
+  strategy: ddp_find_unused_parameters_true
 
   # Any Lightning callback can be appended here; ESPnet3 instantiates the list
   # on top of its own defaults. Watch the same value as `best_model_criterion`
