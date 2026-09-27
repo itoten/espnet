@@ -6,14 +6,14 @@
 # `data_dir` is not one of the fields `run.py` copies from the training
 # config, so it needs the same override `conf/metrics.yaml` and
 # `conf/publication.yaml` already carry.
-data_dir: ${oc.env:MELD_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:MELD_OUTPUT,./data}
 
 ##########################################################
 #                    DATASET DEFINITION                  #
 ##########################################################
 dataset:
   test:
-    - {name: meld, data_src_args: {split: meld}}
+    - {name: meld, data_src_args: {split: test}}
 
 ##########################################################
 #                    MODEL AND OUTPUT                    #

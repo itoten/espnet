@@ -1,6 +1,6 @@
-"""Single-corpus dataset module."""
+"""MELD dataset module."""
 
-from egs3.meld.wavlmasp.dataset.builder import MulticorpusBuilder as DatasetBuilder
-from egs3.meld.wavlmasp.dataset.dataset import MulticorpusDataset as Dataset
+from egs3.meld.wavlmasp.dataset.builder import MELDBuilder as DatasetBuilder
+from egs3.meld.wavlmasp.dataset.dataset import MELDDataset as Dataset
 
 __all__ = ["Dataset", "DatasetBuilder"]
