@@ -15,7 +15,7 @@
 ##########################################################
 task:
 
-data_dir: ${oc.env:CREMAD_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:CREMAD_OUTPUT,./data}
 exp_tag: train_wavlmasp_cremad
 
 ##########################################################
@@ -59,7 +59,7 @@ dataset:
         split: valid
   test:
     - name: cremad
-      data_src_args: {split: cremad}
+      data_src_args: {split: test}
   preprocessor:
     _target_: espnet2.train.preprocessor.CommonPreprocessor
     fs: 16000

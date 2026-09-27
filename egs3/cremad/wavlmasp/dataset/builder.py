@@ -1,30 +1,25 @@
-"""Single-corpus dataset builder, reusing the shared merge logic with one corpus.
-
-Merges the training/validation manifests of every corpus in
-``dataset/config.yaml``'s ``train_corpora`` into one manifest pair, applying
-``label_map`` along the way, and writes one unmerged, label-mapped test
-manifest per corpus/split. The merge logic itself lives in
-``espnet3.components.data.multicorpus_manifest``; this module only wires that
-shared logic to this recipe's own config.
-"""
+"""CREMA-D dataset builder."""
 
 from __future__ import annotations
 
 import logging
 import os
+import re
+import subprocess
 from importlib import resources
 from pathlib import Path
+from typing import Iterator
 
 from espnet3.components.data.dataset_builder import DatasetBuilder
-from espnet3.components.data.multicorpus_manifest import (
-    CorpusRef,
-    build_eval_manifest,
-    merge_train_valid_manifests,
-    write_manifest,
-)
 from espnet3.utils.config_utils import load_config_with_defaults
 
 logger = logging.getLogger(__name__)
+
+# `1001_DFA_ANG_XX.wav` -> actor 1001, sentence DFA, emotion ANG, intensity XX.
+FILENAME_RE = re.compile(
+    r"^(?P<actor>\d{4})_(?P<sentence>[A-Z]{3})_(?P<emotion>[A-Z]{3})"
+    r"_(?P<intensity>[A-Z]{1,2})\.wav$"
+)
 
 
 def _load_builder_config() -> dict:
@@ -34,112 +29,344 @@ def _load_builder_config() -> dict:
 
 
 _CFG = _load_builder_config()
-_LABEL_MAP = {str(k): str(v) for k, v in _CFG["label_map"].items()}
+_EMOTION_CODES = {str(k): str(v) for k, v in _CFG["emotion_codes"].items()}
 
 
-def _train_corpora() -> list[CorpusRef]:
-    return [
-        CorpusRef(str(c["name"]), str(c["data_src"])) for c in _CFG["train_corpora"]
-    ]
+def iter_source_candidates(
+    recipe_root: Path, source_dir: str | Path | None = None
+) -> Iterator[Path]:
+    """Yield the directories that may hold the CREMA-D source tree, in order.
+
+    Args:
+        recipe_root: Resolved recipe directory.
+        source_dir: Explicit location, tried first when given.
+
+    Yields:
+        Path: Candidate corpus roots, most specific first.
+    """
+    if source_dir:
+        yield Path(source_dir).expanduser()
+    env_value = os.environ.get(str(_CFG["source_env_var"]))
+    if env_value:
+        yield Path(env_value).expanduser()
+    yield recipe_root / _CFG["dataset_path"]
 
 
-def eval_manifest_specs() -> list[tuple[str, CorpusRef, str]]:
-    """Return every (split_key, corpus, source_split) the test set needs.
+def resolve_audio_dir(root: Path) -> Path | None:
+    """Return the directory of WAV files under ``root``, or None.
 
-    A corpus contributing a single eval split (every ``train_corpora`` entry,
-    reading its own ``test`` split) is keyed by its own name, so
-    ``dataset.test[*].data_src_args.split`` can just name the corpus. A
-    corpus contributing several eval splits (MSP-Podcast's Test1/Test2) is
-    keyed ``<corpus>_<split>`` instead, so the two stay distinguishable.
+    Accepts either the repository layout (``<root>/AudioWAV``) or a directory
+    of WAV files handed over directly, so a corpus copy that was flattened
+    elsewhere still works.
+
+    Args:
+        root: Candidate corpus root.
 
     Returns:
-        list[tuple[str, CorpusRef, str]]: ``(split_key, corpus, source_split)``.
+        Path | None: Directory containing the WAV files, or None when neither
+        layout matches.
     """
-    specs: list[tuple[str, CorpusRef, str]] = []
-    for c in _CFG["train_corpora"]:
-        corpus = CorpusRef(str(c["name"]), str(c["data_src"]))
-        specs.append((corpus.name, corpus, "test"))
-    for c in _CFG.get("eval_only_corpora", []):
-        corpus = CorpusRef(str(c["name"]), str(c["data_src"]))
-        splits = [str(s) for s in c["splits"]]
-        for split in splits:
-            key = corpus.name if len(splits) == 1 else f"{corpus.name}_{split}"
-            specs.append((key, corpus, split))
-    return specs
+    nested = root / str(_CFG["audio_subdir"])
+    for candidate in (nested, root):
+        if candidate.is_dir() and any(candidate.glob("*.wav")):
+            return candidate
+    return None
+
+
+def resolve_source_root(
+    recipe_root: Path, source_dir: str | Path | None = None
+) -> Path:
+    """Return the first candidate that holds CREMA-D audio.
+
+    Args:
+        recipe_root: Resolved recipe directory.
+        source_dir: Explicit location, tried first when given.
+
+    Returns:
+        Path: Directory containing the WAV files.
+
+    Raises:
+        FileNotFoundError: If no candidate holds any WAV file.
+    """
+    checked = []
+    for candidate in iter_source_candidates(recipe_root, source_dir):
+        audio_dir = resolve_audio_dir(candidate)
+        if audio_dir is not None:
+            return audio_dir
+        checked.append(str(candidate))
+    raise FileNotFoundError(
+        "CREMA-D audio not found. Checked:\n  "
+        + "\n  ".join(checked)
+        + f"\nSet ${_CFG['source_env_var']} to a corpus root, or let "
+        "`prepare_source` download it."
+    )
 
 
 def resolve_data_root(recipe_root: Path) -> Path:
-    """Return the directory the merged manifests are written into.
+    """Return the directory the manifests are written into.
 
     Args:
-        recipe_root: Recipe directory, used to resolve relative locations.
+        recipe_root: Resolved recipe directory.
 
     Returns:
-        Path: ``$<output_env_var>`` when set, else ``<recipe_dir>/data``.
+        Path: ``$CREMAD_OUTPUT`` when set, else ``<recipe_dir>/data``.
     """
     env_value = os.environ.get(str(_CFG["output_env_var"]))
     if env_value:
         return Path(env_value).expanduser()
-    return recipe_root / str(_CFG["data_path"])
+    return recipe_root / _CFG["data_path"]
 
 
-def _all_manifest_paths() -> list[str]:
-    paths = list(str(p) for p in _CFG["manifest_paths"].values())
-    paths += [f"manifest/{key}.tsv" for key, _corpus, _split in eval_manifest_specs()]
-    return paths
+def _require_git_lfs() -> None:
+    """Fail early when git-lfs is missing.
+
+    The corpus tracks every ``*.wav`` through Git LFS, so a clone without the
+    extension installed produces pointer files that still carry the ``.wav``
+    name. Nothing downstream would notice until the audio is read.
+
+    Raises:
+        RuntimeError: If ``git lfs`` is unavailable.
+    """
+    try:
+        subprocess.run(
+            ["git", "lfs", "version"],
+            check=True,
+            capture_output=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+        raise RuntimeError(
+            "git-lfs is required to download CREMA-D: the corpus stores its "
+            "audio in Git LFS, and a clone without it yields pointer files "
+            "named *.wav. Install it (https://git-lfs.com) and retry, or set "
+            f"${_CFG['source_env_var']} to a corpus copy you already have."
+        ) from exc
 
 
-class MulticorpusBuilder(DatasetBuilder):
-    """Builds the merged train/valid manifest and the per-corpus test manifests.
+def _assert_real_audio(audio_dir: Path) -> None:
+    """Check that the WAV files are audio rather than Git LFS pointers.
 
-    Source preparation is delegated entirely to each corpus's own recipe:
-    instantiating that corpus's ``Dataset`` (done inside
-    ``multicorpus_manifest``) triggers its own ``prepare_source`` / ``build``
-    if needed, exactly as using that corpus on its own would. This builder's
-    own ``is_source_prepared`` / ``prepare_source`` are therefore no-ops; all
-    of the work happens in ``build()``.
+    Args:
+        audio_dir: Directory holding the corpus audio.
+
+    Raises:
+        RuntimeError: If the first file is not RIFF-headed.
+    """
+    sample = next(iter(sorted(audio_dir.glob("*.wav"))), None)
+    if sample is None:
+        return
+    with sample.open("rb") as fh:
+        header = fh.read(4)
+    if header != b"RIFF":
+        raise RuntimeError(
+            f"{sample} is not a WAV file (header {header!r}). Git LFS content "
+            "was probably not fetched; run `git lfs pull` inside "
+            f"{audio_dir.parent}."
+        )
+
+
+def _clone_repository(destination: Path) -> None:
+    """Shallow-clone the CREMA-D repository into ``destination``.
+
+    Args:
+        destination: Directory to clone into.
+
+    Raises:
+        RuntimeError: If git-lfs is unavailable.
+        subprocess.CalledProcessError: If the clone fails.
+    """
+    _require_git_lfs()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    url = str(_CFG["repo_url"])
+    logger.info("Cloning CREMA-D (about 600 MB of LFS audio) from %s", url)
+    subprocess.run(
+        ["git", "clone", "--depth", "1", url, str(destination)],
+        check=True,
+    )
+
+
+def parse_filename(name: str) -> dict[str, str] | None:
+    """Split a CREMA-D file name into its fields.
+
+    Args:
+        name: File name such as ``1001_DFA_ANG_XX.wav``.
+
+    Returns:
+        dict[str, str] | None: Keys ``actor``, ``sentence``, ``emotion`` and
+        ``intensity``, or None when the name does not match the corpus scheme.
+
+    Examples:
+        >>> parse_filename("1001_DFA_ANG_XX.wav")["emotion"]
+        'ANG'
+    """
+    match = FILENAME_RE.match(name)
+    return match.groupdict() if match else None
+
+
+def assign_splits(speakers: list[str]) -> dict[str, str]:
+    """Deal sorted speaker ids out to the configured splits.
+
+    CREMA-D has no official partition. Sorting first makes the assignment a
+    function of the corpus alone, so the split is reproducible without shipping
+    a list of ids. The counts must account for every speaker: a partial
+    assignment is far more likely to be a typo in the config than a deliberate
+    choice to drop actors, so it is rejected rather than patched up.
+
+    TODO(itoten): Take the speaker ids from the config instead of deriving them
+    from sort order, so the split can reproduce a published partition. Sorted
+    ids ignore the gender balance that a hand-built fold can hold.
+
+    Args:
+        speakers: Speaker ids found in the corpus.
+
+    Returns:
+        dict[str, str]: Speaker id to split name.
+        ex) {"1001": "train", "1002": "valid", "1003": "test"}
+
+    Raises:
+        ValueError: If the configured counts do not sum to the number of
+            speakers in the corpus.
+    """
+    counts = {str(k): int(v) for k, v in _CFG["split_speaker_counts"].items()}
+    ordered = sorted(set(speakers))
+    if sum(counts.values()) != len(ordered):
+        raise ValueError(
+            f"`split_speaker_counts` sums to {sum(counts.values())} but the "
+            f"corpus has {len(ordered)} speakers "
+            f"({', '.join(f'{k}={v}' for k, v in counts.items())}). "
+            "Adjust the counts in dataset/config.yaml so every speaker lands "
+            "in exactly one split."
+        )
+
+    assignment = {}
+    start = 0
+    for split, count in counts.items():
+        for speaker in ordered[start : start + count]:
+            assignment[speaker] = split
+        start += count
+    return assignment
+
+
+class CremaDBuilder(DatasetBuilder):
+    """Prepare CREMA-D for the classification recipe.
+
+    The corpus is already distributed as 16 kHz mono WAV, so `build()` only
+    writes one manifest per split; the audio is read from wherever it was
+    downloaded or placed.
     """
 
-    def is_source_prepared(self, recipe_dir: str | Path, **_kwargs) -> bool:
-        """Report always ready; each sub-corpus decides for itself in `build()`."""
+    def is_source_prepared(
+        self,
+        recipe_dir: str | Path,
+        source_dir: str | Path | None = None,
+        **_kwargs,
+    ) -> bool:
+        """Check whether a directory of CREMA-D WAV files is reachable."""
+        try:
+            resolve_source_root(Path(recipe_dir).resolve(), source_dir)
+        except FileNotFoundError:
+            return False
         return True
 
-    def prepare_source(self, recipe_dir: str | Path, **_kwargs) -> None:
-        """No-op: source preparation happens per corpus inside `build()`."""
-        return None
-
-    def is_built(self, recipe_dir: str | Path, **_kwargs) -> bool:
-        """Check whether every merged/eval manifest already exists."""
-        data_root = resolve_data_root(Path(recipe_dir).resolve())
-        return all((data_root / p).is_file() for p in _all_manifest_paths())
-
-    def build(self, recipe_dir: str | Path, **_kwargs) -> None:
-        """Merge train/valid across corpora and write per-corpus test manifests.
+    def prepare_source(
+        self,
+        recipe_dir: str | Path,
+        source_dir: str | Path | None = None,
+        **_kwargs,
+    ) -> None:
+        """Clone the corpus unless it is already available.
 
         Args:
             recipe_dir: Recipe directory, used to resolve relative locations.
+            source_dir: Explicit corpus location, tried before the environment
+                variable and the recipe-local download directory.
 
         Raises:
-            RuntimeError: If two corpora emit the same utterance id.
-            AttributeError: If a referenced corpus recipe's `Dataset` does not
-                follow the shared manifest-entry convention.
+            subprocess.CalledProcessError: If the clone fails.
+            FileNotFoundError: If no audio is present after cloning.
         """
         recipe_root = Path(recipe_dir).resolve()
+        if self.is_source_prepared(recipe_dir, source_dir):
+            logger.info("CREMA-D already present; skipping download")
+            return
+
+        destination = next(iter_source_candidates(recipe_root, source_dir))
+        _clone_repository(destination)
+        resolve_source_root(recipe_root, source_dir)
+
+    def is_built(self, recipe_dir: str | Path, **_kwargs) -> bool:
+        """Check whether every split manifest already exists."""
+        data_root = resolve_data_root(Path(recipe_dir).resolve())
+        return all(
+            (data_root / relpath).is_file()
+            for relpath in _CFG["manifest_paths"].values()
+        )
+
+    def build(
+        self,
+        recipe_dir: str | Path,
+        source_dir: str | Path | None = None,
+        **_kwargs,
+    ) -> None:
+        """Write one TSV manifest per split.
+
+        Each row is ``utterance_id<TAB>wav_path<TAB>label``. Utterance ids are
+        the file stems, which already encode speaker, sentence, emotion and
+        intensity.
+
+        Args:
+            recipe_dir: Recipe directory, used to resolve relative locations.
+            source_dir: Explicit corpus location.
+
+        Raises:
+            FileNotFoundError: If the corpus audio cannot be found.
+            ValueError: If the corpus holds too few speakers to split.
+        """
+        recipe_root = Path(recipe_dir).resolve()
+        audio_dir = resolve_source_root(recipe_root, source_dir)
+        _assert_real_audio(audio_dir)
         data_root = resolve_data_root(recipe_root)
 
-        merged = merge_train_valid_manifests(
-            _train_corpora(), _LABEL_MAP, splits=("train", "valid")
-        )
+        entries = []
+        skipped = 0
+        for wav in sorted(audio_dir.glob("*.wav")):
+            fields = parse_filename(wav.name)
+            if fields is None or fields["emotion"] not in _EMOTION_CODES:
+                skipped += 1
+                continue
+            entries.append(
+                (
+                    fields["actor"],
+                    wav.stem,
+                    str(wav.resolve()),
+                    _EMOTION_CODES[fields["emotion"]],
+                )
+            )
+        if skipped:
+            logger.warning("Skipped %d file(s) with an unexpected name", skipped)
+        if not entries:
+            raise FileNotFoundError(f"No CREMA-D audio under {audio_dir}")
+
+        assignment = assign_splits([actor for actor, _, _, _ in entries])
         for split, relpath in _CFG["manifest_paths"].items():
-            write_manifest(merged[str(split)].lines, data_root / str(relpath))
-
-        for key, corpus, source_split in eval_manifest_specs():
-            eval_manifest = build_eval_manifest(corpus, source_split, _LABEL_MAP)
-            write_manifest(eval_manifest.lines, data_root / "manifest" / f"{key}.tsv")
-
-        logger.info(
-            "MulticorpusBuilder.build(): wrote merged train/valid and %d "
-            "test manifest(s) under %s",
-            len(eval_manifest_specs()),
-            data_root,
-        )
+            manifest = data_root / str(relpath)
+            manifest.parent.mkdir(parents=True, exist_ok=True)
+            rows = [
+                (utt_id, wav, label)
+                for actor, utt_id, wav, label in entries
+                if assignment[actor] == split
+            ]
+            # Write to a part file and rename, so an interrupted build cannot
+            # leave a truncated manifest that `is_built` would accept.
+            part = manifest.with_suffix(manifest.suffix + ".part")
+            with part.open("w", encoding="utf-8") as fh:
+                for utt_id, wav, label in sorted(rows):
+                    fh.write(f"{utt_id}\t{wav}\t{label}\n")
+            part.replace(manifest)
+            speakers = len({r[0].split("_")[0] for r in rows})
+            logger.info(
+                "%s: wrote %d entries from %d speaker(s) to %s",
+                split,
+                len(rows),
+                speakers,
+                manifest,
+            )
