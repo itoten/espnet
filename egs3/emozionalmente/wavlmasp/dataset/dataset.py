@@ -1,4 +1,4 @@
-"""Single-corpus dataset implementation backed by TSV manifests."""
+"""Emozionalmente dataset implementation backed by TSV manifests."""
 
 from __future__ import annotations
 
@@ -12,8 +12,7 @@ import soundfile as sf
 from torch.utils.data import Dataset as TorchDataset
 
 from egs3.emozionalmente.wavlmasp.dataset.builder import (
-    MulticorpusBuilder,
-    eval_manifest_specs,
+    EmozionalmenteBuilder,
     resolve_data_root,
 )
 from espnet3.utils.config_utils import load_config_with_defaults
@@ -23,16 +22,10 @@ with resources.as_file(_CONFIG_RESOURCE) as _CONFIG_PATH:
     _CONFIG = load_config_with_defaults(str(_CONFIG_PATH), resolve=False)
 _DATASET_CFG = _CONFIG["dataset"]
 
-# `train`/`valid` read the `remove_long_short` output; every test split comes
-# straight from `eval_manifest_specs()` instead of being repeated by hand
-# here, so this list cannot drift from what `builder.py` actually writes.
 _SPLIT_MANIFEST_PATHS: dict[str, str] = {
     str(split): str(relpath)
     for split, relpath in _DATASET_CFG["split_manifest_paths"].items()
 }
-_SPLIT_MANIFEST_PATHS.update(
-    {key: f"manifest/{key}.tsv" for key, _corpus, _split in eval_manifest_specs()}
-)
 
 
 @dataclass(frozen=True)
@@ -68,19 +61,22 @@ def _read_manifest(manifest_path: Path) -> list[ManifestEntry]:
     return entries
 
 
-class MulticorpusDataset(TorchDataset):
-    """Single-corpus dataset that returns ``{"speech", "label"}`` samples.
+class EmozionalmenteDataset(TorchDataset):
+    """Emozionalmente dataset that returns ``{"speech", "label"}`` samples.
 
     Args:
-        split: ``train``, ``valid``, or one of the per-corpus test split keys
-            from :func:`builder.eval_manifest_specs` (e.g. ``cremad``,
-            ``msppodcast_test``, ``msppodcast_test2``).
+        split: One of ``train``, ``valid``, or ``test``.
         recipe_dir: Optional recipe root. When omitted, defaults to the
             current recipe directory inferred from this module.
 
     Raises:
         ValueError: If ``split`` is unknown.
         FileNotFoundError: If the manifest for ``split`` does not exist.
+
+    Examples:
+        >>> dataset = EmozionalmenteDataset(split="valid")
+        >>> sorted(dataset[0].keys())
+        ['label', 'speech']
     """
 
     def __init__(self, split: str, recipe_dir: str | Path | None = None) -> None:
@@ -92,7 +88,7 @@ class MulticorpusDataset(TorchDataset):
         )
         self.data_dir = resolve_data_root(recipe_root)
 
-        builder = MulticorpusBuilder()
+        builder = EmozionalmenteBuilder()
         if not builder.is_source_prepared(recipe_dir=recipe_root):
             builder.prepare_source(recipe_dir=recipe_root)
         if not builder.is_built(recipe_dir=recipe_root):

@@ -1,8 +1,10 @@
-"""Single-corpus dataset module."""
+"""Emozionalmente dataset module."""
 
 from egs3.emozionalmente.wavlmasp.dataset.builder import (
-    MulticorpusBuilder as DatasetBuilder,
+    EmozionalmenteBuilder as DatasetBuilder,
 )
-from egs3.emozionalmente.wavlmasp.dataset.dataset import MulticorpusDataset as Dataset
+from egs3.emozionalmente.wavlmasp.dataset.dataset import (
+    EmozionalmenteDataset as Dataset,
+)
 
 __all__ = ["Dataset", "DatasetBuilder"]

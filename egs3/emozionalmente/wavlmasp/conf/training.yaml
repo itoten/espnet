@@ -11,7 +11,7 @@
 ##########################################################
 task:
 
-data_dir: ${oc.env:EMOZIONALMENTE_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:EMOZIONALMENTE_OUTPUT,./data}
 exp_tag: train_wavlmasp_emozionalmente
 
 ##########################################################
@@ -55,7 +55,7 @@ dataset:
         split: valid
   test:
     - name: emozionalmente
-      data_src_args: {split: emozionalmente}
+      data_src_args: {split: test}
   preprocessor:
     _target_: espnet2.train.preprocessor.CommonPreprocessor
     fs: 16000
