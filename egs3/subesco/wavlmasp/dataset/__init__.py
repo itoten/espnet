@@ -1,6 +1,6 @@
-"""Single-corpus dataset module."""
+"""SUBESCO dataset module."""
 
-from egs3.subesco.wavlmasp.dataset.builder import MulticorpusBuilder as DatasetBuilder
-from egs3.subesco.wavlmasp.dataset.dataset import MulticorpusDataset as Dataset
+from egs3.subesco.wavlmasp.dataset.builder import SUBESCOBuilder as DatasetBuilder
+from egs3.subesco.wavlmasp.dataset.dataset import SUBESCODataset as Dataset
 
 __all__ = ["Dataset", "DatasetBuilder"]
