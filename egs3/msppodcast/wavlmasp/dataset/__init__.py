@@ -1,8 +1,6 @@
-"""MSP-Podcast-only dataset module."""
+"""MSP-Podcast dataset module."""
 
-from egs3.msppodcast.wavlmasp.dataset.builder import (
-    MulticorpusBuilder as DatasetBuilder,
-)
-from egs3.msppodcast.wavlmasp.dataset.dataset import MulticorpusDataset as Dataset
+from egs3.msppodcast.wavlmasp.dataset.builder import MSPPodcastBuilder as DatasetBuilder
+from egs3.msppodcast.wavlmasp.dataset.dataset import MSPPodcastDataset as Dataset
 
 __all__ = ["Dataset", "DatasetBuilder"]

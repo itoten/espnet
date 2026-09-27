@@ -13,4 +13,4 @@
 # the subdirectories of `${inference_dir}`, so all 12 are scored without
 # listing them here.
 
-data_dir: ${oc.env:MSPPODCAST_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:MSPPODCAST_OUTPUT,./data}

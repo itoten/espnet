@@ -1,25 +1,25 @@
 # MSP-Podcast-only speech emotion recognition (in-domain reference)
 
 Trains `wavlmasp` (fine-tuned WavLM Large + attentive statistics pooling +
-FC head) on MSP-Podcast alone — the same IS2025 challenge target domain —
+FC head) on MSP-Podcast alone -- the same IS2025 challenge target domain --
 and scores it on the same 12 test sets `egs3/multicorpus_core7/wavlmasp` and
 `egs3/multicorpus_full20/wavlmasp` use: MSP-Podcast Test1/Test2 plus the ten
-corpora those recipes train on (read here as evaluation-only). This is the
-in-domain reference point the two cross-corpus recipes are compared against:
-how much does training on MSP-Podcast alone win on MSP-Podcast itself, and
-how much does it lose everywhere else?
+corpora those recipes train on, each read through that corpus's own
+`wavlmasp` recipe as evaluation-only. This is the in-domain reference point
+the two cross-corpus recipes are compared against: how much does training on
+MSP-Podcast alone win on MSP-Podcast itself, and how much does it lose
+everywhere else?
 
 Labels are the same **core7** set `multicorpus_core7` uses (`angry`, `sad`,
 `happy`, `surprise`, `fear`, `disgust`, `neutral`; `contempt` dropped), so
 macro-F1 is directly comparable across all three recipes.
 
-## How it differs from `egs3/msppodcast/esp2_cls`
-
-`esp2_cls` freezes WavLM and trains a small head on top; this recipe
-fine-tunes the full WavLM Large encoder, matching the architecture the
-`multicorpus_core7`/`multicorpus_full20`/`wavlmasp` family uses. The two are
-not meant to be compared with each other; this one exists to be compared
-with the multicorpus recipes.
+[MSP-Podcast](https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html)
+release 2.0 is released under a licence agreement with UT Dallas, so this
+recipe never downloads it. Request it from the lab's page and point
+`MSPPODCAST` at a directory holding `Audios/MSP-PODCAST_*.wav` and
+`Labels/Labels/labels_consensus.csv`; `create_dataset` says as much if it
+cannot find them.
 
 ## Quick start
 
@@ -34,6 +34,5 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-`MSPPODCAST_OUTPUT` must already point at MSP-Podcast's own prepared data
-(same as `egs3/msppodcast/esp2_cls`); `MSPPODCAST_WAVLMASP_OUTPUT` controls
-where this recipe's own filtered manifests and label list are written.
+`MSPPODCAST_OUTPUT` must already point at the prepared data; `create_dataset`
+writes it there if it does not.

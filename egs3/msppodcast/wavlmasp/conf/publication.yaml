@@ -5,7 +5,7 @@
 #   python run.py --stages pack_model   --training_config conf/training.yaml --publication_config conf/publication.yaml
 #   python run.py --stages upload_model --training_config conf/training.yaml --publication_config conf/publication.yaml
 
-data_dir: ${oc.env:MSPPODCAST_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:MSPPODCAST_OUTPUT,./data}
 
 pack_model:
   exclude:

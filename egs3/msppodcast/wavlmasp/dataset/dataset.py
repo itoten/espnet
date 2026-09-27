@@ -1,4 +1,4 @@
-"""MSP-Podcast-only dataset implementation backed by TSV manifests."""
+"""MSP-Podcast dataset implementation backed by TSV manifests."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import soundfile as sf
 from torch.utils.data import Dataset as TorchDataset
 
 from egs3.msppodcast.wavlmasp.dataset.builder import (
-    MulticorpusBuilder,
+    MSPPodcastBuilder,
     eval_manifest_specs,
     resolve_data_root,
 )
@@ -23,15 +23,12 @@ with resources.as_file(_CONFIG_RESOURCE) as _CONFIG_PATH:
     _CONFIG = load_config_with_defaults(str(_CONFIG_PATH), resolve=False)
 _DATASET_CFG = _CONFIG["dataset"]
 
-# `train`/`valid` read the `remove_long_short` output; every test split comes
-# straight from `eval_manifest_specs()` instead of being repeated by hand
-# here, so this list cannot drift from what `builder.py` actually writes.
 _SPLIT_MANIFEST_PATHS: dict[str, str] = {
     str(split): str(relpath)
     for split, relpath in _DATASET_CFG["split_manifest_paths"].items()
 }
 _SPLIT_MANIFEST_PATHS.update(
-    {key: f"manifest/{key}.tsv" for key, _corpus, _split in eval_manifest_specs()}
+    {key: f"manifest/{key}.tsv" for key, _, _ in eval_manifest_specs()}
 )
 
 
@@ -68,19 +65,23 @@ def _read_manifest(manifest_path: Path) -> list[ManifestEntry]:
     return entries
 
 
-class MulticorpusDataset(TorchDataset):
-    """MSP-Podcast-only dataset that returns ``{"speech", "label"}`` samples.
+class MSPPodcastDataset(TorchDataset):
+    """MSP-Podcast dataset that returns ``{"speech", "label"}`` samples.
 
     Args:
-        split: ``train``, ``valid``, or one of the per-corpus test split keys
-            from :func:`builder.eval_manifest_specs` (e.g. ``cremad``,
-            ``msppodcast_test``, ``msppodcast_test2``).
+        split: ``train``, ``valid``, ``test``, ``test2``, or another corpus's
+            test-set key from :func:`builder.eval_manifest_specs`.
         recipe_dir: Optional recipe root. When omitted, defaults to the
             current recipe directory inferred from this module.
 
     Raises:
         ValueError: If ``split`` is unknown.
         FileNotFoundError: If the manifest for ``split`` does not exist.
+
+    Examples:
+        >>> dataset = MSPPodcastDataset(split="valid")
+        >>> sorted(dataset[0].keys())
+        ['label', 'speech']
     """
 
     def __init__(self, split: str, recipe_dir: str | Path | None = None) -> None:
@@ -92,7 +93,7 @@ class MulticorpusDataset(TorchDataset):
         )
         self.data_dir = resolve_data_root(recipe_root)
 
-        builder = MulticorpusBuilder()
+        builder = MSPPodcastBuilder()
         if not builder.is_source_prepared(recipe_dir=recipe_root):
             builder.prepare_source(recipe_dir=recipe_root)
         if not builder.is_built(recipe_dir=recipe_root):

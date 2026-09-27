@@ -1,60 +1,97 @@
 builder:
-  # MSP-Podcast is the only training corpus here: an in-domain reference for
-  # how much cross-corpus training (`multicorpus_core7`/`multicorpus_full20`)
-  # costs or gains relative to training on the target domain alone. Its own
-  # `test` split becomes this recipe's "msppodcast" test entry, exactly like
-  # every other corpus's own test split does in the multicorpus recipes.
-  train_corpora:
-    - name: msppodcast
-      data_src: msppodcast/esp2_cls
+  # Source layout ---------------------------------------------------------
+  # MSP-Podcast is released under a licence agreement with UT Dallas, so this
+  # recipe never downloads it: point `MSPPODCAST` at a copy you already have.
+  # `labels_consensus.csv` carries everything the manifests need -- label,
+  # speaker, gender, attributes and the published partition -- so it is the
+  # only table read.
+  source_env_var: MSPPODCAST
+  dataset_path: download
+  audio_subdir: Audios
+  labels_csv: Labels/Labels/labels_consensus.csv
+  request_url: https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html
 
-  # Everything scored but never trained on: MSP-Podcast's own Test2 (its
-  # `esp2_cls` recipe defines two test splits, but only one is picked up
-  # automatically per corpus in `train_corpora`, so Test2 is named here
-  # explicitly under a distinct key), plus the same nine corpora
-  # `multicorpus_core7`/`multicorpus_full20` train on, read here as
-  # evaluation-only so the exact same 12 test sets are scored across all
-  # three recipes.
+  # Labels ----------------------------------------------------------------
+  # The eight categories of the Interspeech 2025 SER challenge, which drops
+  # `O` (the annotator wrote their own class) and `X` (no plurality winner
+  # among the annotators). Those two are not emotions but states of the
+  # annotation, and they are a fifth of the corpus.
+  #
+  #   "classifying speech samples into one of eight distinct emotional
+  #    categories: anger, happiness, sadness, fear, surprise, contempt,
+  #    disgust, and neutral"   -- Naini et al., Interspeech 2025
+  #
+  # The codes come from `readme.txt`; expanding them is forced because the
+  # table stores single letters, and the expansions are the corpus's own names
+  # in the short form the other recipes use.
+  emotion_codes:
+    A: angry
+    D: disgust
+    F: fear
+    H: happy
+    N: neutral
+    S: sad
+    U: surprise
+
+  # Anything outside `emotion_codes` is dropped. Listing the codes here rather
+  # than dropping silently means an unexpected one is an error, not a loss.
+  drop_codes:
+    - O
+    - X
+    # Contempt: no other corpus here has it.
+    - C
+
+  # One row of the table names a recording the release does not ship,
+  # `MSP-PODCAST_1909_1017.wav` (Test1, happy): podcast 1909 has 650 rows and
+  # 649 files. It is skipped rather than raising, because the copy is otherwise
+  # complete and one missing recording should not stop anyone from running the
+  # recipe -- but the allowance is written down, so a copy that is actually
+  # broken still fails.
+  max_missing_audio: 1
+
+  # Split -----------------------------------------------------------------
+  # The corpus publishes the partition in the `Split_Set` column, and it is
+  # read from there. Test1 is the test split; Test2 is scored alongside it
+  # (see `conf/inference.yaml`) rather than replacing it, because the two are
+  # differently skewed -- Test2 is 58 % neutral against Test1's 34 %.
+  #
+  # Test3 is not usable here: its labels are withheld for the challenge's
+  # submission interface, so it appears in neither the table nor the manifests.
+  split_map:
+    train: Train
+    valid: Development
+    test: Test1
+    test2: Test2
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+    test2: manifest/test2.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # Nearly all of the audio is already 16 kHz mono, but not quite all, so
+  # `build()` puts every recording through ffmpeg. Set `MSPPODCAST_OUTPUT` to
+  # keep the converted audio outside the recipe; it runs to roughly 47 GB.
+  output_env_var: MSPPODCAST_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+  # Test sets of other corpora, scored alongside MSP-Podcast's own. Each is
+  # read through that corpus's own wavlmasp recipe and mapped with
+  # `label_map`; labels outside it are dropped.
   eval_only_corpora:
-    - name: msppodcast_test2
-      data_src: msppodcast/esp2_cls
-      splits: [test2]
-    - name: cremad
-      data_src: cremad/esp2_cls
-      splits: [test]
-    - name: emns
-      data_src: emns/esp2_cls
-      splits: [test]
-    - name: emodb
-      data_src: emodb/esp2_cls
-      splits: [test]
-    - name: emozionalmente
-      data_src: emozionalmente/esp2_cls
-      splits: [test]
-    - name: enterface05
-      data_src: enterface05/esp2_cls
-      splits: [test]
-    - name: jlcorpus
-      data_src: jlcorpus/esp2_cls
-      splits: [test]
-    - name: meld
-      data_src: meld/esp2_cls
-      splits: [test]
-    - name: quechua
-      data_src: quechua/esp2_cls
-      splits: [test]
-    - name: subesco
-      data_src: subesco/esp2_cls
-      splits: [test]
-    - name: thorsten
-      data_src: thorsten/esp2_cls
-      splits: [test]
-
-  # Same core7 label set as the multicorpus recipes (angry/sad/happy/
-  # surprise/fear/disgust/neutral), so macro-F1 is comparable across all
-  # three recipes without a label-space mismatch. `contempt` is dropped here
-  # too, even though MSP-Podcast is the one corpus that has it, for that
-  # comparability -- not because it is out of scope for this corpus alone.
+    - {name: cremad, data_src: cremad/wavlmasp, splits: [test]}
+    - {name: emns, data_src: emns/wavlmasp, splits: [test]}
+    - {name: emodb, data_src: emodb/wavlmasp, splits: [test]}
+    - {name: emozionalmente, data_src: emozionalmente/wavlmasp, splits: [test]}
+    - {name: enterface05, data_src: enterface05/wavlmasp, splits: [test]}
+    - {name: jlcorpus, data_src: jlcorpus/wavlmasp, splits: [test]}
+    - {name: meld, data_src: meld/wavlmasp, splits: [test]}
+    - {name: quechua, data_src: quechua/wavlmasp, splits: [test]}
+    - {name: subesco, data_src: subesco/wavlmasp, splits: [test]}
+    - {name: thorsten, data_src: thorsten/wavlmasp, splits: [test]}
   label_map:
     angry: angry
     anger: angry
@@ -69,14 +106,11 @@ builder:
     disgusted: disgust
     neutral: neutral
 
-  output_env_var: MSPPODCAST_WAVLMASP_OUTPUT
-  data_path: data
-
-  manifest_paths:
-    train: manifest/train.tsv
-    valid: manifest/valid.tsv
-
 dataset:
+  # Train and valid read the `remove_long_short` output; the test splits stay
+  # unfiltered so the reported scores cover all of them.
   split_manifest_paths:
     train: manifest_filtered/train.tsv
     valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
+    test2: manifest/test2.tsv

@@ -13,7 +13,7 @@
 # `conf/publication.yaml` already carry -- without it this fell back to
 # TEMPLATE's literal `./data` default and `infer` could not find
 # `token_list`.
-data_dir: ${oc.env:MSPPODCAST_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:MSPPODCAST_OUTPUT,./data}
 
 ##########################################################
 #                    DATASET DEFINITION                  #
@@ -32,8 +32,8 @@ dataset:
     - {name: quechua,           data_src_args: {split: quechua}}
     - {name: subesco,           data_src_args: {split: subesco}}
     - {name: thorsten,          data_src_args: {split: thorsten}}
-    - {name: msppodcast,        data_src_args: {split: msppodcast}}
-    - {name: msppodcast_test2,  data_src_args: {split: msppodcast_test2}}
+    - {name: msppodcast,        data_src_args: {split: test}}
+    - {name: msppodcast_test2,  data_src_args: {split: test2}}
 
 ##########################################################
 #                    MODEL AND OUTPUT                    #

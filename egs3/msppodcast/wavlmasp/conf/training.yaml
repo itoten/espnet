@@ -16,7 +16,7 @@ task:
 
 # `dataset/builder.py` writes the merged manifests here; the WAV files stay
 # wherever each corpus's own `<CORPUS>_OUTPUT` points.
-data_dir: ${oc.env:MSPPODCAST_WAVLMASP_OUTPUT,./data}
+data_dir: ${oc.env:MSPPODCAST_OUTPUT,./data}
 exp_tag: train_wavlmasp_msppodcast
 
 ##########################################################
@@ -91,9 +91,9 @@ dataset:
     - name: thorsten
       data_src_args: {split: thorsten}
     - name: msppodcast
-      data_src_args: {split: msppodcast}
+      data_src_args: {split: test}
     - name: msppodcast_test2
-      data_src_args: {split: msppodcast_test2}
+      data_src_args: {split: test2}
   preprocessor:
     _target_: espnet2.train.preprocessor.CommonPreprocessor
     fs: 16000
