@@ -1,0 +1,22 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Final test on MSP-Podcast Test1/Test2, run only for the epochs chosen
+# after training. Same `INFERENCE_EPOCH` convention and output directory as
+# `conf/inference.yaml`, so each epoch's results sit side by side.
+data_dir: ${oc.env:MULTICORPUS_OOD20_OUTPUT,./data}
+inference_dir: ${exp_dir}/inference/epoch${oc.env:INFERENCE_EPOCH}
+
+dataset:
+  test:
+    - {name: msppodcast_test,   data_src_args: {split: msppodcast_test}}
+    - {name: msppodcast_test2,  data_src_args: {split: msppodcast_test2}}
+
+model:
+  _target_: src.inference.EmotionClassification
+  train_config: ${exp_dir}/config.yaml
+  model_file: ${exp_dir}/epochs/epoch${oc.env:INFERENCE_EPOCH}.ckpt
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output
