@@ -1,0 +1,39 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Common usage:
+#   python run.py --stages infer \
+#       --training_config conf/training.yaml \
+#       --inference_config conf/inference.yaml
+#
+# `run.py` copies `exp_tag` / `exp_dir` from the training config but not
+# `data_dir`, so it is set here with the same expression as in training.yaml.
+data_dir: ${oc.env:OPENBMI_OUTPUT,./data}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# No preprocessor: the label stays a string and is written to `ref` as is.
+dataset:
+  test:
+    - name: test
+      data_src_args:
+        split: test
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# `network` must match `model.network` in training.yaml.
+# The checkpoint name is `{best_model_criterion monitor}.ave_{nbest}best.pth`.
+model:
+  network:
+    _target_: braindecode.models.Deep4Net
+    n_chans: 62
+    n_outputs: 2
+    n_times: 1000
+    final_conv_length: auto
+  model_file: ${exp_dir}/valid.loss.ave_1best.pth
+  token_list: ${data_dir}/token_list
+
+input_key: eeg
+output_fn: src.inference.build_output

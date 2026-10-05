@@ -1,0 +1,109 @@
+##########################################################
+#                    TRAINING SETTING                    #
+##########################################################
+# Quick usage (three separate commands; see readme.md for why):
+#   python run.py --stages create_dataset prepare_labels collect_stats \
+#       --training_config conf/training.yaml
+#   python run.py --stages train --training_config conf/training.yaml
+#   python run.py --stages infer measure --training_config conf/training.yaml \
+#       --inference_config conf/inference.yaml --metrics_config conf/metrics.yaml
+#
+# The optimiser, scheduler, epoch count and seed follow the reference
+# leave-one-subject-out recipe (Deep4Net, AdamW, cosine decay, 200 epochs).
+
+##########################################################
+#                  SYSTEM AND PATH SETTING               #
+##########################################################
+# Left empty so ESPnet3 instantiates `model` through Hydra.
+task:
+
+# `dataset/builder.py` writes the epochs and manifests here.
+data_dir: ${oc.env:OPENBMI_OUTPUT,./data}
+exp_tag: train_deep4net
+
+##########################################################
+#                  LABEL INVENTORY SETTING               #
+##########################################################
+prepare_labels:
+  save_path: ${data_dir}
+  filename: token_list
+  manifest_path: ${data_dir}/manifest/train.tsv
+  add_symbol:
+    - "<unk>:-1"
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+dataset:
+  train:
+    - data_src_args:
+        split: train
+  valid:
+    - data_src_args:
+        split: valid
+  preprocessor:
+    _target_: espnet2.train.preprocessor.CommonPreprocessor
+    # The label is the only field turned into an integer; `eeg` is passed on.
+    text_name: label
+    token_type: word
+    token_list: ${data_dir}/token_list
+
+##########################################################
+#                      MODEL SETTING                     #
+##########################################################
+model:
+  _target_: espnet3.systems.eegcls.model.EegClsModel
+  network:
+    _target_: braindecode.models.Deep4Net
+    n_chans: 62
+    # token_list ends with `<unk>`, which is not a class: right and left.
+    n_outputs: 2
+    n_times: 1000
+    final_conv_length: auto
+
+##########################################################
+#                  OPTIMIZATION SETTING                  #
+##########################################################
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 0.01
+  weight_decay: 0.0005
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  T_max: ${trainer.max_epochs}
+scheduler_interval: epoch
+
+best_model_criterion:
+  - - valid/loss
+    - 1
+    - min
+
+seed: 20200205
+
+##########################################################
+#                   DATALOADER SETTING                   #
+##########################################################
+dataloader:
+  train:
+    iter_factory:
+      batches:
+        type: unsorted
+        batch_size: 16
+  valid:
+    iter_factory:
+      batches:
+        type: unsorted
+
+##########################################################
+#                     TRAINER SETTING                    #
+##########################################################
+trainer:
+  devices: ${num_device}
+  num_nodes: ${num_nodes}
+  max_epochs: 200
+  gradient_clip_val:
+  accumulate_grad_batches: 1
+  strategy: ddp
+
+fit: {}

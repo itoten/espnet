@@ -1,0 +1,13 @@
+##########################################################
+#                 METRIC SCORING SETTING                 #
+##########################################################
+# Common usage:
+#   python run.py --stages measure \
+#       --training_config conf/training.yaml \
+#       --inference_config conf/inference.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# WA / UA / MacroF1 come from `egs3/TEMPLATE/eegcls/conf/metrics.yaml` and read
+# `${data_dir}/token_list`, so this recipe only points `data_dir` at the same
+# location as `conf/training.yaml`.
+data_dir: ${oc.env:OPENBMI_OUTPUT,./data}

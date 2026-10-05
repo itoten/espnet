@@ -1,0 +1,1 @@
+"""OpenBMI EEG classification recipe."""

@@ -1,0 +1,39 @@
+builder:
+  # Source ----------------------------------------------------------------
+  # OpenBMI (Lee et al., 2019, GigaDB 100542). Only the motor-imagery files are
+  # used. Point `OPENBMI` at the directory holding `session1/` and `session2/`.
+  source_env_var: OPENBMI
+
+  # Download --------------------------------------------------------------
+  # Files are fetched one by one, only when missing. There is no resume: an
+  # interrupted file is fetched again from the start.
+  base_url: https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100542
+
+  # Preprocessing ---------------------------------------------------------
+  # 1000 Hz -> 250 Hz with scipy.signal.decimate, which low-pass filters first.
+  # Nothing else is applied: no band-pass, no normalisation.
+  decimate_factor: 4
+
+  # Split -----------------------------------------------------------------
+  # Fixed split by subject: one test subject, nine validation subjects, the
+  # other 44 for training. The subjects are fold 0 of the notebook's
+  # leave-one-subject-out run (subjects shuffled with seed 0).
+  test_subjects: [54]
+  valid_subjects: [3, 12, 27, 31, 33, 34, 43, 46, 49]
+
+  # Build outputs ---------------------------------------------------------
+  # One `.npy` per trial under `epochs/`, plus the manifests. `OPENBMI_OUTPUT`
+  # keeps them outside the recipe.
+  output_env_var: OPENBMI_OUTPUT
+  data_path: data
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+dataset:
+  # Every split reads its own manifest; nothing is filtered.
+  split_manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
