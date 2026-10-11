@@ -1,0 +1,57 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `OréauFR_02/<f|m>/sess<style>/<speaker><sentence><emotion><suffix>.wav`.
+  # Only `version_dir` is read, so an extracted version 1 next to it is
+  # ignored.
+  source_env_var: OREAU
+  dataset_path: download
+  version_dir: OréauFR_02
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 4405783, CC BY 4.0. Version 2 only: the 434 of version 1's
+  # 502 utterances that listeners recognised and judged natural.
+  # The archive is RAR, extracted with `bsdtar` (libarchive).
+  base_url: https://zenodo.org/api/records/4405783/files
+  archive_name: OréauFR_02.rar
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's one-letter emotion code to manifest label.
+  emotion_map:
+    C: angry     # colère
+    D: disgust   # dégoût
+    J: happy     # joie
+    N: neutral   # neutre
+    P: fear      # peur
+    S: surprise  # surprise
+    T: sad       # tristesse
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz stereo from two microphones whose channels
+  # are not identical (some are close to uncorrelated), so averaging them can
+  # attenuate the speech. `build()` keeps one channel and resamples to 16 kHz.
+  channel: 0
+  output_env_var: OREAU_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
