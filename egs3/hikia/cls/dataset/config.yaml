@@ -1,0 +1,50 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `hi_kia/wav/<speaker>_S<scene>_<trial>_<emotion>.wav`, e.g. `F5_S07_1_h.wav`.
+  source_env_var: HIKIA
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 7091465, CC BY 4.0. Only `wav/` is extracted from the
+  # archive; the rest is precomputed features and pretrained weights.
+  base_url: https://zenodo.org/api/records/7091465/files
+  archive_name: hi_kia_1.0.tar.gz
+  archive_wav_dir: hi_kia/wav
+  # Fewer files means an interrupted extraction.
+  expected_files: 488
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The last letter of the file name to manifest label.
+  emotion_map:
+    a: angry
+    h: happy
+    n: neutral
+    s: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out, so every split shares all 8 speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz stereo; `build()` converts them to 16 kHz mono.
+  output_env_var: HIKIA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
