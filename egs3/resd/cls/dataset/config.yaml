@@ -1,0 +1,56 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The Hugging Face release is one parquet file per official split. Each row
+  # holds `name` (`<dialog>_<emotion>_<emotion>_<role>_<index>`, sometimes
+  # with a space before the role letter), `emotion` and the recording as WAV
+  # bytes in `speech.bytes`.
+  source_env_var: RESD
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset Aniemore/resd, MIT, not gated. Pinned to one revision
+  # so a later upload cannot change the data silently.
+  repo_url: https://huggingface.co/datasets/Aniemore/resd/resolve
+  revision: 8db7068a7717e48d829c2baa32e4908972611138
+  shard_paths:
+    train: data/train-00000-of-00001-d2e27fcc104fa56a.parquet
+    test: data/test-00000-of-00001-5b28f46e6b0805ba.parquet
+
+  # Labels ----------------------------------------------------------------
+  # The `emotion` column to manifest label.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    enthusiasm: enthusiasm
+    fear: fear
+    happiness: happy
+    neutral: neutral
+    sadness: sad
+
+  # Split -----------------------------------------------------------------
+  # The official train/test split is kept. No validation split is published,
+  # so `valid_ratio` of the official train is drawn at random within each
+  # label. The official split shares dialogs (and so speakers) between train
+  # and test.
+  valid_ratio: 0.1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are mono, some 16 kHz and some 44.1 kHz, so `build()`
+  # resamples all of them to 16 kHz.
+  output_env_var: RESD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
