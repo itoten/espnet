@@ -1,0 +1,50 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<01Neutral|02Fearful|03Happy|04Sad|05Angry>/<emotion><folder>-<sentence>-
+  # <repeat>-<gender>-<speaker>.wav`, e.g. `01Neutral/n1-01-01-01-01.wav`.
+  source_env_var: ASED
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The authors' GitHub repository wgwangang/ASED_V1, pinned to its latest
+  # commit. The README states no license or terms of use.
+  download_url: https://github.com/wgwangang/ASED_V1/archive/3feb6d25ec1a88d770594c88d2c4e6cae5c0d046.zip
+  archive_name: ased.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's one-letter emotion code to manifest label. The digit
+  # after it must agree with the folder the file sits in.
+  emotion_map:
+    a: angry
+    f: fear
+    h: happy
+    n: neutral
+    s: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono.
+  output_env_var: ASED_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
