@@ -263,9 +263,9 @@ def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
 class JVNVBuilder(DatasetBuilder):
     """Prepare JVNV for the classification recipe.
 
-    The release is 24.4 kHz mono WAV, so `build()` resamples every recording
-    to 16 kHz and writes one manifest per split, drawn as a label-stratified
-    random split (see :func:`assign_splits`).
+    The release is 48 kHz mono 24-bit WAV, so `build()`
+    resamples every recording to 16 kHz and writes one manifest per split, drawn
+    as a label-stratified random split (see :func:`assign_splits`).
     """
 
     def is_source_prepared(
