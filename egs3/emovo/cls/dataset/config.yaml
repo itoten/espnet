@@ -1,0 +1,53 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `EMOVO/<speaker>/<emotion>-<speaker>-<sentence>.wav`, e.g. `f1/dis-f1-b1.wav`.
+  # The archive also holds a `documents/` folder with the LREC 2014 paper.
+  source_env_var: EMOVO
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The file linked from the corpus's own page (voice.fub.it), now offline; the
+  # page survives in the Internet Archive. Google Drive serves it without a
+  # login through the `drive.usercontent.google.com` endpoint with `confirm=t`.
+  # Neither the archive nor the paper states a license.
+  download_url: https://drive.usercontent.google.com/download?id=1SUtaKeA-LYnKaD3qv87Y5wYgihJiNJAo&export=download&confirm=t
+  archive_name: emovo.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's three-letter Italian emotion code to manifest label.
+  emotion_map:
+    rab: angry     # rabbia
+    dis: disgust   # disgusto
+    pau: fear      # paura
+    gio: happy     # gioia
+    neu: neutral   # neutro
+    tri: sad       # tristezza
+    sor: surprise  # sorpresa
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out, so every split shares all 6 speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz stereo; `build()` downmixes them to 16 kHz mono.
+  output_env_var: EMOVO_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
