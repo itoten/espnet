@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<speaker>/<emotion>/<session>/<speaker>_<emotion>_<session>_<item>.wav`
+  # below the extracted archive's own top folder.
+  source_env_var: JVNV
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The authors' site, CC BY-SA 4.0. No checksum is published.
+  archive_url: https://ss-takashi.sakura.ne.jp/corpus/jvnv/jvnv_ver1.zip
+  archive_name: jvnv_ver1.zip
+  # 4 speakers, 6 emotions; fewer files means an interrupted extraction.
+  expected_files: 1615
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The folder/file name's emotion to manifest label.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    fear: fear
+    happy: happy
+    sad: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out, so the splits share all speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` resamples the recordings (48 kHz, 24 bit) to 16 kHz mono.
+  output_env_var: JVNV_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
