@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<emotion>/<code><index> (<speaker>)[<take>].wav`, e.g. `anger/a01 (1).wav`,
+  # under a top-level folder named after the corpus. The emotion is the folder
+  # name; the one-letter code in the file name must agree with it.
+  source_env_var: AESDD
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Public MEGA folder linked from the corpus's own page
+  # (https://m3c.web.auth.gr/research/aesdd-speech-emotion-recognition/).
+  # MEGA encrypts folders client-side; the key is the part of the link after
+  # the second `!`. The page offers the corpus for non-commercial research.
+  mega_folder_handle: 0ShVXY7C
+  mega_folder_key: -73kVoK05OjTPEA95UUvMw
+
+  # Labels ----------------------------------------------------------------
+  # The emotion folder name to manifest label, and the code its files start with.
+  emotion_map:
+    anger: {label: angry, code: a}
+    disgust: {label: disgust, code: d}
+    fear: {label: fear, code: f}
+    happiness: {label: happy, code: h}
+    sadness: {label: sad, code: s}
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono.
+  output_env_var: AESDD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
