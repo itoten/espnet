@@ -1,0 +1,49 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<Angry|Happy|Neutral|Sad>/S<gender><speaker>_F<file>_<emotion><index>.wav`
+  source_env_var: URDU
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The authors' GitHub repository siddiquelatif/URDU-Dataset, pinned to its
+  # latest commit. The README says the data may be used "only for research
+  # purposes".
+  download_url: https://github.com/siddiquelatif/URDU-Dataset/archive/4b546d4e0fa36d1c86c53a281631b2ab7ce2fdec.zip
+  archive_name: urdu-dataset.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's one-letter emotion code to manifest label. It must agree
+  # with the lower-cased name of the folder the file sits in.
+  emotion_map:
+    A: angry
+    H: happy
+    N: neutral
+    S: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono.
+  output_env_var: URDU_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
