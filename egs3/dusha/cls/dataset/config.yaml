@@ -1,0 +1,66 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # Files unpacked from the Dusha release (github.com/salute-developers/golos,
+  # `dusha/`). Only the crowd domain has audio; the podcast domain is not used.
+  #   crowd_train/wavs/<hash_id>.wav, crowd_test/wavs/<hash_id>.wav
+  #   crowd_train/raw_crowd_train.tsv, crowd_test/raw_crowd_test.tsv
+  #     (one row per annotation; the last column, source_id, groups utterances)
+  #   paper_setups/crowd_large.jsonl, paper_setups/test/crowd_test.jsonl
+  #     (the release's aggregated labels: train and test utterance ids)
+  source_env_var: DUSHA
+  dataset_path: download
+  wav_dirs:
+    train: crowd_train/wavs
+    test: crowd_test/wavs
+  markup_files:
+    train: crowd_train/raw_crowd_train.tsv
+    test: crowd_test/raw_crowd_test.tsv
+  setup_files:
+    train: paper_setups/crowd_large.jsonl
+    test: paper_setups/test/crowd_test.jsonl
+
+  # Download --------------------------------------------------------------
+  # No checksum is published, so completeness is checked by byte count.
+  crowd_url: https://cdn.chatwm.opensmodel.sberdevices.ru/dusha/crowd.tar
+  crowd_bytes: 29968865280
+  setups_url: https://cdn.chatwm.opensmodel.sberdevices.ru/dusha/paper_setups.tgz
+  setups_bytes: 79022080
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The release's emotion word to manifest label. `positive` is the release's
+  # name for happiness; it is renamed to match the other recipes.
+  emotion_map:
+    angry: angry
+    sad: sad
+    neutral: neutral
+    positive: happy
+
+  # Split -----------------------------------------------------------------
+  # The release's train/test partition is kept. The validation set is taken
+  # from train, in whole `source_id` groups, until `valid_ratio` of the train
+  # utterances is reached.
+  valid_ratio: 0.1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The release is 16 kHz mono 16-bit, which `build()` references in place; a
+  # recording in any other format is converted into `wav_subdir`.
+  # `num_workers` threads check the recordings at a time.
+  output_env_var: DUSHA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  num_workers: 16
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
