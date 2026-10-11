@@ -1,0 +1,44 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# `run.py` copies `exp_tag` / `exp_dir` from the training config.
+#
+# `data_dir` is not one of the fields `run.py` copies from the training
+# config, so it needs the same override `conf/metrics.yaml` and
+# `conf/publication.yaml` already carry.
+data_dir: ${oc.env:INDOWAVESENTIMENT_OUTPUT,./data}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+dataset:
+  test:
+    - {name: indowavesentiment, data_src_args: {split: test}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+model:
+  _target_: espnet3.systems.cls.inference_model.ClsInferenceModel
+  # Must match `model` in training.yaml (without `class_weights`).
+  network:
+    _target_: espnet3.systems.cls.model.ClsModel
+    frontend:
+      _target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+      encoder:
+        _target_: transformers.AutoModel.from_pretrained
+        pretrained_model_name_or_path: microsoft/wavlm-large
+      normalize:
+        _target_: espnet3.systems.cls.model.WaveformNormalize
+        stats_file: ${stats_dir}/train/feats_stats.npz
+    # IndoWaveSentiment's label set (5 classes). `token_list` ends
+    # with `<unk>`, not a class.
+    num_classes: 5
+    head_size: 1024
+    head_layers: 1
+    dropout: 0.5
+  model_file: ${exp_dir}/valid.acc.ave_1best.pth
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output
