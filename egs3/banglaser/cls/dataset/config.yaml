@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Actor NN/` folders of `<mode>-<type>-<emotion>-<intensity>-<statement>-
+  # <repetition>-<actor>.wav`, below the extracted archive's own top folder.
+  source_env_var: BANGLASER
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data t9h6p943xy version 5, CC BY 4.0. Mendeley publishes no
+  # checksum for the archive it builds on request.
+  archive_url: https://data.mendeley.com/public-api/zip/t9h6p943xy/download/5
+  archive_name: BanglaSER.zip
+  # 34 actors; fewer files means an interrupted extraction.
+  expected_files: 1467
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's emotion code to manifest label.
+  emotion_map:
+    "01": happy
+    "02": sad
+    "03": angry
+    "04": surprise
+    "05": neutral
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out, so the splits share all speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings' sampling rate varies; `build()` resamples to 16 kHz mono.
+  output_env_var: BANGLASER_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
