@@ -1,5 +1,7 @@
 # Whisper medium encoder: ASR-supervised, 680k h (98 languages), on 30 s of
 # log-mel. It has no time masking; only the layer drop is shared.
+# Nothing is frozen. The fixed CNN is specific to the wav2vec 2.0 family, whose
+# input is a raw waveform; this encoder has no waveform CNN.
 _target_: espnet3.systems.cls.frontend.WhisperFrontend
 whisper:
   _target_: transformers.WhisperModel.from_pretrained
@@ -8,3 +10,4 @@ whisper:
 feature_extractor:
   _target_: transformers.WhisperFeatureExtractor.from_pretrained
   pretrained_model_name_or_path: openai/whisper-medium
+freeze_subsampling: false
