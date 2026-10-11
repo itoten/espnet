@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<emotion dir>/[<intensity dir>/]<actor>-<emotion>-<intensity>-<sentence>.wav`.
+  # The directory names are French; only the file name is parsed.
+  source_env_var: CAFE
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 1478765, CC BY-NC-SA 4.0. Only the 48 kHz / 16-bit release;
+  # the two 192 kHz / 24-bit archives hold the same recordings.
+  base_url: https://zenodo.org/api/records/1478765/files
+  archive_name: CaFE_48k.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's one-letter emotion code to manifest label.
+  emotion_map:
+    C: angry     # Colère
+    D: disgust   # Dégoût
+    J: happy     # Joie
+    N: neutral   # Neutre
+    P: fear      # Peur
+    S: surprise  # Surprise
+    T: sad       # Tristesse
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; actors are not held out, so every split shares all 12 actors.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz mono, so `build()` resamples them to 16 kHz.
+  output_env_var: CAFE_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
