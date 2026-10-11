@@ -1,0 +1,60 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One folder per emotion (`anger/`, ...) of `<speaker><emotion><sentence>.wav`.
+  source_env_var: MCAESPPS
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # OSF project, one zip per emotion. `osf_id` is the OSF file id and `md5`
+  # the checksum OSF lists for it. `code` is the emotion digit in the file
+  # names of that folder.
+  base_url: https://osf.io/download
+  archives:
+    - {name: neutral.zip, folder: neutral, code: "1", osf_id: 5ncyx, md5: cedaca21fcb57a7bf7035185e08c22a3}
+    - {name: happiness.zip, folder: happiness, code: "2", osf_id: udj54, md5: 6b05e1e898ad4ca4b0ae1b35af73610e}
+    - {name: anger.zip, folder: anger, code: "3", osf_id: ms3vq, md5: e61fa94972a1a75a49af557f5a95db09}
+    - {name: fear.zip, folder: fear, code: "4", osf_id: y75rf, md5: 2a6cebd7a6bcd5a690f358bf178c6ebd}
+    - {name: sadness.zip, folder: sadness, code: "5", osf_id: 35e7k, md5: 2b483d038fb5ba402306dbad6e66498d}
+    - {name: disgust.zip, folder: disgust, code: "6", osf_id: e5zyu, md5: 0fd22f63f8355cae728caddf617aa855}
+    - {name: surprise.zip, folder: surprise, code: "7", osf_id: 5wm8j, md5: 42ef7c4fbe8ed891a8ccc8a62b5b8e6f}
+  # Fewer files means an interrupted extraction.
+  expected_files: 6675
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's emotion digit to manifest label.
+  emotion_map:
+    "1": neutral
+    "2": happy
+    "3": angry
+    "4": fear
+    "5": sad
+    "6": disgust
+    "7": surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out, so the splits share all speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` resamples the recordings to 16 kHz mono.
+  output_env_var: MCAESPPS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
