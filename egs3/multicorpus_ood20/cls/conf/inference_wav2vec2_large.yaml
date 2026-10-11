@@ -1,0 +1,5 @@
+# Inference with the `wav2vec2_large` frontend; must match `conf/training_wav2vec2_large.yaml`.
+defaults:
+  - inference
+  - frontend: wav2vec2_large
+  - _self_

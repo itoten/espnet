@@ -1,0 +1,5 @@
+# Inference with the `wavlm_large` frontend; must match `conf/training_wavlm_large.yaml`.
+defaults:
+  - inference
+  - frontend: wavlm_large
+  - _self_

@@ -1,0 +1,8 @@
+# Training with the `w2v_bert_2` frontend (`conf/frontend/w2v_bert_2.yaml`). Everything
+# else comes from `conf/training.yaml` and is the same for every encoder.
+defaults:
+  - training
+  - frontend: w2v_bert_2
+  - _self_
+
+exp_tag: train_w2v_bert_2_ood20

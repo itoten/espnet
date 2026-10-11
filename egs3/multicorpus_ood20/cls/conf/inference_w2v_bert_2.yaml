@@ -1,0 +1,5 @@
+# Inference with the `w2v_bert_2` frontend; must match `conf/training_w2v_bert_2.yaml`.
+defaults:
+  - inference
+  - frontend: w2v_bert_2
+  - _self_

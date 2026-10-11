@@ -1,0 +1,5 @@
+# Inference with the `xls_r_300m` frontend; must match `conf/training_xls_r_300m.yaml`.
+defaults:
+  - inference
+  - frontend: xls_r_300m
+  - _self_

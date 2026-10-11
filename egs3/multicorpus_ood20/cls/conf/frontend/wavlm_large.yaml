@@ -1,0 +1,9 @@
+# WavLM Large: self-supervised, English (94k h). Hugging Face defaults already
+# give the shared regularisation (`layerdrop: 0.1`, `mask_time_prob: 0.075`).
+_target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+encoder:
+  _target_: transformers.AutoModel.from_pretrained
+  pretrained_model_name_or_path: microsoft/wavlm-large
+normalize:
+  _target_: espnet3.systems.cls.model.WaveformNormalize
+  stats_file: ${stats_dir}/train/feats_stats.npz

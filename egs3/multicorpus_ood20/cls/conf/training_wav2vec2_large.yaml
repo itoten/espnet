@@ -1,0 +1,8 @@
+# Training with the `wav2vec2_large` frontend (`conf/frontend/wav2vec2_large.yaml`). Everything
+# else comes from `conf/training.yaml` and is the same for every encoder.
+defaults:
+  - training
+  - frontend: wav2vec2_large
+  - _self_
+
+exp_tag: train_wav2vec2_large_ood20

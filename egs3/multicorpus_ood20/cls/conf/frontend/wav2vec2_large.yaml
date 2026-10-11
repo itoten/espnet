@@ -1,0 +1,11 @@
+# wav2vec 2.0 Large (LV-60): self-supervised, English. Its own defaults are
+# `layerdrop: 0.0` and `mask_time_prob: 0.05`; set to the shared values.
+_target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+encoder:
+  _target_: transformers.AutoModel.from_pretrained
+  pretrained_model_name_or_path: facebook/wav2vec2-large-lv60
+  layerdrop: 0.1
+  mask_time_prob: 0.075
+normalize:
+  _target_: espnet3.systems.cls.model.WaveformNormalize
+  stats_file: ${stats_dir}/train/feats_stats.npz

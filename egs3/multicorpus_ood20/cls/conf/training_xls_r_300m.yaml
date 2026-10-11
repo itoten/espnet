@@ -1,0 +1,8 @@
+# Training with the `xls_r_300m` frontend (`conf/frontend/xls_r_300m.yaml`). Everything
+# else comes from `conf/training.yaml` and is the same for every encoder.
+defaults:
+  - training
+  - frontend: xls_r_300m
+  - _self_
+
+exp_tag: train_xls_r_300m_ood20

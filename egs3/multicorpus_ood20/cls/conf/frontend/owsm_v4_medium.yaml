@@ -1,0 +1,10 @@
+# OWSM v4 medium encoder: ASR/ST-supervised, 320k h (multilingual), on its own
+# 128-dim log-mel with its own normalisation. It has no time masking; only the
+# layer drop is shared. `pad_seconds: 30` feeds 30 s windows as in OWSM's
+# training and inference; drop it to encode each clip at its own length.
+_target_: espnet3.systems.cls.frontend.OwsmFrontend
+s2t_model:
+  _target_: espnet3.systems.cls.frontend.load_s2t_model
+  model_tag: espnet/owsm_v4_medium_1B
+layer_drop_rate: 0.1
+pad_seconds: 30

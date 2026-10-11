@@ -1,0 +1,5 @@
+# Inference with the `owsm_v4_medium` frontend; must match `conf/training_owsm_v4_medium.yaml`.
+defaults:
+  - inference
+  - frontend: owsm_v4_medium
+  - _self_

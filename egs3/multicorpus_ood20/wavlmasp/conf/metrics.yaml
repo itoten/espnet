@@ -1,9 +1,0 @@
-##########################################################
-#                 METRIC SCORING SETTING                 #
-##########################################################
-# The five classification metrics come from
-# `egs3/TEMPLATE/wavlmasp/conf/metrics.yaml`. Test sets are discovered from
-# the subdirectories of `inference_dir`, which `run.py` copies from the
-# inference config. UA and MacroF1 average over the classes present in each
-# set's reference labels.
-data_dir: ${oc.env:MULTICORPUS_OOD20_OUTPUT,./data}

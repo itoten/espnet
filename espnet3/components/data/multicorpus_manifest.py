@@ -4,7 +4,7 @@ A recipe that trains on several corpora at once (for example a cross-corpus
 speech emotion recognition setup) cannot simply list each corpus under
 ``dataset.train`` in a training config: ``remove_long_short`` and
 ``prepare_labels`` each read one manifest per split
-(``espnet3.systems.wavlmasp.system.WavlmAspSystem``), and dropping a row whose
+(``espnet3.systems.cls.system.ClsSystem``), and dropping a row whose
 label falls outside the target class set cannot be expressed as a per-sample
 ``transform``, which cannot change how many rows a dataset holds. This module
 merges the corpora once, at ``DatasetBuilder.build()`` time, into a single

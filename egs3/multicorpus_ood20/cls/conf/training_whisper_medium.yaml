@@ -1,0 +1,8 @@
+# Training with the `whisper_medium` frontend (`conf/frontend/whisper_medium.yaml`). Everything
+# else comes from `conf/training.yaml` and is the same for every encoder.
+defaults:
+  - training
+  - frontend: whisper_medium
+  - _self_
+
+exp_tag: train_whisper_medium_ood20

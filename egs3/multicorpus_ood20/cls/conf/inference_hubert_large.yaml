@@ -1,0 +1,5 @@
+# Inference with the `hubert_large` frontend; must match `conf/training_hubert_large.yaml`.
+defaults:
+  - inference
+  - frontend: hubert_large
+  - _self_

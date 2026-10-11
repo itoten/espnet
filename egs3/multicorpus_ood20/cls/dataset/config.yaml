@@ -1,0 +1,109 @@
+builder:
+  # Training pool ---------------------------------------------------------
+  # Every split each corpus recipe defines (`train`, `valid`, `test`) is read
+  # from its unfiltered `manifest/` and merged, so each corpus is used in
+  # full. `data_src` names that corpus's own `cls` recipe, which
+  # downloads and converts the audio.
+  train_corpora:
+    - name: cremad
+      data_src: cremad/cls
+    - name: emns
+      data_src: emns/cls
+    - name: emodb
+      data_src: emodb/cls
+    - name: emozionalmente
+      data_src: emozionalmente/cls
+    - name: enterface05
+      data_src: enterface05/cls
+    - name: jlcorpus
+      data_src: jlcorpus/cls
+    - name: meld
+      data_src: meld/cls
+    - name: quechua
+      data_src: quechua/cls
+    - name: subesco
+      data_src: subesco/cls
+    - name: thorsten
+      data_src: thorsten/cls
+
+  # Evaluation sets -------------------------------------------------------
+  # None of these corpora is trained on. Each entry becomes one test set
+  # keyed by `name`, built from the listed source splits merged together.
+  # The first five are used in full; MSP-Podcast contributes its
+  # Development set and its two test sets separately.
+  eval_sets:
+    - name: emovdb
+      data_src: emovdb/cls
+      splits: [train, valid, test]
+    - name: iemocap
+      data_src: iemocap/cls
+      splits: [train, valid, test]
+    - name: tess
+      data_src: tess/cls
+      splits: [train, valid, test]
+    - name: savee
+      data_src: savee/cls
+      splits: [train, valid, test]
+    - name: ravdess
+      data_src: ravdess/cls
+      splits: [train, valid, test]
+    - name: msppodcast_dev
+      data_src: msppodcast/cls
+      splits: [valid]
+    - name: msppodcast_test
+      data_src: msppodcast/cls
+      splits: [test]
+    - name: msppodcast_test2
+      data_src: msppodcast/cls
+      splits: [test2]
+
+  # Every label a training corpus carries is kept as its own class. The
+  # `anger`/`joy`/`sadness`/`surprised`/`disgusted` entries are spelling
+  # fixes, not category merges. A label absent from this map is dropped.
+  label_map:
+    angry: angry
+    anger: angry
+    happy: happy
+    joy: happy
+    sad: sad
+    sadness: sad
+    surprise: surprise
+    surprised: surprise
+    fear: fear
+    disgust: disgust
+    disgusted: disgust
+    neutral: neutral
+    excited: excited
+    sleepy: sleepy
+    boredom: boredom
+    calm: calm
+    amused: amused
+    drunk: drunk
+    whisper: whisper
+    anxious: anxious
+    apologetic: apologetic
+    assertive: assertive
+    concerned: concerned
+    encouraging: encouraging
+    sarcastic: sarcastic
+
+  # The merged manifests are written here. The WAV files stay wherever each
+  # corpus's own `<CORPUS>_OUTPUT` points.
+  output_env_var: MULTICORPUS_OOD20_OUTPUT
+  data_path: data
+
+  # No validation runs during training (`limit_val_batches: 0`), but
+  # `DataOrganizer` and `remove_long_short` still expect a `valid` split.
+  # It is filled with the first `placeholder_valid_size` training rows.
+  placeholder_valid_size: 64
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  # Train and valid read the `remove_long_short` output; every eval set
+  # stays unfiltered so it is scored in full.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv

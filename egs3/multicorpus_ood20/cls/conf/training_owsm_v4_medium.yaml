@@ -1,0 +1,8 @@
+# Training with the `owsm_v4_medium` frontend (`conf/frontend/owsm_v4_medium.yaml`). Everything
+# else comes from `conf/training.yaml` and is the same for every encoder.
+defaults:
+  - training
+  - frontend: owsm_v4_medium
+  - _self_
+
+exp_tag: train_owsm_v4_medium_ood20

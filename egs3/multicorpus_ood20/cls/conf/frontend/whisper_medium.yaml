@@ -1,0 +1,10 @@
+# Whisper medium encoder: ASR-supervised, 680k h (98 languages), on 30 s of
+# log-mel. It has no time masking; only the layer drop is shared.
+_target_: espnet3.systems.cls.frontend.WhisperFrontend
+whisper:
+  _target_: transformers.WhisperModel.from_pretrained
+  pretrained_model_name_or_path: openai/whisper-medium
+  encoder_layerdrop: 0.1
+feature_extractor:
+  _target_: transformers.WhisperFeatureExtractor.from_pretrained
+  pretrained_model_name_or_path: openai/whisper-medium

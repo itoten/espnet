@@ -1,0 +1,5 @@
+# Inference with the `whisper_medium` frontend; must match `conf/training_whisper_medium.yaml`.
+defaults:
+  - inference
+  - frontend: whisper_medium
+  - _self_

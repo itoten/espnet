@@ -1,0 +1,84 @@
+builder:
+  # Source layout -----------------------------------------------------------
+  # Same corpus as `egs3/msppodcast/cls`; this recipe never downloads it.
+  source_env_var: MSPPODCAST
+  dataset_path: download
+  audio_subdir: Audios
+  labels_csv: Labels/Labels/labels_consensus.csv
+  request_url: https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html
+
+  # Labels --------------------------------------------------------------
+  # `egs3/msppodcast/cls` drops `C` (contempt) along with `O`/`X`
+  # because none of the corpora it is compared against there has a contempt
+  # label. This recipe trains on MSP-Podcast alone, so that reason does not
+  # apply, and contempt is kept as its own class.
+  #
+  #   "classifying speech samples into one of eight distinct emotional
+  #    categories: anger, happiness, sadness, fear, surprise, contempt,
+  #    disgust, and neutral"   -- Naini et al., Interspeech 2025
+  #
+  # `O` and `X` stay dropped: `O` is the annotators' free-text catch-all, not
+  # an emotion, and `X` means the annotators did not agree on a single label,
+  # so there is no single hard label to train on.
+  emotion_codes:
+    A: angry
+    D: disgust
+    F: fear
+    H: happy
+    N: neutral
+    S: sad
+    U: surprise
+    C: contempt
+
+  drop_codes:
+    - O
+    - X
+
+  max_missing_audio: 1
+
+  # Split -------------------------------------------------------------------
+  # Train and Development are used for training and validation (see
+  # readme.md): a real, in-domain validation set with early stopping, unlike
+  # the ood20 recipe's no-validation design -- MSP-Podcast is orders of
+  # magnitude larger than the other corpora, so a held-out slice of it is
+  # still a reasonable proxy for its own held-out data. Test1/Test2 are not
+  # used for training or validation; they exist here only so this model can
+  # be scored on MSP-Podcast's own test data too, next to the 5 out-of-domain
+  # corpora `conf/inference.yaml` scores it on.
+  split_map:
+    train: Train
+    valid: Development
+    test: Test1
+    test2: Test2
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+    test2: manifest/test2.tsv
+
+  # Converted audio is shared with `egs3/msppodcast/cls` instead of
+  # being resampled again: both recipes derive the same `utt_id` from the
+  # same source filename, so `<shared_wav_output_env_var>/wav/<utt_id>.wav`
+  # means the same recording to either one. This recipe only writes the
+  # handful of files the other recipe's `drop_codes` left out (contempt).
+  # Neither recipe ever deletes or overwrites a file the other wrote.
+  shared_wav_output_env_var: MSPPODCAST_OUTPUT
+  wav_subdir: wav
+  sampling_rate: 16000
+
+  # This recipe's own manifests, token list and class weights -- never
+  # written into the shared output above, so `egs3/msppodcast/cls`'s
+  # 7-class data is unaffected by this recipe existing.
+  output_env_var: MSPPODCAST_FULL8_OUTPUT
+  data_path: data
+
+dataset:
+  # Train/valid read the `remove_long_short` output; test/test2 stay
+  # unfiltered so they are scored in full, same as every other emotion
+  # recipe's test splits.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
+    test2: manifest/test2.tsv

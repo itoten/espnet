@@ -1,0 +1,8 @@
+# Training with the `hubert_large` frontend (`conf/frontend/hubert_large.yaml`). Everything
+# else comes from `conf/training.yaml` and is the same for every encoder.
+defaults:
+  - training
+  - frontend: hubert_large
+  - _self_
+
+exp_tag: train_hubert_large_ood20

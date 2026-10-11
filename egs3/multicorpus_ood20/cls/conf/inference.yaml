@@ -1,0 +1,49 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Settings shared by every encoder. Run with one of the per-encoder configs,
+# `conf/inference_<encoder>.yaml`, which add the frontend:
+#   python run.py --stages infer measure \
+#       --training_config conf/training_wavlm_large.yaml \
+#       --inference_config conf/inference_wavlm_large.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# `run.py` copies `exp_tag` / `exp_dir` from the training config but not
+# `data_dir`, so it is set here with the same expression as in training.yaml.
+data_dir: ${oc.env:MULTICORPUS_OOD20_OUTPUT,./data}
+inference_dir: ${exp_dir}/inference
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# The five Non-Commercial set corpora (never trained on) and MSP-Podcast's
+# Test1/Test2.
+dataset:
+  test:
+    - {name: emovdb,           data_src_args: {split: emovdb}}
+    - {name: iemocap,          data_src_args: {split: iemocap}}
+    - {name: tess,             data_src_args: {split: tess}}
+    - {name: savee,            data_src_args: {split: savee}}
+    - {name: ravdess,          data_src_args: {split: ravdess}}
+    - {name: msppodcast_test,  data_src_args: {split: msppodcast_test}}
+    - {name: msppodcast_test2, data_src_args: {split: msppodcast_test2}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# `network` must match `model` in training.yaml (without `class_weights`).
+# `last.ckpt` holds the model after the last epoch.
+model:
+  _target_: espnet3.systems.cls.inference_model.ClsInferenceModel
+  network:
+    _target_: espnet3.systems.cls.model.ClsModel
+    frontend: ${frontend}
+    num_classes: 20
+    head_size: 1024
+    head_layers: 1
+    dropout: 0.5
+  model_file: ${exp_dir}/last.ckpt
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output
