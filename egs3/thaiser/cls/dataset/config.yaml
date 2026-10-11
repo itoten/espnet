@@ -1,0 +1,71 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The release holds `emotion_label.json` and zip files of
+  # `<studio|zoom>N/<microphone>/<recording>.flac`. The label file lists one
+  # microphone per recording (`con` in the studio, `mic` on Zoom); the other
+  # microphones' files are not extracted.
+  source_env_var: THAISER
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # GitHub release v1 of vistec-AI/dataset-releases, CC BY-SA 4.0. No checksums
+  # are published, so each file's size (bytes) is checked.
+  release_url: https://github.com/vistec-AI/dataset-releases/releases/download/v1
+  label_file: emotion_label.json
+  label_file_size: 16056164
+  archives:
+    zoom1-10.zip: 549004523
+    zoom11-20.zip: 526691615
+    studio1-10.zip: 1552445760
+    studio11-20.zip: 1481601769
+    studio21-30.zip: 1367188788
+    studio31-40.zip: 1466926996
+    studio41-50.zip: 1424289296
+    studio51-60.zip: 1450157240
+    studio61-70.zip: 1401212874
+    studio71-80.zip: 1378972298
+  remove_archives: true
+
+  # Labels ----------------------------------------------------------------
+  # `majority_emo` is the label most of 3 to 8 annotators chose for the
+  # recording. Recordings with no majority (`None`) or `other` are dropped,
+  # as are those whose `agreement` is below `min_agreement`; the release page
+  # says this threshold keeps 14,182 recordings.
+  min_agreement: 0.71
+  expected_files: 14182
+  emotion_map:
+    Neutral: neutral
+    Angry: angry
+    Happy: happy
+    Sad: sad
+    Frustrated: frustrated
+
+  # Split -----------------------------------------------------------------
+  # No partition is published with the archive. Utterances are split at random
+  # within each label; speakers are not held out, so the splits share all 20
+  # speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz FLAC, mono or stereo; `build()` writes 16 kHz mono.
+  # `num_workers` ffmpeg processes run at a time.
+  output_env_var: THAISER_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  num_workers: 16
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
