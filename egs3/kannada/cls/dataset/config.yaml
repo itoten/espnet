@@ -1,0 +1,52 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # Flat directory of `<speaker>-<emotion>-<sentence>.wav`, with a two-digit
+  # speaker (01-13), emotion (01-06) and sentence (01-06) number.
+  source_env_var: KANNADA
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 6345107 (CC BY 4.0). The record holds the 468 WAV files
+  # directly, with no archive.
+  base_url: https://zenodo.org/api/records/6345107/files
+  # 13 speakers x 6 emotions x 6 sentences; a smaller directory is an
+  # interrupted download.
+  expected_files: 468
+
+  # Labels ----------------------------------------------------------------
+  # Emotion number to manifest label, from the record description. The corpus
+  # has no disgust.
+  emotion_map:
+    "01": angry
+    "02": sad
+    "03": surprise
+    "04": happy
+    "05": fear
+    "06": neutral
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every recording to 16 kHz mono.
+  output_env_var: KANNADA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
