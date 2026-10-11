@@ -1,0 +1,56 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `EmoKaz/<narrator>/<train|eval>/<narrator>_<emotion>_<id>.wav`.
+  source_env_var: KAZEMOTTS
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset issai/KazEmoTTS (10.5 GB), CC BY 4.0. The sha256 is
+  # the LFS hash shown on the Hub.
+  archive_url: https://huggingface.co/datasets/issai/KazEmoTTS/resolve/main/EmoKaz.zip
+  archive_name: EmoKaz.zip
+  sha256: 077b52c53220404884a0084b67f2033374609df642348394b0ce76aee8833820
+  # 54,760 WAV files; fewer means an interrupted extraction.
+  expected_files: 54760
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's emotion to manifest label.
+  emotion_map:
+    angry: angry
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # The `train` and `eval` folders are the official split; `eval` is the test
+  # set. Validation is a random `valid_ratio` of the train recordings within
+  # each label. Narrators are shared by all three splits.
+  official_splits:
+    train: train
+    eval: test
+  valid_ratio: 0.1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` resamples the recordings (22.05 kHz) to 16 kHz mono with
+  # `num_workers` ffmpeg processes at a time.
+  output_env_var: KAZEMOTTS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  num_workers: 16
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
