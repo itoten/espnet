@@ -1,0 +1,55 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Emotion Speech Dataset/<speaker>/<Emotion>/<speaker>_<item>.wav` in the
+  # extracted archive. Speakers 0001-0010 are Mandarin, 0011-0020 English.
+  source_env_var: ESD
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The Google Drive file linked from the authors' GitHub page
+  # (HLTSingapore/Emotional-Speech-Data). No checksum is published.
+  archive_url: https://drive.usercontent.google.com/download?id=1scuFwqh8s7KIYAfZW1Eu6088ZAK2SI-v&export=download&confirm=t
+  archive_name: ESD.zip
+  # 20 speakers x 5 emotions x 350 utterances; fewer means an interrupted
+  # extraction.
+  expected_files: 35000
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The emotion folder's name to manifest label.
+  emotion_map:
+    Angry: angry
+    Happy: happy
+    Neutral: neutral
+    Sad: sad
+    Surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published with the archive. Utterances are split at random
+  # within each label; speakers are not held out, so the splits share all 20
+  # speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are already 16 kHz mono; `build()` converts them anyway.
+  # `num_workers` ffmpeg processes run at a time.
+  output_env_var: ESD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  num_workers: 16
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
