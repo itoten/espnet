@@ -1,0 +1,54 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<Angry|Calm|Happy|Sad>/<speaker>_<emotion>_<word>.wav`, e.g.
+  # `Angry/1157_kz_acik.wav`. The speaker number is the file name's first field.
+  source_env_var: TUREVDB
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The authors' GitHub repository Xeonen/TurEV-DB, pinned to its latest
+  # commit. Only the WAV files under `Sound Source/` are extracted; the
+  # rest is spectrograms and model outputs. The README says CC BY-NC-ND 4.0,
+  # while the repository's LICENSE file is the GNU GPL v3.
+  download_url: https://github.com/Xeonen/TurEV-DB/archive/be9873eccbc40538acbeb5e67c718bda96763cf3.zip
+  archive_name: turevdb.zip
+  archive_wav_dir: Sound Source
+  # Fewer files means an interrupted extraction.
+  expected_files: 1735
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's emotion code to manifest label. The folder the file sits
+  # in must agree with it.
+  emotion_map:
+    kz: angry
+    sk: calm
+    mt: happy
+    hl: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono.
+  output_env_var: TUREVDB_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
