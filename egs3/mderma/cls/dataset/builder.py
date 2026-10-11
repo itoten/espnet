@@ -9,6 +9,7 @@ import os
 import re
 import shutil
 import subprocess
+import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from importlib import resources
@@ -32,6 +33,7 @@ _CFG = _load_builder_config()
 _EMOTION_MAP = {str(k): str(v) for k, v in _CFG["emotion_map"].items()}
 _RECORDINGS_DIR = Path(str(_CFG["recordings_dir"]))
 _LABEL_PATTERN = re.compile("(" + "|".join(_EMOTION_MAP) + ")", re.IGNORECASE)
+_ATTEMPTS = 4
 
 
 def iter_source_candidates(
@@ -158,7 +160,8 @@ def _list_files() -> list[dict]:
 def _fetch_file(entry: dict, destination: Path) -> None:
     """Download one recording and check its size and SHA-256.
 
-    The target name is built here from the listing, not taken from the server.
+    The target name is built here from the listing, not taken from the server. A
+    failed transfer (for example a timeout) is retried a few times.
 
     Raises:
         ValueError: If the file does not match its listed size or SHA-256.
@@ -168,12 +171,19 @@ def _fetch_file(entry: dict, destination: Path) -> None:
         return
     target.parent.mkdir(parents=True, exist_ok=True)
     part = target.with_name(target.name + ".part")
-    digest = hashlib.sha256()
-    with urllib.request.urlopen(_request(entry["url"]), timeout=120) as response:
-        with part.open("wb") as dst:
-            for chunk in iter(lambda: response.read(1 << 20), b""):
-                digest.update(chunk)
-                dst.write(chunk)
+    for attempt in range(_ATTEMPTS):
+        digest = hashlib.sha256()
+        try:
+            with urllib.request.urlopen(_request(entry["url"]), timeout=120) as r:
+                with part.open("wb") as dst:
+                    for chunk in iter(lambda: r.read(1 << 20), b""):
+                        digest.update(chunk)
+                        dst.write(chunk)
+            break
+        except OSError:
+            if attempt == _ATTEMPTS - 1:
+                raise
+            time.sleep(5 * (attempt + 1))
     if part.stat().st_size != entry["size"] or digest.hexdigest() != entry["sha256"]:
         raise ValueError(f"{entry['filename']}: size or SHA-256 does not match")
     part.replace(target)
