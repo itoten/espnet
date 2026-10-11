@@ -1,0 +1,55 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `YSED/<emotion>/<code>-<n>-<n>-<n>-<n>.wav`, e.g. `angry/a5-01-01-01-25.wav`.
+  # The archive's top-level folder (`Eiad7-YSED-<commit>/`) is dropped.
+  source_env_var: YSED
+  dataset_path: download
+  recordings_dir: YSED
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 15227219 (v1.0.0), CC BY 4.0; `md5` is the checksum Zenodo
+  # lists.
+  archive_url: https://zenodo.org/api/records/15227219/files/Eiad7/YSED-v1.0.0.zip/content
+  archive_name: YSED-v1.0.0.zip
+  md5: 7e104652b42f93adea5d832bd853d10a
+  # Fewer recordings means an interrupted extraction.
+  expected_files: 1432
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The folder name to manifest label. Only `fearful` is renamed to match the
+  # other recipes. Disgust and surprise do not occur.
+  emotion_map:
+    angry: angry
+    fearful: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; the release does not say who spoke which recording, so speakers cannot
+  # be held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The release is 48 kHz stereo; `build()` converts it to 16 kHz mono.
+  output_env_var: YSED_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
