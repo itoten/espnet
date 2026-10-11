@@ -1,0 +1,53 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # Flat directories of `<gender><speaker><emotion><index>.wav`, e.g. `F14A09.wav`.
+  source_env_var: SHEMO
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # The authors' GitHub repository mansourehk/ShEMO, pinned to its latest commit.
+  # The archives are Git LFS objects, so they come from media.githubusercontent.com
+  # (raw.githubusercontent.com would return the 134-byte pointer files).
+  # The README offers the data "for academic purposes free of charge".
+  base_url: https://media.githubusercontent.com/media/mansourehk/ShEMO/0db1b9343e08794d66ca2f5c3faa9533c923abcd
+  archive_names:
+    - female.zip
+    - male.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's one-letter emotion code to manifest label.
+  emotion_map:
+    A: angry
+    F: fear
+    H: happy
+    N: neutral
+    S: sad
+    W: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono.
+  output_env_var: SHEMO_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
