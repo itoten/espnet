@@ -1,0 +1,58 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `audio/<name>__<sha256 prefix>.wav`, where <name> is the file name in the
+  # release (e.g. `Angry_female_15_1_0`). The release's names collide (17 names
+  # are used for two different recordings), so the SHA-256 prefix is appended.
+  source_env_var: MDERMA
+  dataset_path: download
+  recordings_dir: audio
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data dataset yzsw3ff6rn (CC BY 4.0), the authors' own upload.
+  # The listing gives each file's size and SHA-256, which are checked.
+  # The release holds 1345 WAV files; 45 of them are 44-byte headers without
+  # any audio, and 33 of the remaining 1300 repeat the content of another file,
+  # which leaves `expected_files` distinct recordings.
+  dataset_url: https://data.mendeley.com/public-api/datasets/yzsw3ff6rn
+  user_agent: Mozilla/5.0
+  listed_wavs: 1345
+  expected_files: 1267
+  hash_prefix_length: 12
+  num_workers: 8
+
+  # Labels ----------------------------------------------------------------
+  # The first word of the file name (case ignored) to manifest label.
+  emotion_map:
+    angry: angry
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label. File names carry a gender, an age and a session number, but the
+  # release does not say they identify a speaker, so speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz stereo; `build()` converts them to 16 kHz mono.
+  output_env_var: MDERMA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  min_wav_bytes: 45
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
