@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<speaker>.<emotion>_<word>_<take>.wav` at the top level of the archive,
+  # e.g. `m1.a_nie_1.wav`.
+  source_env_var: POLISHEMO
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # MOST Wiedzy (Bridge of Knowledge) Open Research Data, DOI
+  # 10.34808/h46c-hb44, CC BY 4.0. The `/download` URL redirects to a signed
+  # storage URL; the record publishes no checksum.
+  download_url: https://mostwiedzy.pl/en/open-research-data/emotions-in-polish-speech-recordings,11190523461146169-0/download
+  archive_name: polishemo.zip
+  # Fewer files means an interrupted extraction.
+  expected_files: 450
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's emotion code to manifest label, as listed in the record's
+  # description: anger (a), fear (s), neutral (n).
+  emotion_map:
+    a: angry
+    s: fear
+    n: neutral
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono.
+  output_env_var: POLISHEMO_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
