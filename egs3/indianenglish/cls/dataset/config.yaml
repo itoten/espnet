@@ -1,0 +1,55 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<Emotion>/<NNN>.wav` (e.g. `Happy/001.wav`), as in the release's zip.
+  # Despite the extension, the files are Ogg Opus streams; ffmpeg reads them.
+  source_env_var: INDIANENGLISH
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data dataset mtk28hgc6x (CC BY 4.0), file `Original_dataset.zip`
+  # (the dataset's other zip, `Augmented.zip`, is not used). The Mendeley listing
+  # gives the zip's size and SHA-256, which are checked.
+  dataset_url: https://data.mendeley.com/public-api/datasets/mtk28hgc6x
+  archive_name: Original_dataset.zip
+  user_agent: Mozilla/5.0
+
+  # The zip holds 747 recordings. 50 are repeats: of files with identical
+  # content, one is kept when they share a label, and none when the labels differ
+  # (two pairs). `expected_files` is what remains.
+  listed_wavs: 747
+  expected_files: 695
+
+  # Labels ----------------------------------------------------------------
+  # Folder name (case ignored) to manifest label.
+  emotion_map:
+    angry: angry
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label. The release does not identify speakers, so none can be held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono WAV.
+  output_env_var: INDIANENGLISH_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
