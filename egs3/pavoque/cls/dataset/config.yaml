@@ -1,0 +1,55 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One FLAC plus one YAML per style (`pavoque-<style>.flac/.yaml`). A YAML is a
+  # list of utterances, each with `prompt`, `text`, `style`, and `start`/`end`
+  # (seconds) locating it in the FLAC.
+  source_env_var: PAVOQUE
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Release v0.2 of marytts/pavoque-data on GitHub; no checksums are published.
+  # The release also has `pavoque-outtakes`, which is not used.
+  base_url: https://github.com/marytts/pavoque-data/releases/download/v0.2
+  styles:
+    - angry
+    - happy
+    - neutral
+    - poker
+    - sad
+
+  # Labels ----------------------------------------------------------------
+  # The YAML `style` value to manifest label. `poker` is the corpus's
+  # reserved, unexpressive style, not one of the seven common emotions.
+  emotion_map:
+    angry: angry
+    happy: happy
+    neutral: neutral
+    poker: poker
+    sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; the corpus has a single speaker.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts each FLAC to 16 kHz mono and cuts it into utterances.
+  output_env_var: PAVOQUE_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
