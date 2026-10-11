@@ -1,0 +1,53 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Mexican Emotional Speech Database (MESD)/<Emotion>_<voice>_<word corpus>_<word>.wav`.
+  # The release also holds `MESD Speaker-embedded naturalness-reduced female
+  # voices/Level{1,2}/`, edited copies named `<Emotion>_F_B_L<level>_<word>.wav`;
+  # those are skipped (see `read_entries`).
+  source_env_var: MESD
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data cy34mh68j9, version 5, CC BY 4.0. The endpoint returns the
+  # whole version as one zip.
+  download_url: https://data.mendeley.com/public-api/zip/cy34mh68j9/download/5
+  archive_name: cy34mh68j9-5.zip
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The file name's emotion word to manifest label.
+  emotion_map:
+    Anger: angry
+    Disgust: disgust
+    Fear: fear
+    Happiness: happy
+    Neutral: neutral
+    Sadness: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; speakers are not held out (the file name does not identify them).
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz mono 24-bit, so `build()` resamples them to
+  # 16 kHz.
+  output_env_var: MESD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
