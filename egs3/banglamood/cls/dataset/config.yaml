@@ -1,0 +1,60 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<Emotion>/<Gender>/<NNNN>.wav` (e.g. `Angry/Female/0160.wav`). The file
+  # numbers are unique across the whole release.
+  source_env_var: BANGLAMOOD
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data dataset 9cc8k5v7w4, version 3 (CC BY 4.0). The file listing
+  # gives each recording's size and SHA-256 but not its folder, and the folder
+  # is the label, so the recipe downloads the dataset's zip ("Download all" on
+  # the dataset page) and checks every recording in it against the listing.
+  dataset_url: https://data.mendeley.com/public-api/datasets/9cc8k5v7w4
+  archive_url: https://data.mendeley.com/public-api/zip/9cc8k5v7w4/download/3
+  user_agent: Mozilla/5.0
+
+  # The zip holds 3220 recordings, two of which have identical content but
+  # different labels (Disappointment/Male/0737.wav and Neutral/Male/0704.wav).
+  # Both are left out, so `expected_files` is 3218.
+  listed_wavs: 3220
+  expected_files: 3218
+
+  # Labels ----------------------------------------------------------------
+  # Folder name (case ignored) to manifest label.
+  emotion_map:
+    angry: angry
+    disappointment: disappointed
+    excitement: excited
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprised: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label. The release does not identify speakers, so none can be held out.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the recordings to 16 kHz mono WAV.
+  output_env_var: BANGLAMOOD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
