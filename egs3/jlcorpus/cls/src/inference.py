@@ -1,4 +1,4 @@
-"""Output formatting for the emotion recipe's inference stage."""
+"""Output formatting for the cls recipe's inference stage."""
 
 from __future__ import annotations
 
