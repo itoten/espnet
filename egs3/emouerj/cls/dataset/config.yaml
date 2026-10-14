@@ -1,0 +1,49 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `emoUERJ/<m|w><actor>[h|a|s|n]<trial>.wav`, e.g. `w02h16.wav`.
+  source_env_var: EMOUERJ
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 5427549, CC BY 4.0 (105 MB zip of 377 wav files).
+  base_url: https://zenodo.org/api/records/5427549/files
+  archive_name: emoUERJ.zip
+  archive_md5: 7817ccc4cfba39ff85eba0b26a174af8
+  # Fewer files means an interrupted extraction.
+  expected_files: 377
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The letter after the actor code in the file name to manifest label.
+  emotion_map:
+    h: happy
+    a: angry
+    s: sad
+    n: neutral
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; actors are not held out, so every split shares all 8 actors.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz stereo; `build()` converts them to 16 kHz mono.
+  output_env_var: EMOUERJ_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
