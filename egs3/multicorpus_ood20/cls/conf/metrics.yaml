@@ -1,9 +1,51 @@
 ##########################################################
 #                 METRIC SCORING SETTING                 #
 ##########################################################
-# The five classification metrics come from
-# `egs3/TEMPLATE/cls/conf/metrics.yaml`. Test sets are discovered from
-# the subdirectories of `inference_dir`, which `run.py` copies from the
+# The same five metrics as `egs3/TEMPLATE/cls/conf/metrics.yaml`, each with
+# `unknown_reference: score`. Test sets are discovered from the
+# subdirectories of `inference_dir`, which `run.py` copies from the
 # inference config. UA and MacroF1 average over the classes present in each
 # set's reference labels.
+#
+# Evaluation sets are not filtered by label, so a reference can name a class
+# the model does not have (e.g. contempt). With `score`, UA and MacroF1 count
+# it as a class no prediction matches (recall and F1 of 0). mAP and AUC have
+# no score column for it, so it is not averaged in, and its utterances count
+# as negatives for every class. Use `skip` to leave those utterances out.
 data_dir: ${oc.env:MULTICORPUS_OOD20_OUTPUT,./data}
+
+metrics:
+  - metric:
+      _target_: espnet3.systems.cls.metrics.wa.WA
+      ref_key: ref
+      hyp_key: hyp
+
+  - metric:
+      _target_: espnet3.systems.cls.metrics.ua.UA
+      ref_key: ref
+      hyp_key: hyp
+      token_list: ${data_dir}/token_list
+      unknown_reference: score
+
+  - metric:
+      _target_: espnet3.systems.cls.metrics.macro_f1.MacroF1
+      ref_key: ref
+      hyp_key: hyp
+      token_list: ${data_dir}/token_list
+      unknown_reference: score
+
+  - metric:
+      _target_: espnet3.systems.cls.metrics.mean_ap.MAP
+      token_list: ${data_dir}/token_list
+      unknown_reference: score
+    inputs:
+      ref: ref
+      score: score
+
+  - metric:
+      _target_: espnet3.systems.cls.metrics.auc.AUC
+      token_list: ${data_dir}/token_list
+      unknown_reference: score
+    inputs:
+      ref: ref
+      score: score

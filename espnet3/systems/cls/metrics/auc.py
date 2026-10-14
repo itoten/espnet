@@ -12,6 +12,8 @@ from espnet3.components.metrics.base_metric import BaseMetric
 from espnet3.systems.cls.metrics.scoring_utils import (
     build_score_matrix,
     build_target_matrix,
+    check_unknown_reference,
+    drop_unknown_rows,
     load_class_labels,
     require_sklearn,
     supported_classes,
@@ -45,6 +47,7 @@ class AUC(BaseMetric):
         token_list: str,
         ref_key: str = "ref",
         score_key: str = "score",
+        unknown_reference: str = "error",
     ) -> None:
         """Initialize the AUC metric.
 
@@ -53,10 +56,16 @@ class AUC(BaseMetric):
                 of the columns in ``score.scp``.
             ref_key: Key name for reference label entries.
             score_key: Key name for per-class probability entries.
+            unknown_reference: What to do with a reference label that is not
+                in ``token_list``: ``"error"`` (default), ``"score"`` (the
+                utterance is a negative for every class; the label itself has
+                no score column, so it is not averaged in) or ``"skip"``
+                (leave those utterances out).
         """
         self.token_list = token_list
         self.ref_key = ref_key
         self.score_key = score_key
+        self.unknown_reference = check_unknown_reference(unknown_reference)
 
     def __call__(
         self,
@@ -94,8 +103,13 @@ class AUC(BaseMetric):
             refs.append(row[self.ref_key])
             scores.append(row[self.score_key])
 
+        refs, (scores,) = drop_unknown_rows(
+            refs, [scores], self.token_list, self.unknown_reference
+        )
         classes = load_class_labels(self.token_list)
-        target = build_target_matrix(refs, classes)
+        target = build_target_matrix(
+            refs, classes, allow_unknown=self.unknown_reference == "score"
+        )
         output = build_score_matrix(scores, len(classes))
         keep, kept_labels = supported_classes(target, classes)
         # A class every utterance belongs to has no negative to rank against,

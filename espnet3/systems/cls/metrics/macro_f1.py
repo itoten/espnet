@@ -7,6 +7,8 @@ from typing import Dict, Optional
 
 from espnet3.components.metrics.base_metric import BaseMetric
 from espnet3.systems.cls.metrics.scoring_utils import (
+    check_unknown_reference,
+    drop_unknown_rows,
     require_sklearn,
     resolve_classes,
     single_labels,
@@ -35,6 +37,7 @@ class MacroF1(BaseMetric):
         ref_key: str = "ref",
         hyp_key: str = "hyp",
         token_list: Optional[str] = None,
+        unknown_reference: str = "error",
     ) -> None:
         """Initialize the macro F1 metric.
 
@@ -44,10 +47,15 @@ class MacroF1(BaseMetric):
             token_list: Optional path to the recipe's token list. It fixes the
                 class set so unseen labels are caught; without it the classes
                 are taken from the reference file.
+            unknown_reference: What to do with a reference label that is not
+                in ``token_list``: ``"error"`` (default), ``"score"`` (count
+                it as a class no prediction can match) or ``"skip"`` (leave
+                those utterances out).
         """
         self.ref_key = ref_key
         self.hyp_key = hyp_key
         self.token_list = token_list
+        self.unknown_reference = check_unknown_reference(unknown_reference)
 
     def __call__(
         self,
@@ -86,7 +94,11 @@ class MacroF1(BaseMetric):
 
         references = single_labels(refs)
         hypotheses = single_labels(hyps)
-        classes = resolve_classes(references, self.token_list)
+        if self.token_list is not None:
+            references, (hypotheses,) = drop_unknown_rows(
+                references, [hypotheses], self.token_list, self.unknown_reference
+            )
+        classes = resolve_classes(references, self.token_list, self.unknown_reference)
         score = sklearn_metrics.f1_score(
             references,
             hypotheses,
