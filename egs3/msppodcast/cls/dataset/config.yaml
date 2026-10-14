@@ -1,6 +1,7 @@
 builder:
   # Source layout -----------------------------------------------------------
-  # Same corpus as `egs3/msppodcast/cls`; this recipe never downloads it.
+  # The corpus is released under a licence agreement; this recipe never
+  # downloads it.
   source_env_var: MSPPODCAST
   dataset_path: download
   audio_subdir: Audios
@@ -8,10 +9,8 @@ builder:
   request_url: https://ecs.utdallas.edu/research/researchlabs/msp-lab/MSP-Podcast.html
 
   # Labels --------------------------------------------------------------
-  # `egs3/msppodcast/cls` drops `C` (contempt) along with `O`/`X`
-  # because none of the corpora it is compared against there has a contempt
-  # label. This recipe trains on MSP-Podcast alone, so that reason does not
-  # apply, and contempt is kept as its own class.
+  # Contempt is one of MSP-Podcast's eight standard classes and is kept as
+  # its own class.
   #
   #   "classifying speech samples into one of eight distinct emotional
   #    categories: anger, happiness, sadness, fear, surprise, contempt,
@@ -57,20 +56,12 @@ builder:
     test: manifest/test.tsv
     test2: manifest/test2.tsv
 
-  # Converted audio is shared with `egs3/msppodcast/cls` instead of
-  # being resampled again: both recipes derive the same `utt_id` from the
-  # same source filename, so `<shared_wav_output_env_var>/wav/<utt_id>.wav`
-  # means the same recording to either one. This recipe only writes the
-  # handful of files the other recipe's `drop_codes` left out (contempt).
-  # Neither recipe ever deletes or overwrites a file the other wrote.
-  shared_wav_output_env_var: MSPPODCAST_OUTPUT
+  # Converted audio goes to `$MSPPODCAST_OUTPUT/wav/<utt_id>.wav`.
   wav_subdir: wav
   sampling_rate: 16000
 
-  # This recipe's own manifests, token list and class weights -- never
-  # written into the shared output above, so `egs3/msppodcast/cls`'s
-  # 7-class data is unaffected by this recipe existing.
-  output_env_var: MSPPODCAST_FULL8_OUTPUT
+  # Manifests, token list, class weights and WAV files are written here.
+  output_env_var: MSPPODCAST_OUTPUT
   data_path: data
 
 dataset:

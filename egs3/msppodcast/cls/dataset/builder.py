@@ -1,18 +1,10 @@
-"""MSP-Podcast dataset builder for the full 8-class (contempt-included) set.
+"""MSP-Podcast dataset builder (8 classes, Train and Development).
 
-Reads the same `labels_consensus.csv` and `Audios/` tree as
-`egs3/msppodcast/cls`, with two differences: `contempt` is kept as an
-eighth class (see `dataset/config.yaml`), and only the `Train`/`Development`
-partitions are used (this recipe trains on MSP-Podcast alone, with real
-in-domain validation and early stopping; it does not need `Test1`/`Test2`
-manifests of its own -- for evaluation against the same out-of-domain
-corpora `multicorpus_ood20` uses, `conf/inference.yaml` reads that recipe's
-already-built manifests directly via `data_src`).
-
-Converted audio is shared with `egs3/msppodcast/cls` (see
-`shared_wav_output_env_var` in `dataset/config.yaml`) so the ~207k
-recordings both recipes hold in common are not resampled twice; only the
-~5.6k contempt-labelled recordings this recipe adds are new.
+Reads `labels_consensus.csv` and the `Audios/` tree, keeps the eight emotion
+classes including `contempt` (see `dataset/config.yaml`), and drops `O`/`X`.
+Only the `Train`/`Development` partitions feed training and validation; the
+`Test1`/`Test2` manifests are built too so the model can be scored on them.
+Audio is resampled to 16 kHz mono into `$MSPPODCAST_OUTPUT/wav`.
 """
 
 from __future__ import annotations
@@ -94,34 +86,15 @@ def resolve_source_root(
 
 
 def resolve_data_root(recipe_root: Path) -> Path:
-    """Return the directory this recipe's own manifests are written into.
+    """Return the directory holding the manifests, token list and WAV files.
 
     Returns:
-        Path: ``$MSPPODCAST_FULL8_OUTPUT`` when set, else ``<recipe_dir>/data``.
+        Path: ``$MSPPODCAST_OUTPUT`` when set, else ``<recipe_dir>/data``.
     """
     env_value = os.environ.get(str(_CFG["output_env_var"]))
     if env_value:
         return Path(env_value).expanduser()
     return recipe_root / str(_CFG["data_path"])
-
-
-def resolve_shared_wav_dir(recipe_root: Path) -> Path:
-    """Return the wav directory shared with ``egs3/msppodcast/cls``.
-
-    Raises:
-        RuntimeError: If ``shared_wav_output_env_var`` is unset. There is no
-            recipe-local fallback: writing converted audio inside this
-            recipe would defeat the point of sharing it.
-    """
-    var = str(_CFG["shared_wav_output_env_var"])
-    env_value = os.environ.get(var)
-    if not env_value:
-        raise RuntimeError(
-            f"${var} must be set to the same directory "
-            "`egs3/msppodcast/cls` uses, so converted audio is shared "
-            "rather than duplicated."
-        )
-    return Path(env_value).expanduser() / str(_CFG["wav_subdir"])
 
 
 def read_entries(source_root: Path) -> list[dict[str, str]]:
@@ -162,8 +135,6 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     f"dropped: {sorted(_DROP_CODES)}"
                 )
             name = row["FileName"].strip()
-            # Same utt_id scheme as `egs3/msppodcast/cls`, so a
-            # recording that recipe already converted is found, not redone.
             entries.append(
                 {
                     "utt_id": f"msppodcast-{Path(name).stem}",
@@ -203,8 +174,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     return entries
 
 
-class MSPPodcastFull8Builder(DatasetBuilder):
-    """Prepare MSP-Podcast (8 classes, Train+Development) for this recipe."""
+class MSPPodcastBuilder(DatasetBuilder):
+    """Prepare MSP-Podcast (8 classes) for this recipe."""
 
     def is_source_prepared(
         self,
@@ -241,7 +212,7 @@ class MSPPodcastFull8Builder(DatasetBuilder):
         source_dir: str | Path | None = None,
         **_kwargs,
     ) -> None:
-        """Resample any newly-needed recordings and write train/valid manifests.
+        """Resample the recordings and write the split manifests.
 
         Raises:
             FileNotFoundError: If the corpus or ``ffmpeg`` cannot be found.
@@ -250,7 +221,7 @@ class MSPPodcastFull8Builder(DatasetBuilder):
         recipe_root = Path(recipe_dir).resolve()
         source_root = resolve_source_root(recipe_root, source_dir)
         data_root = resolve_data_root(recipe_root)
-        wav_dir = resolve_shared_wav_dir(recipe_root)
+        wav_dir = data_root / str(_CFG["wav_subdir"])
         wav_dir.mkdir(parents=True, exist_ok=True)
 
         ffmpeg = shutil.which("ffmpeg")

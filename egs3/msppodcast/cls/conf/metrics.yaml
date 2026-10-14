@@ -16,7 +16,7 @@
 # passing it would make `resolve_classes` reject any reference label outside
 # the 8 classes. mAP/AUC are dropped entirely: they require `token_list` and
 # raise the same way with no fallback.
-data_dir: ${oc.env:MSPPODCAST_FULL8_OUTPUT,./data}
+data_dir: ${oc.env:MSPPODCAST_OUTPUT,./data}
 
 metrics:
   - metric:

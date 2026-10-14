@@ -1,4 +1,4 @@
-"""MSP-Podcast (full 8-class) dataset implementation backed by TSV manifests.
+"""MSP-Podcast dataset implementation backed by TSV manifests.
 
 ``train``/``valid`` are this recipe's own MSP-Podcast manifests. The 5
 out-of-domain test splits (``emovdb``, ``iemocap``, ``tess``, ``savee``,
@@ -29,8 +29,8 @@ import numpy as np
 import soundfile as sf
 from torch.utils.data import Dataset as TorchDataset
 
-from egs3.msppodcast_full8.cls.dataset.builder import (
-    MSPPodcastFull8Builder,
+from egs3.msppodcast.cls.dataset.builder import (
+    MSPPodcastBuilder,
     resolve_data_root,
 )
 from espnet3.utils.config_utils import load_config_with_defaults
@@ -94,7 +94,7 @@ def _read_manifest(manifest_path: Path) -> list[ManifestEntry]:
     return entries
 
 
-class MSPPodcastFull8Dataset(TorchDataset):
+class MSPPodcastDataset(TorchDataset):
     """MSP-Podcast (Train/Development, 8 classes) dataset.
 
     Args:
@@ -121,7 +121,7 @@ class MSPPodcastFull8Dataset(TorchDataset):
             )
             self.data_dir = resolve_data_root(recipe_root)
 
-            builder = MSPPodcastFull8Builder()
+            builder = MSPPodcastBuilder()
             if not builder.is_source_prepared(recipe_dir=recipe_root):
                 builder.prepare_source(recipe_dir=recipe_root)
             if not builder.is_built(recipe_dir=recipe_root):

@@ -30,7 +30,9 @@ builder:
   # None of these corpora is trained on. Each entry becomes one test set
   # keyed by `name`, built from the listed source splits merged together.
   # The first five are used in full; MSP-Podcast contributes its
-  # Development set and its two test sets separately.
+  # Development set and its two test sets separately. No evaluation
+  # utterance is dropped for its label, so labels the model cannot predict
+  # are still inferred; what is scored is decided when results are measured.
   eval_sets:
     - name: emovdb
       data_src: emovdb/cls
@@ -59,7 +61,8 @@ builder:
 
   # Every label a training corpus carries is kept as its own class. The
   # `anger`/`joy`/`sadness`/`surprised`/`disgusted` entries are spelling
-  # fixes, not category merges. A label absent from this map is dropped.
+  # fixes, not category merges. In the training pool a label absent from this
+  # map is dropped; an evaluation label absent from it is kept as it is.
   label_map:
     angry: angry
     anger: angry
