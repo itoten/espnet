@@ -1,0 +1,44 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `dataset.csv` (filename, emotion, speaker_id, split, ...) and
+  # `clips/<name>.wav`.
+  source_env_var: UA_SER
+  dataset_path: download
+  metadata_file: dataset.csv
+  recordings_dir: clips
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset OlhaHavryliuk/UA-SER (CC BY 4.0), pinned to one
+  # commit. Hugging Face lists each wav's size and SHA-256, which are checked
+  # per file; `dataset.csv` is checked against its git blob id.
+  repo_id: OlhaHavryliuk/UA-SER
+  revision: c3fc0b0ef8d40f133d7a74e804ab6f376ef53aa9
+  metadata_oid: 9d0acce315f86c2c50c38248a14b13bd45961661
+  expected_files: 952
+  num_workers: 8
+
+  # Split -----------------------------------------------------------------
+  # `dataset.csv` marks every clip train or test, and no speaker is in both.
+  # The labels are used as published (angry, happy, neutral, sad). A valid
+  # split is cut from train by whole speakers.
+  valid_speaker_ratio: 0.1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the clips to 16 kHz mono when they are not already.
+  output_env_var: UA_SER_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
