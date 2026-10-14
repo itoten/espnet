@@ -15,11 +15,9 @@
 ##########################################################
 task:
 
-# This recipe's own manifests/token_list/class_weights; the WAV files live in
-# `egs3/msppodcast/cls`'s `$MSPPODCAST_OUTPUT/wav`, shared rather than
-# duplicated (see `dataset/config.yaml`).
-data_dir: ${oc.env:MSPPODCAST_FULL8_OUTPUT,./data}
-exp_tag: train_cls_msppodcast_full8
+# Manifests, token_list, class_weights and the converted WAV files.
+data_dir: ${oc.env:MSPPODCAST_OUTPUT,./data}
+exp_tag: train_cls_msppodcast
 
 ##########################################################
 #              LONG/SHORT FILTERING SETTING              #
@@ -149,8 +147,8 @@ dataloader:
 # is far larger than the other corpora here, so a held-out slice of it
 # (Development) is a reasonable proxy for its own held-out data. `max_epochs`
 # is a ceiling; `EarlyStopping` is expected to end training well before it,
-# matching the previous MSP-Podcast model, which stopped at epoch 12 (best at
-# epoch 7) -- see `egs3/msppodcast/cls/exp/train_cls_msppodcast/`.
+# matching the earlier MSP-Podcast model, which stopped at epoch 12 (best at
+# epoch 7).
 trainer:
   devices: ${num_device}
   num_nodes: ${num_nodes}

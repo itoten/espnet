@@ -9,15 +9,19 @@ else stays the same.
 |---|---|---:|
 | Training (every split of each corpus) | CREMA-D, EMNS, EmoDB, Emozionalmente, eNTERFACE'05, JL-Corpus, MELD, Quechua Collao, SUBESCO, Thorsten | 55,524 (55,086 after the 0.5–30 s filter) |
 | Evaluation (every split of each corpus) | EmoV-DB, IEMOCAP, TESS, SAVEE, RAVDESS | 17,184 |
-| Evaluation | MSP-Podcast Test1 / Test2 | 35,728 / 11,363 |
+| Evaluation | MSP-Podcast Test1 / Test2 | 36,768 / 11,667 |
 
-Each corpus is read through its own `egs3/<corpus>/emotion` recipe, from the
+Each corpus is read through its own `egs3/<corpus>/cls` recipe, from the
 unfiltered `manifest/` that recipe writes. Utterance counts are those
-manifests' row counts. The MSP-Podcast recipe's manifests carry seven labels:
-angry, disgust, fear, happy, neutral, sad and surprise.
+manifests' row counts. MSP-Podcast is read through `egs3/msppodcast/cls`,
+whose manifests carry eight labels: angry, contempt, disgust, fear, happy,
+neutral, sad and surprise (`O` and `X` are dropped there).
 
 All 20 labels found in the training corpora are kept as classes
-(`dataset/config.yaml`'s `label_map`). Every evaluation label is one of them.
+(`dataset/config.yaml`'s `label_map`). Evaluation sets are never filtered by
+label: an evaluation label the model has no class for, such as contempt
+(Test1 1,040, Test2 304), stays in the manifests and is inferred like the
+rest. `label_map` only unifies spellings there.
 
 ## Encoders
 

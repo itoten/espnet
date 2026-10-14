@@ -141,15 +141,19 @@ def load_raw_rows(data_src: str, split: str) -> list[tuple[str, str, str]]:
     return rows
 
 
-def merge_rows(sources: Sequence[CorpusSplits], context: str) -> list[str]:
+def merge_rows(
+    sources: Sequence[CorpusSplits], context: str, keep_unmapped: bool = False
+) -> list[str]:
     """Merge the listed splits of several corpora into manifest lines.
 
-    Labels are mapped through ``label_map``; a row whose label is not a key
-    of it is dropped. Rows are sorted by utterance id.
+    Labels are mapped through ``label_map``. A label that is not a key of it
+    is dropped, or kept unchanged when ``keep_unmapped`` is set. Rows are
+    sorted by utterance id.
 
     Args:
         sources: Corpora and splits to merge.
         context: Output name, used only in log messages.
+        keep_unmapped: Keep rows whose label is not in ``label_map``.
 
     Returns:
         list[str]: Newline-terminated ``utt_id<TAB>wav_path<TAB>label`` lines.
@@ -167,7 +171,7 @@ def merge_rows(sources: Sequence[CorpusSplits], context: str) -> list[str]:
     for source in sources:
         for split in source.splits:
             for utt_id, wav_path, label in load_raw_rows(source.data_src, split):
-                mapped = _LABEL_MAP.get(label)
+                mapped = _LABEL_MAP.get(label, label if keep_unmapped else None)
                 if mapped is None:
                     dropped[(source.name, label)] += 1
                     continue
@@ -235,5 +239,5 @@ class MulticorpusBuilder(DatasetBuilder):
         write_manifest(valid_lines, data_root / str(manifest_paths["valid"]))
 
         for source in build_eval_sources():
-            lines = merge_rows([source], source.name)
+            lines = merge_rows([source], source.name, keep_unmapped=True)
             write_manifest(lines, data_root / "manifest" / f"{source.name}.tsv")
