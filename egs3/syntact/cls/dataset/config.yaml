@@ -1,0 +1,54 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `syntact_cat/` holds `synthesized_audio/de<N>_<emotion>_p<number>.wav`
+  # plus CSV tables: `db.files.csv` (file to voice) and the official
+  # train/test emotion tables. The emotion is the one the synthesizer was asked
+  # to produce (the "desired" tables).
+  source_env_var: SYNTACT
+  dataset_path: download
+  release_dir: syntact_cat
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 6573016, CC BY 4.0. Only the wav and csv files are kept.
+  archive_name: syntact_cat.zip
+  archive_url: https://zenodo.org/api/records/6573016/files/syntact_cat.zip/content
+  archive_md5: e5e3ba24f70edc3193a007047fec5870
+  # Fewer files means an interrupted extraction.
+  expected_files: 6001
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  emotion_map:
+    anger: angry
+    boredom: boredom
+    fear: fear
+    happiness: happy
+    neutral: neutral
+    sadness: sad
+
+  # Split -----------------------------------------------------------------
+  # Official split: voices de1-de4 train, de6/de7 test (disjoint). No valid
+  # set is published, so voice de3 moves from train to valid.
+  tables:
+    train: db.emotion.categories.train.desired.csv
+    test: db.emotion.categories.test.desired.csv
+  valid_speakers: [de3]
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are already 16 kHz mono; `build()` rewrites them in the shared layout.
+  output_env_var: SYNTACT_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
