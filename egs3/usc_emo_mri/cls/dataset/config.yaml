@@ -1,0 +1,54 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `USC-EMO-MRI/<speaker>/avi/<basename>_withaudio.avi` holds the MRI video
+  # and the 20 kHz mono speech. `<speaker>/labels/meta` gives the emotion of
+  # each utterance and `labels/utt_time_stamp` the start/end seconds inside
+  # the AVI. Speakers are f1-f5 and m1-m5.
+  source_env_var: USC_EMO_MRI
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 19325044, CC BY 4.0 (1.49 GB zip). Only the AVI files and
+  # the label files are kept.
+  archive_name: USC-EMO-MRI.zip
+  archive_url: https://zenodo.org/api/records/19325044/files/USC-EMO-MRI.zip/content
+  archive_md5: 65fa5b0cf0337a873227a490d56fdaf3
+  # Fewer AVI files means an interrupted extraction.
+  expected_avi: 356
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # `emotion ID` of `meta`: the final label from the listener evaluation.
+  # ID 5 is not described by the README; those utterances are dropped.
+  emotion_map:
+    "1": neutral
+    "2": angry
+    "3": happy
+    "4": sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole speakers are held out: 2 for test,
+  # 1 for valid and 7 for training.
+  n_test_speakers: 2
+  n_valid_speakers: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The audio is 20 kHz mono; `build()` cuts each utterance out of its AVI
+  # and converts it to 16 kHz.
+  output_env_var: USC_EMO_MRI_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
