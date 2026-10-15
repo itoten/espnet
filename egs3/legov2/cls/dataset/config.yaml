@@ -1,0 +1,67 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `LEGOv2/corpus/csv/interactions.csv` (one row per system-user exchange,
+  # semicolon-separated, Latin-1) and the utterance recordings in
+  # `LEGOv2/audio/<date>/<call>/<n>.wav`.
+  source_env_var: LEGOV2
+  dataset_path: download
+  interactions_csv: LEGOv2/corpus/csv/interactions.csv
+  audio_subdir: LEGOv2/audio
+
+  # Download --------------------------------------------------------------
+  # Direct download from the University of Bamberg (no login). The archive
+  # also holds features, MySQL dumps and 3,000+ calls' worth of files this
+  # recipe does not use; only the csv, the licence and the wav files are
+  # extracted.
+  archive_url: https://data.ds.uni-bamberg.de/LEGO/LEGOv2.zip
+  archive_name: LEGOv2.zip
+  archive_size: 1187741413
+  archive_sha256: 67a41f6daa139df1dd610ef47ffcd1644cdb75ba813fcbb593d231725b26761c
+  extract_members:
+    - LEGOv2/corpus/csv/interactions.csv
+    - LEGOv2/license.txt
+    - LEGOv2/readme.txt
+  remove_archive: true
+  # Labelled utterances present in the archive; fewer means an interrupted
+  # extraction.
+  expected_labelled: 4832
+
+  # Labels ----------------------------------------------------------------
+  # `EmotionalState` of the single annotator, to manifest label.
+  emotion_map:
+    friendly: friendly
+    neutral: neutral
+    slightlyAngry: slightly_angry
+    angry: angry
+    veryAngry: very_angry
+  # Not an emotion of the annotation scheme (the readme lists five states);
+  # presumably unusable audio, but its meaning is not documented.
+  drop_states:
+    - garbage
+
+  # Split -----------------------------------------------------------------
+  # No partition is published and callers are anonymous. Whole calls are kept
+  # in one split (utterances of one call share a speaker), assigned so that
+  # each split's label proportions are close to 70/10/20.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  output_env_var: LEGOV2_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
