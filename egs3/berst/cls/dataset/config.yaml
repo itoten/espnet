@@ -1,0 +1,52 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `berst-data/<train|validation|test>/{metadata.csv,audio/<recording>/final/<chunk>.wav}`.
+  # The clips are the speech segments cut from the actors' raw recordings.
+  source_env_var: BERST
+  dataset_path: download
+  metadata_name: metadata.csv
+  split_dirs:
+    train: berst-data/train
+    valid: berst-data/validation
+    test: berst-data/test
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset Rosie-Lab/BERSt (CC BY 4.0, no login), pinned
+  # commit. The 4,523 clips are 1.27 GB; each is fetched on its own.
+  base_url: https://huggingface.co/datasets/Rosie-Lab/BERSt/resolve/fed35c477427cff44206464b7f85e68d1fc99062
+  download_workers: 8
+  download_retries: 5
+
+  # Labels ----------------------------------------------------------------
+  # The `affect` column (the emotion the actor was asked to portray) to
+  # manifest label.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    fear: fear
+    joy: happy
+    neutral: neutral
+    sadness: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # The published train/validation/test split is used as is. According to the
+  # dataset card there is no speaker overlap between the splits.
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts the clips to 16 kHz mono.
+  output_env_var: BERST_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
