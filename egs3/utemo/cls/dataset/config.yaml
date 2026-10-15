@@ -1,0 +1,53 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Utemo/<Emotion>_Actor<n>_P<m>_F<l>.avi`: emotion, actor (1-14), repetition
+  # (1-3) and phrase. The audio lives inside the videos.
+  source_env_var: UTEMO
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data x5rmd28h73 (v1), CC BY-NC 3.0; the public file link needs no
+  # login. 2.5 GB zip. Only the AVI files are kept.
+  archive_url: https://data.mendeley.com/public-files/datasets/x5rmd28h73/files/e12e699f-366a-423e-8692-19ff3bb18e79/file_downloaded
+  archive_name: Utemo.zip
+  archive_sha256: 605dfe5a4bfdc2ed122283cc60dee0f96593fe8846365e37ee077daf54e02809
+  # Fewer files means an interrupted extraction.
+  expected_files: 1801
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The emotion word in the file name to manifest label.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    fear: fear
+    happiness: happy
+    neutral: neutral
+    sadness: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole actors are held out (14 actors): 3 for
+  # test, 2 for valid, the rest for training.
+  n_test_actors: 3
+  n_valid_actors: 2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The videos carry 48 kHz mono PCM; `build()` extracts 16 kHz mono WAV.
+  output_env_var: UTEMO_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
