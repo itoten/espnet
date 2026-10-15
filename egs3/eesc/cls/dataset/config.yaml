@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # Flat directory of `<id>.wav` (44.1 kHz mono) and `<id>.TextGrid`; the
+  # emotion is the one-interval `emotion` tier at the end of each TextGrid.
+  source_env_var: EESC
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # figshare 10.6084/m9.figshare.25249744, CC BY 4.0 (277 MB zip).
+  archive_url: https://ndownloader.figshare.com/files/44609146
+  archive_name: ekorpus.zip
+  archive_md5: 5896dc72c864103fab86b2acfcee6b2c
+  # Fewer files means an interrupted extraction.
+  expected_files: 1164
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # TextGrid emotion to manifest label (`joy` is written `happy`, as in the
+  # other recipes).
+  emotion_map:
+    anger: angry
+    joy: happy
+    neutral: neutral
+    sadness: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published and there is a single speaker. Utterances are
+  # split at random within each label.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz mono; `build()` converts them to 16 kHz.
+  output_env_var: EESC_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
