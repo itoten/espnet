@@ -1,0 +1,57 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `EMOdb/<speaker> Zmogus/<speaker> <Emotion>/<speaker> <Emotion>_<phrase>.wav`
+  # (10 speakers, the emotion is the Lithuanian folder name without diacritics).
+  source_env_var: LITHUANIAN_EMOTION_DB
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # GitHub archive of the corpus repository at a pinned commit; the repository
+  # states no licence. A source archive has no fixed checksum, so completeness
+  # is checked by counting the recordings.
+  archive_url: https://codeload.github.com/BPTI-LT/Emociju-duomenu-baze/tar.gz/526844b91b21c65ea7f73e35ff4faa464cbfb3e6
+  archive_name: Emociju-duomenu-baze.tar.gz
+  archive_member_prefix: EMOdb/
+  # Fewer files means an interrupted extraction.
+  expected_files: 1453
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The emotion in the file name to manifest label.
+  emotion_map:
+    Baime: fear
+    Pyktis: angry
+    Dziaugsmas: happy
+    Nuostaba: surprise
+    Pasislykstejimas: disgust
+    Liudesys: sad
+    Neutrali: neutral
+  # `Ilgesys` (longing) is not among the seven emotions the corpus describes;
+  # it has 9 recordings, all from speaker 5.
+  drop_emotions:
+    - Ilgesys
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole speakers are held out: 2 for test, 1 for
+  # valid, the other 7 for training.
+  n_test_speakers: 2
+  n_valid_speakers: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  output_env_var: LITHUANIAN_EMOTION_DB_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
