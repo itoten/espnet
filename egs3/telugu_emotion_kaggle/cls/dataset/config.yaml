@@ -1,0 +1,48 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `telugu/<emotion>/S45_SRI_C01_G1_D02_SPKF23_V1_SA5_MMM.wav`; the speaker is
+  # the `SPK[MF]<nn>` field. Two files are empty (0 bytes) and are skipped.
+  source_env_var: TELUGU_EMOTION_KAGGLE
+  dataset_path: download
+
+  # Source ----------------------------------------------------------------
+  # Manual download from Kaggle (free account). No download is attempted here.
+  kaggle_url: https://www.kaggle.com/datasets/jettysowmith/telugu-emotion-speech
+  # Fewer files means an incomplete extraction.
+  expected_files: 456
+
+  # Labels ----------------------------------------------------------------
+  # Folder name (misspellings as published) to manifest label.
+  emotion_map:
+    angry: angry
+    happy: happy
+    nuetral: neutral
+    sad: sad
+    suprised: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. The 20 speakers are held out as whole speakers:
+  # 4 for test, 2 for valid.
+  n_test_groups: 4
+  n_valid_groups: 2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz stereo (nine are 48 kHz); `build()` converts them
+  # to 16 kHz mono.
+  output_env_var: TELUGU_EMOTION_KAGGLE_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
