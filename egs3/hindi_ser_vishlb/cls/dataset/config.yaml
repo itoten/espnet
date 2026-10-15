@@ -1,0 +1,54 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `my Dataset/<speaker 1-8>/session<1-5>/<emotion>/<speaker>.<session>.
+  # <emotion>-<sentence 01-10>.wav`. Speaker, session and label are taken from
+  # the folders, because some file names have typos.
+  source_env_var: HINDI_SER_VISHLB
+  dataset_path: download
+
+  # Source ----------------------------------------------------------------
+  # Manual download from Kaggle (free account; the licence field reads
+  # "Database: Open Database, Contents: (c) Original Authors"). The zip is about
+  # 0.3 GB.
+  kaggle_url: https://www.kaggle.com/datasets/vishlb/speech-emotion-recognition-hindi
+  # Fewer files means an incomplete extraction.
+  expected_files: 3200
+
+  # Labels ----------------------------------------------------------------
+  # The emotion folder name to manifest label. Two files carry a typo in the
+  # file name only (`dusgust`, `happpy`); the folder is correct.
+  emotion_map:
+    anger: angry
+    disgust: disgust
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    sarcastic: sarcastic
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. The 8 speakers read the same 10 sentences, so
+  # whole speakers are held out: 2 for test, 1 for valid, 5 for training.
+  n_test_groups: 2
+  n_valid_groups: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every recording to 16 kHz mono.
+  output_env_var: HINDI_SER_VISHLB_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
