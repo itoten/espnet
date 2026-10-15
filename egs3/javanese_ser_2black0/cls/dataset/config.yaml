@@ -1,0 +1,60 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<actor>-<sentence>-<emotion>_<repetition>.wav`, 10 actors x 4 sentences x
+  # 6 emotions x 7 repetitions; some archives wrap the files in a folder.
+  source_env_var: JAVANESE_SER_2BLACK0
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # One zip per actor from the author's GitHub repository (MIT licence),
+  # pinned to a commit. Values are SHA-256 digests.
+  base_url: https://raw.githubusercontent.com/2black0/Sound-Emotion-Recognition-Javanese-Speech-Dataset/607ddd0836d225a6bbd6e15f7b7af787f3529db8/dataset
+  archives:
+    dataset-person-01.zip: 93a597d4f37604c3cd6d8ce6a6c1546d3fe96172ec29210e79633748a457a8eb
+    dataset-person-02.zip: 09471782feececb3cdddcba88855ca757f20fffe8179ca4bdc12a642f62cc741
+    dataset-person-03.zip: cc88af8ef2089cf941e8dd8ab4adaf0a8c76e82d2ead1f8a9acac2d0d8bed3f9
+    dataset-person-04.zip: 08ea011873e75236434e7887e546a8a5c3485123eae1cd05a58f993f201629f2
+    dataset-person-05.zip: 8768476be803f34b25fe2133b14d2dfb1248a5697954cd4ce02baa00d4b34a1c
+    dataset-person-06.zip: 595c03da750e6466d0a9b95941a73a4a65da921243ddc9760038bcad5a4815ed
+    dataset-person-07.zip: d3cbdd0a2bac6416628a7631f20a3f51acdc044c402d4946c32cad384482ff72
+    dataset-person-08.zip: e05f9bc7452d4f61d0c4e5e5994e05507589e3102ead18254b6b226e07e0a175
+    dataset-person-09.zip: 17d024518e5e26855fddc76cb226f92ce1236a642f1145e6264d51dc3eb7fa91
+    dataset-person-10.zip: d9b21905fec8ad2aef973ce61a8f88a38861c102c852482681992a71308f2233
+  # Fewer files means an interrupted extraction.
+  expected_files: 1680
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The emotion code in the file name to manifest label.
+  emotion_map:
+    "01": neutral
+    "02": sad
+    "03": happy
+    "04": surprise
+    "05": fear
+    "06": angry
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole actors are held out: 2 for test, 1 for
+  # valid, 7 for training. The 4 sentences are shared by all actors.
+  n_test_speakers: 2
+  n_valid_speakers: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  output_env_var: JAVANESE_SER_2BLACK0_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
