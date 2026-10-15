@@ -1,0 +1,61 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Actor_<n><Dialect>/<prefix><sample>-<emotion>-<dialect>-<actor>.wav`, e.g.
+  # `Actor_3Baleswari/a58-01-02-07.wav`. One file (`sr102-06-10.wav`) has no
+  # dialect field.
+  source_env_var: SITB_OSED
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 16210020, CC BY 4.0 (4.9 GB zip of 12,110 wav files).
+  archive_name: SITB-OSED.zip
+  archive_url: https://zenodo.org/api/records/16210020/files/SITB-OSED.zip/content
+  archive_md5: 0b32441a9348b908a6c3ebfabb4876d7
+  # Fewer files means an interrupted extraction.
+  expected_files: 12110
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The emotion code (second field of the file name) to manifest label.
+  emotion_map:
+    "01": angry
+    "02": disgust
+    "03": fear
+    "04": happy
+    "05": sad
+    "06": surprise
+  # The sample prefix must agree with the emotion code (a = angry, d = disgust,
+  # f = fear, h = happy, s = sad, sr = surprised).
+  prefix_to_code:
+    a: "01"
+    d: "02"
+    f: "03"
+    h: "04"
+    s: "05"
+    sr: "06"
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. The 20 actors are held out by speaker: 4 for
+  # test, 2 for valid and 14 for training.
+  n_test_speakers: 4
+  n_valid_speakers: 2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 22.05 kHz stereo; `build()` converts them to 16 kHz mono.
+  output_env_var: SITB_OSED_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
