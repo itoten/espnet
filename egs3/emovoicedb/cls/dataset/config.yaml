@@ -1,0 +1,62 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `train.jsonl`, `val.jsonl`, `test.jsonl` plus `<emotion>/<key>.wav`
+  # (24 kHz mono wav).
+  source_env_var: EMOVOICEDB
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset `yhaha/EmoVoice-DB` (MIT), pinned to a commit. Values
+  # are SHA-256 digests. `audio/<emotion>.zip` holds the `<emotion>/` folders.
+  base_url: https://huggingface.co/datasets/yhaha/EmoVoice-DB/resolve/e0e61055fc5c2b52bc20d8b45f8ce3037228a61d
+  files:
+    train.jsonl: bc5e4693de75c18762471b091981b765c8f6f26f9a185d63017ac70121374067
+    val.jsonl: 7af64d0964f77f452633579d3b818b3841772a5ac63c89aca0afafee5f8e291c
+    test.jsonl: 40631e69d6d5e1d6d98834a51939b74ea7629d57bec75c9bfb69d3211f47fa24
+    audio/angry.zip: cc930836cb197375fed9f0b502cfc95d8c82c53b4095cbd8b195456fc901dab6
+    audio/disgusted.zip: 23fea449a91925009a5f8e6fb4e9289d6572de920dd230a9e64147056054f71f
+    audio/fearful.zip: e8a669ab40c9af053f186865544d82dd6ed66ba7fdc00a38b7e1fad65e402618
+    audio/happy.zip: 2f9a33d38d124930f8b8c44e4826bccee0f6a5d114420aa83f8034334d41c0fa
+    audio/neutral.zip: bfbdd24a00b601a5a3fbffabb1cf7bb472aebab5df0b3d0e166195fcef72c746
+    audio/sad.zip: 8c332270ffba62d321d91ca7b727890459dcb72d7aed2380edaf544b4ccbfd88
+    audio/surprised.zip: 03854fb6abc1d690dd5a2988e5e674daa45cc4a2a8cd14f7b512198af7b35c1c
+  # Fewer recordings means an interrupted extraction.
+  expected_files: 22100
+  remove_archive: true
+
+  # Official lists: train.jsonl repeats each recording three times (one row per
+  # paraphrased emotion description), so rows are de-duplicated by key.
+  splits:
+    train: train.jsonl
+    valid: val.jsonl
+    test: test.jsonl
+
+  # Labels ----------------------------------------------------------------
+  # The `emotion` field of the lists to manifest label.
+  emotion_map:
+    angry: angry
+    disgusted: disgust
+    fearful: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprised: surprise
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  output_env_var: EMOVOICEDB_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  convert_workers: 8
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
