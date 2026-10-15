@@ -62,3 +62,35 @@ def test_balanced_classes_all_weigh_one(tmp_path: Path):
     labels = ["a", "b", "c", "<unk>"]
 
     assert _weights(tmp_path, counter, labels) == pytest.approx([1.0, 1.0, 1.0])
+
+
+def _collect_stats_with(monkeypatch, model_cfg):
+    from omegaconf import OmegaConf
+
+    seen = {}
+    monkeypatch.setattr(
+        "espnet3.systems.base.system.collect_stats",
+        lambda cfg: seen.setdefault("model", OmegaConf.to_container(cfg.model)),
+    )
+    cfg = OmegaConf.create(
+        {"exp_dir": "exp", "stats_dir": "stats", "model": model_cfg}
+    )
+    system = ClsSystem(training_config=cfg)
+    system.collect_stats()
+    return cfg, seen["model"]
+
+
+def test_collect_stats_drops_frontend_normalize(monkeypatch):
+    """The normalizer needs the stats this stage creates, so it is removed."""
+    model = {"frontend": {"_target_": "x", "normalize": {"stats_file": "a.npz"}}}
+
+    cfg, seen = _collect_stats_with(monkeypatch, model)
+
+    assert "normalize" not in seen["frontend"]
+    assert "normalize" in cfg.model.frontend
+
+
+def test_collect_stats_without_normalize_is_untouched(monkeypatch):
+    for model in ({"frontend": {"_target_": "x"}}, {"_target_": "y"}):
+        _, seen = _collect_stats_with(monkeypatch, model)
+        assert seen == model

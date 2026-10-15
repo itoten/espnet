@@ -8,7 +8,7 @@ import logging
 from collections import Counter
 from pathlib import Path
 
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
 from espnet3.parallel.parallel import set_parallel
 from espnet3.systems.base.system import BaseSystem
@@ -71,6 +71,25 @@ class ClsSystem(BaseSystem):
             },
             demo_config=demo_config,
         )
+
+    def collect_stats(self, *args, **kwargs):
+        """Collect statistics without the waveform normalizer.
+
+        ``model.frontend.normalize`` loads ``feats_stats.npz``, which this
+        stage is about to create. It is dropped from a copy of the config, so
+        the later stages still see it.
+        """
+        config = self.training_config
+        frontend = OmegaConf.select(config, "model.frontend")
+        if frontend is None or "normalize" not in frontend:
+            return super().collect_stats(*args, **kwargs)
+
+        self.training_config = config.copy()
+        self.training_config.model.frontend.pop("normalize")
+        try:
+            return super().collect_stats(*args, **kwargs)
+        finally:
+            self.training_config = config
 
     def remove_long_short(self, *args, **kwargs):
         """Remove utterances outside the configured duration range.
