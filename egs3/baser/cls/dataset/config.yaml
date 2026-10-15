@@ -1,0 +1,49 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `BASER_DATASET/<F|M>_<n>_<NAME>_S_<sentence>_<EMOTION>_<take>.wav`, e.g.
+  # `M_4_RIAD_S_2_ANGRY_3.wav`: speaker (sex, number, name), sentence number,
+  # emotion, take number (a few names lack the take or have an odd one).
+  source_env_var: BASER
+  dataset_path: download
+  audio_subdir: BASER_DATASET
+
+  # Download --------------------------------------------------------------
+  # Kaggle needs a login, so the recipe does not download. Fetch the zip by
+  # hand and extract it so that `BASER_DATASET/` lies inside `$BASER`.
+  request_url: https://www.kaggle.com/datasets/jabedcse/baser-dataset
+  # Fewer files means an interrupted extraction.
+  expected_files: 750
+
+  # Labels ----------------------------------------------------------------
+  # The emotion in the file name to manifest label.
+  emotion_map:
+    ANGRY: angry
+    FEAR: fear
+    HAPPY: happy
+    NEUTRAL: neutral
+    SAD: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole speakers are held out: the test split
+  # takes one female and one male speaker, the valid split one more speaker,
+  # all drawn with `split_seed`; the other seven speakers train.
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz mono; `build()` converts them to 16 kHz.
+  output_env_var: BASER_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
