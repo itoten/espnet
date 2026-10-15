@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `CASIA/6/<emotion>/<sentence>-<emotion>-<speaker>.wav` (the 1,200-utterance,
+  # six-emotion, four-speaker subset).
+  source_env_var: CASIA
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Unofficial Hugging Face mirror (pinned commit); no official download page
+  # was found. `license: other` on the mirror, no terms stated.
+  archive_url: https://huggingface.co/datasets/Bill13579/casia-mirror/resolve/a6699530434a32a5ce8f49e037016ba58e934abd/CASIA.zip
+  archive_name: CASIA.zip
+  archive_sha256: af186e90e8216f9b5131f8a24bd0f2e75a777a99f4d627d38bdab90bb1ce38e7
+  # Fewer files means an interrupted extraction.
+  expected_files: 1200
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The emotion in the file name to manifest label.
+  emotion_map:
+    angry: angry
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. With four speakers, one is held out for test and
+  # one for valid, which leaves two for training.
+  n_test_speakers: 1
+  n_valid_speakers: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  output_env_var: CASIA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
