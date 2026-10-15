@@ -1,0 +1,70 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<source>/default/<train|dev|test>/NNNN.parquet`, each row holding the
+  # audio bytes and its metadata.
+  source_env_var: NONVERBALTTS
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset deepvk/NonverbalTTS at a pinned commit (open, no
+  # login; about 3.1 GB for the files below). The published `other` split is
+  # not used.
+  base_url: https://huggingface.co/datasets/deepvk/NonverbalTTS/resolve/947139b9003316e1d369ae2012a3bded83fd7128
+  files:
+    - path: default/train/0000.parquet
+      sha256: bfbc52e30217751b41cc07140ce55fdda64f2ff3638969153f9c674c012f0106
+    - path: default/train/0001.parquet
+      sha256: 6dc132a76c4feeedd1bbd13a2c0c0c936718bc77d578814e645b8575dc5843da
+    - path: default/train/0002.parquet
+      sha256: 7b4751db101a1bd410bd82bd9fd5c8eec7adc706f5ed0a357da77b31d1b329ec
+    - path: default/train/0003.parquet
+      sha256: 9df6eea450b9e7a84721b68d407fd2723634a027069b90d2612da72054cfd079
+    - path: default/train/0004.parquet
+      sha256: 0b2392b635e8d490de7510bb5d38fe215ccfcbb8493d4d2085a2d765fa3344f8
+    - path: default/train/0005.parquet
+      sha256: f14bb1bf9928edadff4339c10adef67d0f1629e7db84c76946936b84d6626a37
+    - path: default/dev/0000.parquet
+      sha256: 4415d09190bf3e82211a7f5542b5251a4982ef81c78130ce9fe4d881e4f6f449
+    - path: default/test/0000.parquet
+      sha256: 59f2949915563aa67e2babac20819b041cde7b398aec6beed652fb3278d6ec54
+
+  # Labels ----------------------------------------------------------------
+  # `Emotion` column to manifest label. Rows tagged `other` or with no tag
+  # are not emotion classes and are dropped.
+  emotion_map:
+    angry: angry
+    disgusted: disgust
+    fearful: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprised: surprise
+  drop_emotions:
+    - other
+
+  # Split -----------------------------------------------------------------
+  # The published speaker-disjoint split is used; `dev` becomes `valid`.
+  split_map:
+    train: train
+    dev: valid
+    test: test
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # VoxCeleb clips are 16 kHz and Expresso clips 48 kHz; `build()` converts
+  # everything to 16 kHz mono.
+  output_env_var: NONVERBALTTS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
