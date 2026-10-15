@@ -1,0 +1,57 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Entire Marathi Dataset Corpus/<series> <number>[ name]-<Emotion>-<take>.wav`,
+  # one sentence per file. The emotion is the word in the file name.
+  source_env_var: MASERC
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data 10.17632/b9jrrpdxgb.1, CC BY 4.0 (285 MB zip, no login).
+  archive_url: https://data.mendeley.com/public-files/datasets/b9jrrpdxgb/files/6d735e4b-cec4-42cc-a465-e4c80e87b401/file_downloaded
+  archive_name: maserc.zip
+  archive_sha256: 48cbb1cf540078de76685c5e3ea7e4cad43d1f9181727ef7dfcfe7d99a10e264
+  # Fewer files means an interrupted extraction.
+  expected_files: 808
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The (lower-cased) emotion word in the file name to manifest label. The
+  # three `surprise` misspellings occur once each in the release.
+  emotion_map:
+    angry: angry
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprise: surprise
+    suprise: surprise
+    surpsise: surprise
+    surprsie: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition or speaker table is in the archive. Files are grouped by the
+  # session (series and number) in the name and whole sessions are split at
+  # random; a session is probably one speaker, but this is not documented.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz stereo; `build()` converts them to 16 kHz mono.
+  output_env_var: MASERC_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
