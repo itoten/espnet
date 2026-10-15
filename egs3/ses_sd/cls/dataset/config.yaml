@@ -1,0 +1,47 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `SES-SD/<speaker 1-53>_<sentence>_<emotion>_SPA.wav` (e.g. `10_DFA_ANG_SPA.wav`).
+  source_env_var: SES_SD
+  dataset_path: download
+
+  # Source ----------------------------------------------------------------
+  # Manual download from Kaggle (free account). No download is attempted here.
+  kaggle_url: https://www.kaggle.com/datasets/angeluxarmenta/ses-sd
+  # Fewer files means an incomplete extraction.
+  expected_files: 1588
+
+  # Labels ----------------------------------------------------------------
+  # The emotion code in the file name to manifest label.
+  emotion_map:
+    ANG: angry
+    DIS: disgust
+    FEA: fear
+    HAP: happy
+    NEU: neutral
+    SAD: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Each of the 53 speakers read the same 5 sentences
+  # in 6 emotions, so whole speakers are held out: 11 for test, 5 for valid.
+  n_test_groups: 11
+  n_valid_groups: 5
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz mono; `build()` converts them to 16 kHz.
+  output_env_var: SES_SD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
