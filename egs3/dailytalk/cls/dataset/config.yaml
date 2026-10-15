@@ -1,0 +1,57 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<root>/metadata.json` holds the per-utterance emotion; the recordings are
+  # `<root>/data/<dialog>/<utterance>_<speaker>_d<dialog>.wav`.
+  source_env_var: DAILYTALK
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Public Google Drive file linked from github.com/keonlee9420/DailyTalk,
+  # CC BY-SA 4.0 (5.3 GB zip, 23,773 wav files). Only the wav files and
+  # metadata.json are kept.
+  archive_name: dailytalk.zip
+  archive_url: https://drive.usercontent.google.com/download?id=1nPrfJn3TcIVPc0Uf5tiAXUYLJceb_5k-&export=download&confirm=t
+  archive_md5: e5dc6d792b7cf36da09fb12eeed58ad1
+  # Fewer files means an interrupted extraction.
+  expected_files: 23773
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The `emotion` field of metadata.json to manifest label. The label comes
+  # from the text dialogue (DailyDialog) that the actors performed.
+  emotion_map:
+    no emotion: neutral
+    happiness: happy
+    sadness: sad
+    anger: angry
+    fear: fear
+    disgust: disgust
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published and both speakers appear in every dialogue, so
+  # whole dialogues are assigned at random to 70/10/20.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz (mostly mono); `build()` converts them to
+  # 16 kHz mono.
+  output_env_var: DAILYTALK_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
