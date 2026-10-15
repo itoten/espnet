@@ -1,0 +1,48 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Indian Emotional Speech Corpora (IESC)/Speaker-<n>/<Emotion>/<E>-<take>-<n>-<sentence>.wav`
+  source_env_var: IESC
+  dataset_path: download
+  audio_glob: "**/Speaker-*/*/*.wav"
+
+  # Download --------------------------------------------------------------
+  # Kaggle needs a login, so the recipe does not download. Fetch the zip by
+  # hand and extract it.
+  request_url: https://www.kaggle.com/datasets/ybsingh/indian-emotional-speech-corpora-iesc
+  expected_files: 600
+
+  # Labels ----------------------------------------------------------------
+  # The emotion directory name to manifest label.
+  emotion_map:
+    Anger: angry
+    Fear: fear
+    Happy: happy
+    Neutral: neutral
+    Sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole speakers are held out: two for test, one
+  # for valid, five for train.
+  n_test_speakers: 2
+  n_valid_speakers: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings come in several formats (16-48 kHz, mono or stereo);
+  # `build()` converts them to 16 kHz mono.
+  output_env_var: IESC_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
