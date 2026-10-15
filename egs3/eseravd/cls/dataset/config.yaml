@@ -1,0 +1,52 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The Kaggle zip holds three releases. Only `E-SERAVD 1.2` is used: its
+  # `.../02_Audio-Only/<NN_Emotion>/<film>/NN-NN-<film>-T-<clip>.wav` has 3,000
+  # clips, 500 per emotion.
+  source_env_var: ESERAVD
+  dataset_path: download
+  release_dir: E-SERAVD 1.2
+
+  # Source ----------------------------------------------------------------
+  # Manual download from Kaggle (free account, CC BY 4.0). The zip is 6.4 GB
+  # because it also holds the mp4 video; extracting the .wav files is enough.
+  kaggle_url: https://www.kaggle.com/datasets/ahmadnafibudianto/e-seravd-speech-emotion-recognition-av-dataset
+  # Fewer files means an incomplete extraction.
+  expected_files: 3000
+
+  # Labels ----------------------------------------------------------------
+  # The emotion code (second number of the file name, also the folder prefix).
+  emotion_map:
+    "01": angry
+    "02": sad
+    "03": neutral
+    "04": happy
+    "05": disgust
+    "06": fear
+
+  # Split -----------------------------------------------------------------
+  # No partition or speaker id is published. The clips come from 11 films, so
+  # whole films are held out (3 for test, 1 for valid, 7 for training) as the
+  # closest available stand-in for speaker independence.
+  n_test_groups: 3
+  n_valid_groups: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every recording to 16 kHz mono.
+  output_env_var: ESERAVD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
