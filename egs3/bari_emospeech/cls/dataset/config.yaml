@@ -1,0 +1,51 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `BarishalAudio/<Class>/<n>.m4a`; the directory is the emotion. Other
+  # files in the same directories (voice notes, a ringtone, music) are skipped.
+  source_env_var: BARI_EMOSPEECH
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Mendeley Data dataset hpfv67fgb8 (version 1), CC BY 4.0, 105 MB.
+  archive_url: https://data.mendeley.com/public-files/datasets/hpfv67fgb8/files/6c5f5374-32ab-4c31-98be-059cd60ee199/file_downloaded
+  archive_name: BARI-EmoSpeech.zip
+  archive_sha256: 2e45138202de69e950dc0fe641dbc90415f9ab342a7264df79a742015a16e36e
+  # Fewer files means an interrupted extraction.
+  expected_files: 2303
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The directory name to manifest label.
+  emotion_map:
+    Affection: affection
+    Happiness: happy
+    Jealousy: jealousy
+    Normal: neutral
+    Sadness: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Utterances are split at random within each
+  # label; the corpus carries no speaker information.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are AAC at 44.1 or 48 kHz; `build()` converts them to 16 kHz mono.
+  output_env_var: BARI_EMOSPEECH_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
