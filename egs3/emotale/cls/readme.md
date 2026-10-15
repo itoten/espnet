@@ -1,0 +1,75 @@
+# EmoTale speech emotion recognition (single-corpus baseline)
+
+Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
+head) on EmoTale alone and scores it on EmoTale's own test split, classifying each
+utterance into one of five emotions.
+
+[EmoTale](https://github.com/snehadas/EmoTale) is an enacted corpus in Danish and
+English recorded at DTU with wireless microphones in a quiet room. 18 speakers (12
+women, 6 men, aged 9 to 39) read five emotionally neutral sentences in five
+emotions: `angry`, `boredom`, `happy`, `neutral` and `sad`. 14 of the speakers also
+recorded the English sentences, so there are 450 Danish and 350 English files,
+800 in total, 160 per emotion. Clips are 1.07 to 7.44 seconds long, 0.617 hours in
+total, and are 48 kHz stereo; `create_dataset` converts them to 16 kHz mono with
+ffmpeg.
+
+The label is the enacted emotion, taken from the file name
+`<DK|EN>_<speaker>_<code>_<sentence>.wav` (`A`, `B`, `H`, `N`, `S`), which equals the
+`gt_emotion` column of `annotations.csv` for every file; `dataset/config.yaml` maps
+the codes to labels. The repository also holds listener annotations (categorical
+emotion, arousal, valence and dominance), `speaker_info.csv` and the datasheet, which
+this recipe does not use.
+
+Two environment variables control where the data lives. Both are optional and
+default to `download/` and `data/` under the recipe.
+
+- `EMOTALE` — the directory holding `wav/` and `annotations.csv`, or where to download them to
+- `EMOTALE_OUTPUT` — where the converted audio and manifests are written
+
+## Download
+
+`prepare_source` downloads the 800 wav files (409 MB) and the two tables from the
+public GitHub repository, pinned to commit `41e7d00f`; no login is needed. Measured on
+one run: about 42 seconds to download; `create_dataset`, `remove_long_short` and
+`prepare_labels` together took about 75 seconds.
+
+## Splits
+
+The release publishes no partition. Whole speakers are held out (`split_seed` in
+`dataset/config.yaml`). The speaker id is shared by a speaker's Danish and English
+files, which are kept in one split. Of the 18 speakers, 12 are in train (3, 5, 6, 7,
+8, 9, 10, 12, 14, 15, 16, 19), 2 in valid (4, 17) and 4 in test (1, 11, 13, 18). Every
+speaker recorded each emotion equally often, so every split is balanced over the five
+emotions. The test speakers are three women and one man, all adults, and the train
+speakers include the three children (ages 9 to 12).
+
+| split | utterances | after `remove_long_short` |
+|---|---|---|
+| train | 525 | 525 |
+| valid | 100 | 100 |
+| test | 175 | 175 (not filtered) |
+
+## License and citation
+
+The repository states no license. Its datasheet says the data is distributed under a
+copyright with no license and asks users to cite the corresponding paper: Maja J. Hjuler,
+Harald V. Skat-Rørdam, Line H. Clemmensen and Sneha Das, "EmoTale: An Enacted Speech-emotion Dataset in Danish", ASRU 2025
+(https://arxiv.org/abs/2508.14548). Check the terms with the authors before
+redistributing the audio.
+
+## Quick start
+
+Run the three commands separately. With several GPUs, `train` starts one
+process per GPU by re-running its own command, so any other stage listed in the
+same command would run once per GPU as well.
+
+```bash
+python run.py --stages create_dataset remove_long_short prepare_labels \
+    collect_stats --training_config conf/training.yaml
+python run.py --stages train \
+    --training_config conf/training.yaml
+python run.py --stages infer measure \
+    --training_config conf/training.yaml \
+    --inference_config conf/inference.yaml \
+    --metrics_config conf/metrics.yaml
+```
