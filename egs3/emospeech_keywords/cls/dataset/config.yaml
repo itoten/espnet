@@ -1,0 +1,53 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `emospeech-dataset-v1/<location>/<keyword>-<environment>-<emotion>-<stamp>-
+  # <user hash>.wav`; the folder names the place of recording.
+  source_env_var: EMOSPEECH_KEYWORDS
+  dataset_path: download
+
+  # Source ----------------------------------------------------------------
+  # Manual download from Kaggle (free account, CC BY-NC-SA 4.0); the zip is
+  # about 0.5 GB.
+  kaggle_url: https://www.kaggle.com/datasets/ujjwal9/emospeech
+  # Fewer files means an incomplete extraction.
+  expected_files: 7735
+
+  # Labels ----------------------------------------------------------------
+  # The emotion in the file name (lower-cased) to manifest label. `none` marks
+  # clips with no emotion (mostly keyword-free background) and is dropped.
+  emotion_map:
+    angry: angry
+    calm: calm
+    fearful: fear
+    happy: happy
+  drop_codes:
+    - none
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. 5,709 of the 7,735 recordings carry one shared
+  # "unknown user" hash, so speakers cannot be held out. Utterances are split at
+  # random within each label, after identical recordings are removed.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are already 16 kHz mono; `build()` copies them into the same
+  # layout as the other recipes.
+  output_env_var: EMOSPEECH_KEYWORDS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
