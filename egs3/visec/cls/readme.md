@@ -1,0 +1,80 @@
+# ViSEC speech emotion recognition (single-corpus baseline)
+
+Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
+head) on ViSEC alone and scores it on ViSEC's own test split, classifying each
+utterance into one of four emotions.
+
+ViSEC is a Vietnamese speech emotion corpus released with Pham Viet Thanh et al.,
+"A Robust Pitch-Fusion Model for Speech Emotion Recognition in Tonal Languages"
+(ICASSP 2024, pp. 12386-12390). The copy used here has 5,280 rows (3.18 hours) with the
+emotions `angry`, `happy`, `neutral` and `sad`, a gender (`female`/`male`), an
+accent (`south`/`north`/`mid`) and a `speaker_id` per row. The clips are 16 kHz mono
+(5,178 are 16-bit and 102 are 24-bit PCM) and 1.0 to 24.7 seconds long.
+
+The label is the `emotion` column. The materials say nothing about how the
+recordings were made or labelled.
+
+## Provenance
+
+The original repository (`hustep-lab/ViSEC` on Hugging Face) answers 401. The recipe
+uses a **third-party copy**, `Dennis290/ViSEC` (pinned to commit
+`70f4b62f432d85c0b52dee3855a5f8dd244f093a`, not gated, one 367 MB parquet file,
+SHA-256 checked). Its card says `cc-by-4.0` and asks to cite the paper above; the
+terms of the original release could not be checked.
+
+Two environment variables control where the data lives. Both are optional and
+default to `download/` and `data/` under the recipe.
+
+- `VISEC` — the directory holding `train-00000-of-00001.parquet`, or where to download it to
+- `VISEC_OUTPUT` — where the converted audio and manifests are written
+
+## Data cleaning
+
+The parquet file has 277 groups of byte-identical clips (276 pairs and one triple,
+278 surplus rows), which would leak between splits, so each is kept once. In three
+of these groups the copies carry different emotions (for example `sad` and
+`angry`); those six rows are dropped. That leaves 4,999 distinct clips (2.96 hours).
+
+## Download
+
+`prepare_source` downloads the parquet file and checks its SHA-256 (31 seconds
+on one run). `create_dataset`, `remove_long_short` and `prepare_labels`
+together took about 4 minutes (create_dataset alone 222 s, almost all of it
+converting the 4,999 clips with ffmpeg).
+
+## Splits
+
+No partition is published. Whole `speaker_id` groups are kept in one split, so no
+`speaker_id` appears in two splits. The id `0` alone covers 2,217 of the 5,280 rows (42%); all of them are female and
+south accent, with all four emotions. Whether any `speaker_id` is a real speaker
+is not documented. A group larger than the test quota (20% of the utterances) is
+therefore always put in train, and the other groups are shuffled (`split_seed`
+in `dataset/config.yaml`) and fill test, then valid, then train. Labels are not
+balanced across the splits.
+
+| split | utterances | after `remove_long_short` |
+|---|---|---|
+| train | 3,422 | 3,422 |
+| valid | 514 | 514 |
+| test | 1,063 | 1,063 (not filtered) |
+
+Train holds 1,160 angry, 938 neutral, 689 sad and 635 happy utterances; valid
+138 angry, 160 neutral, 155 sad and 61 happy; test 167 angry, 407 neutral, 212
+sad and 277 happy. The 4,999 distinct clips are 147 `speaker_id` groups.
+
+## Quick start
+
+Run the three commands separately. With several GPUs, `train` starts one
+process per GPU by re-running its own command, so any other stage listed in the
+same command would run once per GPU as well.
+
+```bash
+python run.py --stages create_dataset remove_long_short prepare_labels \
+    collect_stats --training_config conf/training.yaml
+python run.py --stages train \
+    --training_config conf/training.yaml
+python run.py --stages infer measure \
+    --training_config conf/training.yaml \
+    --inference_config conf/inference.yaml \
+    --metrics_config conf/metrics.yaml
+```

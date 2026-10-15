@@ -1,0 +1,54 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One parquet file; each row has `speaker_id`, `path` (WAV bytes and a name
+  # `<N>.wav`), `duration`, `accent`, `emotion`, `emotion_id` and `gender`.
+  source_env_var: VISEC
+  dataset_path: download
+  parquet_name: train-00000-of-00001.parquet
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset Dennis290/ViSEC (pinned commit, not gated, card says
+  # CC BY 4.0, 367 MB). This is a third-party copy: the original repository
+  # `hustep-lab/ViSEC` answers 401. The card names the ICASSP 2024 paper of
+  # Pham Viet Thanh et al. as the source.
+  parquet_url: https://huggingface.co/datasets/Dennis290/ViSEC/resolve/70f4b62f432d85c0b52dee3855a5f8dd244f093a/data/train-00000-of-00001.parquet
+  parquet_sha256: bfc7697b3a591cc6cf185c61178815a35363dae4f2c43276636d68eb72cd4a3e
+  expected_rows: 5280
+
+  # Labels ----------------------------------------------------------------
+  # The `emotion` column to manifest label.
+  emotion_map:
+    angry: angry
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole `speaker_id` groups are kept in one split.
+  # One id holds 42% of the recordings, so any group larger than a held-out
+  # split's quota goes to train; the other groups are shuffled with
+  # `split_seed` and fill test, then valid, then train. Whether `speaker_id`
+  # is a real speaker is not documented.
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The clips are already 16 kHz mono; `build()` still passes them through
+  # ffmpeg so that the output matches the other recipes (24-bit becomes 16-bit).
+  output_env_var: VISEC_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
