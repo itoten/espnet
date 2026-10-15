@@ -1,0 +1,62 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `BESD/<TELUGU|ENGLISH>/<ANGER|DISGUST|FEAR|HAPPY|NEUTRAL|SAD>/*.wav`, named
+  # like `1.TF_12_angry_1.wav` or `1.EF_12 Angry_1.wav`: a running number,
+  # language (T/E) and sex (F/M), a number that is presumably the child's age,
+  # the emotion and the take. Spelling and separators vary between files.
+  source_env_var: CBESD
+  dataset_path: download
+  audio_subdir: BESD
+
+  # Download --------------------------------------------------------------
+  # Kaggle needs a login, so the recipe does not download. Fetch the zip by
+  # hand and extract it so that `BESD/` lies inside `$CBESD`.
+  request_url: https://www.kaggle.com/datasets/pranuthi19/bilingual-emotion-speech-datasetbesd
+  # Fewer files means an interrupted extraction.
+  expected_files: 4204
+
+  # Labels ----------------------------------------------------------------
+  # The folder name to manifest label. The emotion written in the file name must
+  # agree with the folder (compared by its first two letters, since it is
+  # misspelt in places); files where it does not are dropped.
+  emotion_map:
+    ANGER: angry
+    DISGUST: disgust
+    FEAR: fear
+    HAPPY: happy
+    NEUTRAL: neutral
+    SAD: sad
+  language_codes:
+    TELUGU: tel
+    ENGLISH: eng
+
+  # Split -----------------------------------------------------------------
+  # No partition or child id is published. Recordings are grouped by language,
+  # sex, the number after the sex letter and the running number; byte-identical
+  # files are kept in the same group. Whole groups go to one split, chosen to
+  # keep the language and label ratios. This is a guess at "same child" that
+  # has not been checked against the corpus metadata, so children may still be
+  # shared.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz stereo; `build()` converts them to 16 kHz mono.
+  output_env_var: CBESD_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
