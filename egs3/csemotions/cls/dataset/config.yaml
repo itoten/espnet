@@ -1,0 +1,65 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # Eight parquet shards `train-0000N-of-00008.parquet`; each row has `audio`
+  # (WAV bytes and the original file name), `text`, `emotion` and `speaker`.
+  source_env_var: CSEMOTIONS
+  dataset_path: download
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset ATH-MaaS/CSEMOTIONS (formerly AIDC-AI/CSEMOTIONS),
+  # pinned commit, not gated, Apache-2.0. About 3.1 GB in total.
+  base_url: https://huggingface.co/datasets/ATH-MaaS/CSEMOTIONS/resolve/19498e62e6745cf9ec9b69a44b826caa467eac31/data
+  shards:
+    - name: train-00000-of-00008.parquet
+      sha256: caeb0357cf4fc990204ec83d6c0692303fcde2997767a965b86ff4f489c3ce8e
+    - name: train-00001-of-00008.parquet
+      sha256: 5910d384a5eb89c9edc1154c6ce7d5ee8041d01c185c33224f7083546cae66e3
+    - name: train-00002-of-00008.parquet
+      sha256: d74b15673cfb166f90c6e363d5807087aff2ad1b95dc2c3f740e93cae567cd92
+    - name: train-00003-of-00008.parquet
+      sha256: dbfb1a9d449584fd1c05ebd507638c000f426ef902e57b005944450e92a8e751
+    - name: train-00004-of-00008.parquet
+      sha256: 98305ba9a4a93407331fdd74481a9e400aab465bca289a20dca7f6dd8c5b10c3
+    - name: train-00005-of-00008.parquet
+      sha256: ee4bdb8c958aaad48ceb48ca7c958200fbab871ac58d0cc8089f3261e9dbed5a
+    - name: train-00006-of-00008.parquet
+      sha256: 461c85d5027d93a55f976a2085db47946c8a7926970fb7e8eee0641f8a8a5633
+    - name: train-00007-of-00008.parquet
+      sha256: 3bdaed0f6d633c698fde55c53bef3cc9b4c58ff5d6fed09f53dc2ffeb9644254
+
+  # Labels ----------------------------------------------------------------
+  # The `emotion` column to manifest label.
+  emotion_map:
+    angry: angry
+    fearful: fear
+    happy: happy
+    neutral: neutral
+    playfulness: playfulness
+    sad: sad
+    surprise: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole speakers are held out (10 speakers):
+  # 2 for test, 1 for valid, the rest for training.
+  n_test_speakers: 2
+  n_valid_speakers: 1
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz mono; `build()` converts them to 16 kHz.
+  output_env_var: CSEMOTIONS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
