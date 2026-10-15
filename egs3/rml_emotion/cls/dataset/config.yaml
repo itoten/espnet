@@ -1,0 +1,46 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<source>/s<N>/s<N>/[f<M><lang>/]<emo><take>.avi`. Obtained manually from
+  # Kaggle (free account); no download is attempted here.
+  source_env_var: RML_EMOTION
+  dataset_path: download
+  kaggle_url: https://www.kaggle.com/datasets/ryersonmultimedialab/ryerson-emotion-database
+  # Fewer files means an incomplete extraction.
+  expected_files: 720
+
+  # Labels ----------------------------------------------------------------
+  # Emotion code in the file name to manifest label.
+  emotion_map:
+    an: angry
+    di: disgust
+    fe: fear
+    ha: happy
+    sa: sad
+    su: surprise
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. Whole subject folders (s1 ... s8, assumed to be
+  # 8 speakers) are assigned at random to test, then valid, then train.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are avi files with 44.1/48 kHz stereo audio; `build()` extracts 16 kHz mono wav.
+  output_env_var: RML_EMOTION_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
