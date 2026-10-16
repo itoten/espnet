@@ -32,9 +32,56 @@ builder:
     Sad: sad
     Surprise: surprise
 
+  # Exclusions -----------------------------------------------------------
+  # Files left out of every split (see the readme).
+  exclude_files:
+    # P_44 and P_90 repeat P_43 (sentences 1 and 2, all seven emotions): byte-identical audio; P_43 is kept.
+    - P_44_F_44_SUMAIYASANVI_S_01_ANGRY.wav
+    - P_44_F_44_SUMAIYASANVI_S_01_DISGUST.wav
+    - P_44_F_44_SUMAIYASANVI_S_01_FEAR.wav
+    - P_44_F_44_SUMAIYASANVI_S_01_HAPPY.wav
+    - P_44_F_44_SUMAIYASANVI_S_01_NEUTRAL.wav
+    - P_44_F_44_SUMAIYASANVI_S_01_SAD.wav
+    - P_44_F_44_SUMAIYASANVI_S_01_SURPRISE.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_ANGRY.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_DISGUST.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_FEAR.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_HAPPY.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_NEUTRAL.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_SAD.wav
+    - P_44_F_44_SUMAIYASANVI_S_02_SURPRISE.wav
+    - P_90_M_40_SHUVO_S_01_ANGRY.wav
+    - P_90_M_40_SHUVO_S_01_DISGUST.wav
+    - P_90_M_40_SHUVO_S_01_FEAR.wav
+    - P_90_M_40_SHUVO_S_01_HAPPY.wav
+    - P_90_M_40_SHUVO_S_01_NEUTRAL.wav
+    - P_90_M_40_SHUVO_S_01_SAD.wav
+    - P_90_M_40_SHUVO_S_01_SURPRISE.wav
+    - P_90_M_40_SHUVO_S_02_ANGRY.wav
+    - P_90_M_40_SHUVO_S_02_DISGUST.wav
+    - P_90_M_40_SHUVO_S_02_FEAR.wav
+    - P_90_M_40_SHUVO_S_02_HAPPY.wav
+    - P_90_M_40_SHUVO_S_02_NEUTRAL.wav
+    - P_90_M_40_SHUVO_S_02_SAD.wav
+    - P_90_M_40_SHUVO_S_02_SURPRISE.wav
+    # P_62 repeats P_61 (sentence 2, all seven emotions): byte-identical audio; P_61 is kept.
+    - P_62_M_12_TARIF_S_02_ANGRY.wav
+    - P_62_M_12_TARIF_S_02_DISGUST.wav
+    - P_62_M_12_TARIF_S_02_FEAR.wav
+    - P_62_M_12_TARIF_S_02_HAPPY.wav
+    - P_62_M_12_TARIF_S_02_NEUTRAL.wav
+    - P_62_M_12_TARIF_S_02_SAD.wav
+    - P_62_M_12_TARIF_S_02_SURPRISE.wav
+    # Same speaker and sentence, one audio file under two labels; listening showed the other label is the wrong one.
+    - P_02_F_02_NASSA_S_01_DISGUST.wav
+    - P_05_F_05_ARMIN_S_02_DISGUST.wav
+    - P_07_F_07_KONIKA_S_01_DISGUST.wav
+    - P_10_F_10_JERIN_S_02_DISGUST.wav
+    - P_13_F_13_TISHA_S_02_SURPRISE.wav
+    - P_26_F_26_TARIN_S_01_DISGUST.wav
+
   # Split -----------------------------------------------------------------
-  # No partition is published. Speakers are held out; speakers who share a
-  # byte-identical recording are kept in the same split.
+  # No partition is published. Whole speakers are held out.
   train_ratio: 0.7
   valid_ratio: 0.1
   test_ratio: 0.2

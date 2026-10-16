@@ -15,10 +15,16 @@ The label is the intended emotion, taken from the `emotion_label` column of
 `UFTBESD_Metadata.csv`; `dataset/config.yaml` maps it to lower-case labels.
 `create_dataset` converts the recordings to 16 kHz mono with ffmpeg.
 
-Some recordings are byte-identical: 27 groups (68 files) share the same audio,
-21 of them across two different speakers with the same label and 6 within one
-speaker under two different emotions (for example `disgust` and `surprise` of
-the same sentence). They are kept as they are.
+The release contains byte-identical audio: 27 groups (68 files) of identical
+content. In 21 groups the same recording is filed under different speakers
+(P_43, P_44 and P_90 for both sentences, P_61 and P_62 for sentence 2), and in 6
+groups one speaker has the same audio under two emotions. After listening to
+them, the recipe keeps P_43 and P_61 as the originals, drops the copies under
+P_44, P_90 and P_62, and for the 6 conflicting pairs drops the file whose label
+does not match the emotion heard (`disgust` for P_02, P_05, P_07, P_10 and P_26,
+`surprise` for P_13). The 41 files are listed in `exclude_files` in
+`dataset/config.yaml`, and `create_dataset` stops if any identical audio is left.
+1,359 recordings from 98 speakers remain.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -39,15 +45,15 @@ took about 96 seconds.
 
 The release publishes no partition. Speakers are split 70/10/20 at random
 (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
-`dataset/config.yaml`), so no speaker appears in two splits. Speakers who share
-a byte-identical recording are kept together. Every speaker has all seven
-emotions, so the splits are exactly balanced.
+`dataset/config.yaml`), so no speaker appears in two splits. Every speaker has
+all seven emotions, so the splits are almost exactly balanced (the 41 excluded
+files above remove a few from `disgust` and `surprise`).
 
 | split | speakers | utterances | after `remove_long_short` |
 |---|---|---|---|
-| train | 70 | 980 | 980 |
-| valid | 10 | 140 | 140 |
-| test | 20 | 280 | 280 (not filtered) |
+| train | 68 | 942 | 942 |
+| valid | 10 | 139 | 139 |
+| test | 20 | 278 | 278 (not filtered) |
 
 ## License and citation
 

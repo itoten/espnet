@@ -156,6 +156,8 @@ def _download_source(destination: Path) -> None:
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Read the metadata table into one row per recording.
 
+    Files named in ``exclude_files`` are skipped.
+
     Args:
         source_root: Corpus root from :func:`resolve_source_root`.
 
@@ -164,11 +166,13 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If an emotion is not in ``emotion_map`` or a file name
-            appears twice.
+        ValueError: If an emotion is not in ``emotion_map``, a file name
+            appears twice, an excluded name is not in the table, or two
+            remaining recordings are byte-identical.
         FileNotFoundError: If a recording named in the table is absent.
     """
     wavs = {p.name: p for p in source_root.rglob("*.wav")}
+    excluded = set(_CFG["exclude_files"])
     entries = []
     seen: set[str] = set()
     with (source_root / str(_CFG["labels_csv"])).open(
@@ -189,6 +193,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 raise FileNotFoundError(
                     f"Recording named in the table is absent: {name}"
                 )
+            if name in excluded:
+                excluded.discard(name)
+                continue
             entries.append(
                 {
                     "utt_id": f"uftbesd-{Path(name).stem}",
@@ -197,6 +204,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     "label": _EMOTION_MAP[emotion],
                 }
             )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not in the table: {sorted(excluded)}")
+    _check_no_duplicates(entries)
     logger.info(
         "Read %d utterance(s) from %d speaker(s)",
         len(entries),
@@ -205,34 +215,24 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     return entries
 
 
-def _group_speakers(entries: list[dict[str, str]]) -> dict[str, str]:
-    """Map each speaker to a group id; speakers sharing identical audio merge.
-
-    Some recordings are byte-identical across speakers, so such speakers must
-    land in the same split to keep the test set free of copies of training audio.
-    """
-    parent: dict[str, str] = {e["speaker"]: e["speaker"] for e in entries}
-
-    def find(x: str) -> str:
-        while parent[x] != x:
-            parent[x] = parent[parent[x]]
-            x = parent[x]
-        return x
-
+def _check_no_duplicates(entries: list[dict[str, str]]) -> None:
+    """Raise if two recordings are byte-identical, which would leak across splits."""
     owner: dict[str, str] = {}
     for entry in entries:
         digest = _md5(Path(entry["source"]))
-        other = owner.setdefault(digest, entry["speaker"])
-        parent[find(entry["speaker"])] = find(other)
-    return {speaker: find(speaker) for speaker in parent}
+        if digest in owner:
+            raise ValueError(
+                f"Identical audio: {entry['utt_id']} and {owner[digest]}; "
+                "add one of them to `exclude_files`"
+            )
+        owner[digest] = entry["utt_id"]
 
 
 def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
     """Split the utterances so that no speaker appears in two splits.
 
-    Speakers whose recordings share identical audio are merged into one group
-    (see :func:`_group_speakers`). Groups are shuffled with ``split_seed`` and
-    filled into test, valid and train in that order until each holds its
+    Speakers are shuffled with ``split_seed`` and filled into test, valid and
+    train in that order until each holds its
     ``test_ratio``/``valid_ratio`` share of the utterances.
 
     Args:
@@ -253,10 +253,9 @@ def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
             f"{train_ratio} + {valid_ratio} + {test_ratio}"
         )
 
-    group_of = _group_speakers(entries)
     members: dict[str, list[str]] = {}
     for entry in entries:
-        members.setdefault(group_of[entry["speaker"]], []).append(entry["utt_id"])
+        members.setdefault(entry["speaker"], []).append(entry["utt_id"])
     groups = sorted(members)
     Random(int(_CFG["split_seed"])).shuffle(groups)
 
