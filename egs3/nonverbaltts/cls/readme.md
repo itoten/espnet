@@ -48,9 +48,9 @@ default to `download/` and `data/` under the recipe.
 
 `prepare_source` downloads the 8 parquet files of `train`, `dev` and `test`
 (about 3.1 GB) from Hugging Face at a pinned commit, with no login, and checks
-each SHA-256. Measured on one run (all 12 files, 4.3 GB): about 4.7 minutes to
-download; `create_dataset`, `remove_long_short` and `prepare_labels` together took
-about 3 minutes.
+each SHA-256. Measured on one run that downloaded all 11 published parquet files
+(4.2 GB): about 4.7 minutes to download; `create_dataset`, `remove_long_short`
+and `prepare_labels` together took about 3 minutes.
 
 ## Splits
 
