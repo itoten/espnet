@@ -57,10 +57,13 @@ files above remove a few from `disgust` and `surprise`).
 
 ## License and citation
 
-The dataset is licensed CC BY 4.0 (Mendeley Data). The record names Md Rayhan Ali
-and colleagues of Bangabandhu Sheikh Mujibur Rahman Digital University as
-authors; please cite the Mendeley Data record
-(https://doi.org/10.17632/h3f8pjbw73.4).
+The dataset is licensed CC BY 4.0 (Mendeley Data). Please cite the Mendeley Data
+record, as given on its page under "Cite this dataset":
+
+> Ali, Md Rayhan; Saeef, Sadman; Mohammad, Mohammad Miftahul Islam Irfan; Khan,
+> Maliha; Hasan, Suchi; Das, Sajib; Aurpa, Tanjim Taharat; Hasan, Sharad (2026),
+> "UFTBESD: University of Frontier Technology, Bangladesh-Bangla Emotional Speech
+> Dataset", Mendeley Data, V4, doi: 10.17632/h3f8pjbw73.4
 
 ## Quick start
 
