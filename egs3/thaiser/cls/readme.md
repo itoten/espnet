@@ -24,8 +24,8 @@ recordings (21.3 hours), the count the release page reports. They come from 200 
 11,146 studio and 3,036 Zoom, 8,255 improvised and 5,927 read. The source audio is
 44.1 kHz FLAC, mono or stereo; `create_dataset` converts it to 16 kHz mono 16-bit
 WAV, `num_workers` files at a time. Durations range from 0.5 to 108.8 seconds
-(median 4.6). `remove_long_short` drops 42 recordings from train/valid (40 longer
-than 30 seconds, 2 of about 0.5 seconds); test is not filtered and holds 5 of the
+(median 4.6). `remove_long_short` drops the 40 recordings of train/valid longer than
+30 seconds; test is not filtered and holds 5 of the
 45 recordings longer than 30 seconds.
 
 Two environment variables control where the data lives. Both are optional and
@@ -50,7 +50,7 @@ and the three read sentences appear in all splits.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 9928 | 9890 |
+| train | 9928 | 9892 |
 | valid | 1417 | 1413 |
 | test | 2837 | (not filtered) |
 

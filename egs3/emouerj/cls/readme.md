@@ -39,7 +39,7 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 37 |
 | test | 75 |
 
-No clip is shorter than the 0.5 s floor of `remove_long_short`.
+No clip is shorter than the 0.2 s floor of `remove_long_short`.
 
 ## Quick start
 

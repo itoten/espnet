@@ -17,11 +17,12 @@ exp_tag: train_cls_hikia
 ##########################################################
 #              LONG/SHORT FILTERING SETTING              #
 ##########################################################
-# HiKIA utterances are wake-up words, 0.24 s to 1.75 s long; a 0.5 s floor would
-# drop 99 of 488, so no minimum is applied (the stage requires a value, and
-# 0 keeps every non-empty clip).
+# Clips outside 0.2-30 s are dropped from train and valid (test stays
+# unfiltered). During training, WavLM's SpecAugment (`mask_time_length: 10`)
+# raises an error on a batch shorter than 10 encoder frames, i.e. under
+# 0.205 s at 16 kHz.
 remove_long_short:
-  min_wav_duration: 0
+  min_wav_duration: 0.2
   max_wav_duration: 30
   splits:
     - train

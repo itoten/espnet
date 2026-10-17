@@ -43,11 +43,11 @@ every split and scores are optimistic for unseen speakers.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 294 | 292 |
+| train | 294 | 294 |
 | valid | 42 | 42 |
 | test | 84 | 84 (not filtered) |
 
-`remove_long_short` drops the two train clips shorter than 0.5 s.
+`remove_long_short` drops nothing.
 
 ## License and citation
 

@@ -44,8 +44,7 @@ label once, so every split holds all nine labels, evenly.
 | valid | 9 | 9 |
 | test | 18 | 18 (not filtered) |
 
-The lower bound of `remove_long_short` is 0.2 s here, not the usual 0.5 s, which
-would drop 14 of the 90 clips (7 of them are surprise bursts). With
+All clips are 0.24 s or longer, so `remove_long_short` drops nothing. With
 18 test clips and 9 valid clips, scores are very noisy.
 
 ## License and citation

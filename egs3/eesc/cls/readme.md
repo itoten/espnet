@@ -41,11 +41,11 @@ so the same sentence can fall in different splits and scores are optimistic.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 814 | 812 |
+| train | 814 | 814 |
 | valid | 117 | 117 |
 | test | 233 | 233 (not filtered) |
 
-`remove_long_short` drops the 2 train clips shorter than 0.5 s.
+`remove_long_short` drops nothing.
 
 ## License and citation
 

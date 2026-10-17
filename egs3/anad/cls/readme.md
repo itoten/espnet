@@ -59,8 +59,8 @@ groups are assigned largest first to the split furthest below its target
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 937 | 891 |
-| valid | 131 | 106 |
+| train | 937 | 894 |
+| valid | 131 | 107 |
 | test | 266 | 266 (not filtered) |
 
 ## Quick start

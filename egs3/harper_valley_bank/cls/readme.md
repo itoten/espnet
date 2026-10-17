@@ -26,9 +26,9 @@ corpus README describes as the offset from the start of the recording, does not
 match the audio (measured by scanning the energy of the audio around both
 fields); this recipe uses `start_ms`. Thirteen segments start after the end of
 their recording and are dropped. `create_dataset` cuts each segment out of its
-call and converts it to 16 kHz mono with ffmpeg. About a quarter of the
-segments are shorter than 0.5 s (6,626 of 25,717), so `remove_long_short` removes
-many train and valid utterances.
+call and converts it to 16 kHz mono with ffmpeg. Many segments are
+very short: 3,068 of the 20,556 train and valid segments are shorter than 0.2 s,
+and `remove_long_short` removes them.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -52,8 +52,8 @@ callers appear in several calls and therefore in several splits.
 
 | split | utterances | after `remove_long_short` | negative / neutral / positive (filtered) |
 |---|---|---|---|
-| train | 17,973 | 13,346 | 282 / 7,487 / 5,577 |
-| valid | 2,583 | 1,909 | 54 / 1,084 / 771 |
+| train | 17,973 | 15,304 | 283 / 9,315 / 5,706 |
+| valid | 2,583 | 2,184 | 54 / 1,341 / 789 |
 | test | 5,161 | 5,161 (not filtered) | 96 / 3,415 / 1,650 (unfiltered) |
 
 The label is skewed to neutral and `negative` is rare, so `prepare_labels` writes class

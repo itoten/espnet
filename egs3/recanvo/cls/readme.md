@@ -44,12 +44,11 @@ optimistic and say nothing about unseen participants.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 4,959 | 4,208 |
-| valid | 704 | 603 |
+| train | 4,959 | 4,934 |
+| valid | 704 | 703 |
 | test | 1,414 | 1,414 (not filtered) |
 
-`remove_long_short` drops the clips shorter than 0.5 s. The rarest labels thin out
-(`laugh` keeps 1 train clip, `greeting` 2), and `hunger`/`no`/`laugh`/`greeting`
+`remove_long_short` drops the clips shorter than 0.2 s. `hunger` and `greeting`
 are absent from valid.
 
 ## License and citation

@@ -38,7 +38,7 @@ all 6 speakers.
 
 | split | utterances |
 |---|---|
-| train | 4672 (4667 after `remove_long_short`) |
+| train | 4672 (`remove_long_short` drops none) |
 | valid | 668 |
 | test | 1335 |
 

@@ -54,7 +54,7 @@ with the seed.
 | valid | 20 | 15 |
 | test | 39 | 39 (not filtered) |
 
-`remove_long_short` drops clips outside 0.5 to 30 seconds from train and valid;
+`remove_long_short` drops clips outside 0.2 to 30 seconds from train and valid;
 the long recordings account for all of the 24 dropped. In the filtered train
 split: angry 26, fear 15, happy 26, neutral 16, sad 32.
 

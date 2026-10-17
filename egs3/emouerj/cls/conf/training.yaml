@@ -17,9 +17,12 @@ exp_tag: train_cls_emouerj
 ##########################################################
 #              LONG/SHORT FILTERING SETTING              #
 ##########################################################
-# emoUERJ clips are 1.2 s to 7.1 s long, so the usual 0.5 s floor drops none.
+# Clips outside 0.2-30 s are dropped from train and valid (test stays
+# unfiltered). During training, WavLM's SpecAugment (`mask_time_length: 10`)
+# raises an error on a batch shorter than 10 encoder frames, i.e. under
+# 0.205 s at 16 kHz.
 remove_long_short:
-  min_wav_duration: 0.5
+  min_wav_duration: 0.2
   max_wav_duration: 30
   splits:
     - train

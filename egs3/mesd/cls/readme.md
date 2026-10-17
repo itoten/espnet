@@ -21,10 +21,8 @@ also holds 288 naturalness-reduced copies of female corpus-B recordings
 are skipped. The recordings are 48 kHz mono 24-bit, so `create_dataset`
 resamples them to 16 kHz with ffmpeg.
 
-The utterances are single words, from 0.20 s to 2.54 s long, and 164 of the
-862 are shorter than 0.5 s. `remove_long_short` therefore applies no minimum
-duration here (`min_wav_duration: 0`), unlike the 0.5 s used elsewhere, and
-keeps every utterance.
+The utterances are single words, from 0.20 s to 2.54 s long. `remove_long_short`
+drops the one valid utterance shorter than 0.2 s (0.199 s).
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.

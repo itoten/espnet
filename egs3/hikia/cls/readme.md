@@ -44,8 +44,8 @@ speakers.
 | valid | 49 |
 | test | 98 |
 
-Because the utterances are so short, `remove_long_short` applies no minimum
-duration (99 of the 488 are under 0.5 s).
+The utterances are 0.24 s or longer, so `remove_long_short` drops none for being
+short.
 
 ## Quick start
 

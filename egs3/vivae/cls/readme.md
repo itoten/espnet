@@ -24,8 +24,8 @@ The speaker, emotion and intensity come from the file name,
 The emotion word is the label, except that `anger` is written `angry` as in the other
 recipes.
 
-Because the recordings are so short, no minimum length is applied in
-`remove_long_short`: a 0.5 s floor would drop 120 of 1,085.
+The recordings are 0.40 s or longer, so `remove_long_short` drops none for being
+short.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.

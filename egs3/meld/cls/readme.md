@@ -11,7 +11,7 @@ downloads the corpus if not already present, extracts it, converts every clip
 to 16 kHz mono WAV, and writes one manifest per split. `MELD` points at an
 existing MELD source tree, or where to download it to.
 
-`remove_long_short` filters the train and valid splits to 0.1-30s; the test
+`remove_long_short` filters the train and valid splits to 0.2-30 s; the test
 split is left untouched so the reported scores cover the whole set.
 
 ## Quick start

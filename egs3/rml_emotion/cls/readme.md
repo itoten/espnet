@@ -50,7 +50,7 @@ approximate and the labels are not balanced across splits.
 | valid | 80 | s3 |
 | test | 220 | s2, s5, s6 |
 
-No clip is shorter than the 0.5 s floor of `remove_long_short`, and none is longer than 30 s.
+No clip is shorter than the 0.2 s floor of `remove_long_short`, and none is longer than 30 s.
 
 ## Quick start
 

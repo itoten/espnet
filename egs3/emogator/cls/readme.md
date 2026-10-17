@@ -57,11 +57,11 @@ train, 108 in valid and 213 in test.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 22,500 | 22,495 |
+| train | 22,500 | 22,500 |
 | valid | 3,240 | 3,240 |
 | test | 6,390 | 6,390 (not filtered) |
 
-`remove_long_short` drops the 5 train recordings shorter than 0.5 s.
+`remove_long_short` drops nothing.
 
 ## Quick start
 

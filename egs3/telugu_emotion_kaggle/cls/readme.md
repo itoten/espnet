@@ -45,11 +45,11 @@ valid and 14 for train (`n_test_groups`, `n_valid_groups`, `split_seed` in
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 312 | 308 |
-| valid | 47 | 45 |
+| train | 312 | 312 |
+| valid | 47 | 47 |
 | test | 97 | 97 (not filtered) |
 
-`remove_long_short` drops 4 train and 2 valid clips shorter than 0.5 s.
+`remove_long_short` drops nothing.
 
 ## License
 

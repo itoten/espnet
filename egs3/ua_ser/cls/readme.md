@@ -35,7 +35,7 @@ split is kept (test 181 clips). A valid split is cut from train by whole speaker
 | valid | 63 |
 | test | 181 |
 
-No clip is shorter than the 0.5 s floor of `remove_long_short`.
+No clip is shorter than the 0.2 s floor of `remove_long_short`.
 
 ## Quick start
 
