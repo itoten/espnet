@@ -7,8 +7,8 @@ builder:
 
   # Download --------------------------------------------------------------
   # Hugging Face dataset deepvk/NonverbalTTS at a pinned commit (open, no
-  # login; about 3.1 GB for the files below). The published `other` split is
-  # not used.
+  # login; about 3.1 GB for the files below). The published `other` split
+  # (not to be confused with the `other` emotion tag) is not used.
   base_url: https://huggingface.co/datasets/deepvk/NonverbalTTS/resolve/947139b9003316e1d369ae2012a3bded83fd7128
   files:
     - path: default/train/0000.parquet
@@ -29,8 +29,8 @@ builder:
       sha256: 59f2949915563aa67e2babac20819b041cde7b398aec6beed652fb3278d6ec54
 
   # Labels ----------------------------------------------------------------
-  # `Emotion` column to manifest label. Rows tagged `other` or with no tag
-  # are not emotion classes and are dropped.
+  # `Emotion` column to manifest label. Rows with the `other` emotion tag or
+  # with no tag are not emotion classes and are dropped.
   emotion_map:
     angry: angry
     disgusted: disgust

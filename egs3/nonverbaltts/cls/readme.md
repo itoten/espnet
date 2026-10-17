@@ -8,19 +8,30 @@ classifying each utterance into one of seven emotions.
 English corpus of clips cut from VoxCeleb (interviews, 16 kHz) and Expresso
 (acted, 48 kHz), built for text-to-speech with nonverbal vocalizations
 (breathing, laughter and so on) marked in the transcripts. Each clip also has an
-`Emotion` tag: the dataset card says it was first predicted automatically with
-emotion2vec+ and then checked by human annotators. This recipe uses only that
-tag.
+`Emotion` tag (one per clip): the dataset card says it was first predicted
+automatically with emotion2vec+ and then checked by human annotators.
 
-The Hugging Face dataset has 6,256 rows (17.6 hours, 0.5 to 116.7 seconds) in
-four published splits: `train` (3,641), `dev` (46), `test` (359) and `other`
-(2,210). The recipe uses `train`, `dev` and `test` and does not download
-`other`: neither the dataset card nor the paper's text describes it, its speakers
-overlap with `train` and `test`, and 522 of its rows have no emotion tag. Rows
-tagged `other` (833) or without a tag (12) are not emotion classes and are
-dropped, and the log reports their numbers. The remaining 3,201 clips (8.1
-hours, 0.57 to 29.8 seconds) carry the seven labels `angry`, `disgust`, `fear`,
-`happy`, `neutral`, `sad` and `surprise`.
+The Hugging Face dataset has 6,256 clips (17.6 hours, 0.5 to 116.7 seconds).
+Two different things in it are called `other`; this readme keeps them apart:
+
+- the **`other` split**: a fourth published split (2,210 clips) next to
+  `train` (3,641), `dev` (46) and `test` (359);
+- the **`other` emotion tag**: one of the eight values of the `Emotion` column,
+  meaning none of the seven named emotions (1,177 clips in all splits).
+
+What the recipe uses and leaves out:
+
+| part of the data | clips | used | reason |
+|---|---|---|---|
+| `train`, `dev`, `test` splits | 4,046 | yes | the splits used in the paper |
+| `other` split | 2,210 | no, not downloaded | not described by the dataset card or the paper, and not among the splits the paper reports (its Table 5 lists only `train`, `dev` and `test`). Its clips do carry annotations |
+| `other` emotion tag, in `train`/`dev`/`test` | 833 | no | not one of the seven emotion classes |
+| no emotion tag, in `train` | 12 | no | no emotion label (the paper says about 8.5% of clips have none because the annotators did not agree) |
+| nonverbal-vocalization marks in the transcripts | — | no | a clip can hold several marks of different types, so they are multi-label, while this recipe predicts one label per clip. No audio is lost by this: the marks are in the same clips as the emotion tags |
+
+The log reports the number of clips dropped for each tag. The remaining 3,201
+clips (8.1 hours, 0.57 to 29.8 seconds) carry the seven labels `angry`,
+`disgust`, `fear`, `happy`, `neutral`, `sad` and `surprise`.
 
 The label distribution is very skewed, and the test split has only four labels:
 
