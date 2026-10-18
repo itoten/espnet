@@ -33,6 +33,16 @@ def _split_batch(speech: torch.Tensor, speech_lengths: torch.Tensor) -> list:
     ]
 
 
+def _min_samples_for_frames(config, frames: int) -> int:
+    """Return the fewest samples the convolutional front turns into ``frames``."""
+    samples = frames
+    for kernel, stride in zip(
+        reversed(config.conv_kernel), reversed(config.conv_stride)
+    ):
+        samples = (samples - 1) * stride + kernel
+    return samples
+
+
 class Wav2Vec2Frontend(AbsFrontend):
     """Hugging Face wav2vec 2.0-family encoder on the raw waveform.
 
@@ -92,6 +102,18 @@ class Wav2Vec2Frontend(AbsFrontend):
         """
         if self.normalize is not None:
             speech, speech_lengths = self.normalize(speech, speech_lengths)
+
+        config = self.encoder.config
+        if (
+            self.training
+            and getattr(config, "apply_spec_augment", False)
+            and getattr(config, "mask_time_prob", 0) > 0
+        ):
+            # SpecAugment raises if the padded batch is shorter than one time
+            # mask; the extra zeros are outside the attention mask.
+            min_samples = _min_samples_for_frames(config, config.mask_time_length)
+            if speech.size(1) < min_samples:
+                speech = F.pad(speech, (0, min_samples - speech.size(1)))
 
         mask = (
             torch.arange(speech.size(1), device=speech.device)[None, :]

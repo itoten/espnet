@@ -3,7 +3,12 @@
 import pytest
 import torch
 from torch import nn
-from transformers import SeamlessM4TFeatureExtractor, WhisperFeatureExtractor
+from transformers import (
+    SeamlessM4TFeatureExtractor,
+    WavLMConfig,
+    WavLMModel,
+    WhisperFeatureExtractor,
+)
 
 from espnet2.legacy.nets.pytorch_backend.transformer.subsampling import (
     Conv2dSubsampling8,
@@ -31,6 +36,10 @@ from espnet3.systems.cls.frontend import (
 # | test_wav2vec2_freeze_can_be_turned_off      | Everything stays trainable.  |
 # | test_wav2vec2_normalizes_before_encoding    | The waveform reaches the     |
 # |                          | encoder already normalized.                     |
+# | test_wav2vec2_trains_on_a_batch_shorter_than_a_time_mask | A real    |
+# |                          | WavLM with SpecAugment trains on a 0.1 s batch. |
+# | test_wav2vec2_does_not_pad_in_eval          | Short input is left as is    |
+# |                                             | outside training.            |
 #
 # W2vBertFrontend
 # | test_w2v_bert_feeds_stacked_filterbanks     | 160-dim stacked filterbanks, |
@@ -235,6 +244,41 @@ def test_wav2vec2_normalizes_before_encoding():
     Wav2Vec2Frontend(encoder, normalize=Doubler())(speech, lengths)
 
     assert torch.allclose(encoder.seen["speech"], speech * 2)
+
+
+def _tiny_wavlm():
+    config = WavLMConfig(
+        hidden_size=HIDDEN,
+        num_hidden_layers=1,
+        num_attention_heads=2,
+        intermediate_size=32,
+        conv_dim=(8,) * 7,
+        num_conv_pos_embeddings=8,
+        mask_time_prob=0.5,
+        mask_time_length=10,
+    )
+    return WavLMModel(config)
+
+
+def test_wav2vec2_trains_on_a_batch_shorter_than_a_time_mask():
+    # 1,600 samples become 4 frames, fewer than the 10 a time mask needs.
+    frontend = Wav2Vec2Frontend(_tiny_wavlm()).train()
+    speech, lengths = _speech([1600, 800], total=1600)
+
+    frames, frame_lengths = frontend(speech, lengths)
+    frames.sum().backward()
+
+    assert frame_lengths.tolist() == [4, 2]
+    assert frames.size(1) >= 10
+
+
+def test_wav2vec2_does_not_pad_in_eval():
+    frontend = Wav2Vec2Frontend(_tiny_wavlm()).eval()
+    speech, lengths = _speech([1600], total=1600)
+
+    frames, _ = frontend(speech, lengths)
+
+    assert frames.size(1) == 4
 
 
 def test_w2v_bert_feeds_stacked_filterbanks():
