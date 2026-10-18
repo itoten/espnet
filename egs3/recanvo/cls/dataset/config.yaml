@@ -18,9 +18,11 @@ builder:
   remove_archive: true
 
   # Labels ----------------------------------------------------------------
-  # The 22 label strings of `dataset_file_directory.csv`, used unchanged. The
-  # first six are shared by all participants; the rest are optional labels
-  # chosen per participant.
+  # The 21 classes. `dataset_file_directory.csv` has 22 label strings; `laugh`
+  # (8 recordings, all P03) is merged into `laughter` by `label_aliases`, as
+  # the paper's Table 2 counts those 8 as laughter. The first six classes are
+  # shared by all participants; the rest are optional labels chosen per
+  # participant.
   labels:
     - selftalk
     - frustrated
@@ -40,10 +42,11 @@ builder:
     - dysregulation-bathroom
     - "no"
     - glee
-    - laugh
     - tablet
     - hunger
     - greeting
+  label_aliases:
+    laugh: laughter
 
   # Split -----------------------------------------------------------------
   # No partition is published. Each (participant, label) group is split at

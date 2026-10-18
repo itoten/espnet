@@ -2,19 +2,24 @@
 
 Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
 head) on ReCANVo alone and scores it on ReCANVo's own test split, classifying each
-vocalization into one of 22 caregiver-assigned labels.
+vocalization into one of 21 caregiver-assigned labels.
 
 [ReCANVo](https://zenodo.org/records/5786860) (Real-World Communicative and
-Affective Nonverbal Vocalizations) holds short vocalizations of 8 minimally
-speaking individuals (`P01`-`P16`), recorded in daily life and labeled by their
-caregivers. The 7,077 wav files total 2.46 hours (0.08 to 14.1 seconds, 44.1 kHz).
+Affective Nonverbal Vocalizations) is not an acted or read-speech emotion corpus.
+It holds short vocalizations of 8 minimally speaking individuals (`P01`-`P16`;
+the paper defines this as people who produce 0-10 spoken words or word
+approximations), recorded in daily life (homes, schools and so on) and labeled in
+real time by parents or caregivers who knew them well. The 7,077 wav files total
+2.46 hours (0.08 to 14.1 seconds, 44.1 kHz).
+
 Labels are the caregiver-assigned meaning or affect of each vocalization, so
 they are not emotion categories in the usual sense and differ per participant
 (for example `selftalk`, `frustrated`, `delighted`, `dysregulated`, `social`,
-`request`, `yes`, `hunger`). All 22 labels in `dataset_file_directory.csv` are
-kept as they are. The class distribution is very unbalanced (1,885 `selftalk`
-down to 3 `greeting`), and `laugh`/`laughter` and `happy`/`glee` are
-near-synonyms kept separate in the source.
+`request`, `yes`, `hunger`). The 22 label strings of `dataset_file_directory.csv`
+are used as classes, except that `laugh` (8 recordings, all from `P03`) is
+merged into `laughter`: the paper's Table 2 counts those 8 recordings as
+laughter, so the recipe has 21 classes. The class distribution is very
+unbalanced (1,885 `selftalk` down to 3 `greeting`).
 
 `create_dataset` converts the recordings to 16 kHz mono with ffmpeg.
 
@@ -53,9 +58,25 @@ are absent from valid.
 
 ## License and citation
 
-The Zenodo record is licensed CC BY 3.0 US. Please cite Narain, J. and Johnson,
-K. T., ReCANVo: A Dataset of Real-World Communicative and Affective Nonverbal
-Vocalizations (Zenodo, 2021, https://doi.org/10.5281/zenodo.5786860).
+The Zenodo record is licensed CC BY 3.0 US. The record asks users to cite the
+paper below (Johnson and Narain are joint first authors), and also gives the
+dataset record:
+
+```
+@article{johnson2023recanvo,
+  title   = {ReCANVo: A database of real-world communicative and affective nonverbal vocalizations},
+  author  = {Johnson, Kristina T. and Narain, Jaya and Quatieri, Thomas and Maes, Pattie and Picard, Rosalind W.},
+  journal = {Scientific Data},
+  volume  = {10},
+  number  = {523},
+  year    = {2023},
+  doi     = {10.1038/s41597-023-02405-7},
+}
+```
+
+Narain, J. and Johnson, K. T., ReCANVo: A Dataset of Real-World Communicative
+and Affective Nonverbal Vocalizations (Zenodo, 2021,
+https://doi.org/10.5281/zenodo.5786860).
 
 ## Quick start
 

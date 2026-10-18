@@ -1,4 +1,4 @@
-"""ReCANVo dataset builder (22 caregiver-assigned vocalization labels)."""
+"""ReCANVo dataset builder (21 caregiver-assigned vocalization labels)."""
 
 from __future__ import annotations
 
@@ -29,6 +29,7 @@ def _load_builder_config() -> dict:
 
 _CFG = _load_builder_config()
 _LABELS = {str(label) for label in _CFG["labels"]}
+_ALIASES = {str(k): str(v) for k, v in _CFG["label_aliases"].items()}
 
 
 def iter_source_candidates(
@@ -171,8 +172,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If a label is not listed in ``labels`` or a file name
-            appears twice.
+        ValueError: If a label is not listed in ``labels`` (after applying
+            ``label_aliases``) or a file name appears twice.
         FileNotFoundError: If a recording named in the table is absent.
     """
     entries = []
@@ -183,6 +184,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         for row in csv.DictReader(fh):
             name = row["Filename"].strip()
             label = row["Label"].strip()
+            label = _ALIASES.get(label, label)
             if label not in _LABELS:
                 raise ValueError(
                     f"Unknown label {label!r} for {name}. Known: {sorted(_LABELS)}"
