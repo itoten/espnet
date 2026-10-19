@@ -8,13 +8,17 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import zipfile
 from collections import Counter
 from importlib import resources
 from pathlib import Path
 from random import Random
-from typing import Iterator
+from typing import Callable, Iterator
 
+import numpy as np
+import soundfile as sf
+import yaml
 from espnet3.components.data.dataset_builder import DatasetBuilder
 from espnet3.utils.config_utils import load_config_with_defaults
 from espnet3.utils.download_utils import download_url
@@ -251,12 +255,63 @@ def assign_splits(entries: list[dict]) -> dict[str, str]:
     }
 
 
+def load_enhancer(model_tag: str, enhanced_weight: float) -> Callable:
+    """Return a function that reduces the reverberation of a waveform.
+
+    The pretrained ESPnet enhancement model ``model_tag`` is applied, and its
+    output (scaled to the input level) is mixed with the input as
+    ``enhanced_weight * enhanced + (1 - enhanced_weight) * input``, since the
+    model output alone sounded choppy.
+
+    Args:
+        model_tag: Hugging Face id of an ESPnet enhancement model.
+        enhanced_weight: Share of the enhanced signal in the mix, 0 to 1.
+
+    Returns:
+        Callable: Maps ``(waveform, sampling_rate)`` to the processed waveform.
+    """
+    import torch
+    from huggingface_hub import snapshot_download
+
+    from espnet2.bin.enh_inference import SeparateSpeech
+
+    root = Path(snapshot_download(model_tag))
+    (config_path,) = root.glob("exp/*/config.yaml")
+    model_file = max(root.glob("exp/*/*.pth"), key=lambda p: p.stat().st_size)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    # Training losses are not used at inference and need extra packages.
+    config["criterions"] = None
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    with tempfile.TemporaryDirectory() as tmp:
+        patched = Path(tmp) / "config.yaml"
+        patched.write_text(yaml.safe_dump(config), encoding="utf-8")
+        model = SeparateSpeech(
+            train_config=str(patched),
+            model_file=str(model_file),
+            device=device,
+            normalize_output_wav=True,
+        )
+    logger.info("Enhancement model %s (%s) on %s", model_tag, model_file.name, device)
+
+    def enhance(wave: np.ndarray, sampling_rate: int) -> np.ndarray:
+        with torch.no_grad():
+            enhanced = np.asarray(model(wave[None, :], fs=sampling_rate)[0]).reshape(-1)
+        energy = float(enhanced @ enhanced)
+        if energy > 0:
+            enhanced = enhanced * float(wave @ enhanced) / energy
+        mixed = enhanced_weight * enhanced + (1.0 - enhanced_weight) * wave
+        return np.clip(mixed, -1.0, 1.0)
+
+    return enhance
+
+
 class UscEmoMriBuilder(DatasetBuilder):
     """Prepare USC-EMO-MRI for the classification recipe.
 
     `build()` cuts every labelled utterance out of its AVI as 16 kHz mono
-    audio and writes one manifest per split, drawn as a speaker-held-out
-    split (see :func:`assign_splits`).
+    audio, optionally reduces its reverberation (see :func:`load_enhancer`) and
+    writes one manifest per split, drawn as a speaker-held-out split (see
+    :func:`assign_splits`).
     """
 
     def is_source_prepared(
@@ -311,7 +366,7 @@ class UscEmoMriBuilder(DatasetBuilder):
         source_dir: str | Path | None = None,
         **_kwargs,
     ) -> None:
-        """Cut and resample the utterances and write one TSV manifest per split.
+        """Cut, resample and enhance the utterances; write one manifest per split.
 
         Args:
             recipe_dir: Recipe directory, used to resolve relative locations.
@@ -332,6 +387,9 @@ class UscEmoMriBuilder(DatasetBuilder):
         wav_dir = data_root / str(_CFG["wav_subdir"])
         wav_dir.mkdir(parents=True, exist_ok=True)
         sampling_rate = str(_CFG["sampling_rate"])
+        enhancement = _CFG["enhancement"]
+        use_enhancement = bool(enhancement["enabled"])
+        enhance = None
 
         entries = read_entries(source_root)
         assignment = assign_splits(entries)
@@ -359,6 +417,8 @@ class UscEmoMriBuilder(DatasetBuilder):
                         sampling_rate,
                         "-f",
                         "wav",
+                        "-c:a",
+                        "pcm_f32le" if use_enhancement else "pcm_s16le",
                         "-y",
                         "-hide_banner",
                         "-loglevel",
@@ -367,6 +427,16 @@ class UscEmoMriBuilder(DatasetBuilder):
                     ],
                     check=True,
                 )
+                if use_enhancement:
+                    if enhance is None:
+                        enhance = load_enhancer(
+                            str(enhancement["model_tag"]),
+                            float(enhancement["enhanced_weight"]),
+                        )
+                    wave, rate = sf.read(part, dtype="float32")
+                    sf.write(
+                        part, enhance(wave, rate), rate, subtype="PCM_16", format="WAV"
+                    )
                 part.replace(wav)
             rows[assignment[entry["utt_id"]]].append(
                 (entry["utt_id"], str(wav.resolve()), entry["label"])

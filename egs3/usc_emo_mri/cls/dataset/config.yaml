@@ -38,9 +38,23 @@ builder:
     valid: manifest/valid.tsv
     test: manifest/test.tsv
 
+  # Reverberation reduction -----------------------------------------------
+  # The recordings sound reverberant (recorded inside the MRI scanner).
+  # With `enabled: true`, each utterance goes through this ESPnet enhancement
+  # model, and the output is mixed back with the input at `enhanced_weight`
+  # (the model output alone sounded choppy). Both were chosen by listening to
+  # six utterances and are not tuned.
+  # `enabled: false` keeps the plain converted audio. The setting is read only
+  # when the audio is written, so after changing it, delete `wav/` and the
+  # manifests in the output directory before running `create_dataset` again.
+  enhancement:
+    enabled: true
+    model_tag: espnet/Wangyou_Zhang_universal_train_enh_uses_refch0_2mem_raw
+    enhanced_weight: 0.9
+
   # Build outputs ---------------------------------------------------------
   # The audio is 20 kHz mono; `build()` cuts each utterance out of its AVI
-  # and converts it to 16 kHz.
+  # and converts it to 16 kHz before the reverberation reduction.
   output_env_var: USC_EMO_MRI_OUTPUT
   data_path: data
   wav_subdir: wav
