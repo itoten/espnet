@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import tarfile
@@ -31,7 +32,9 @@ def _load_builder_config() -> dict:
 
 _CFG = _load_builder_config()
 _CLASSES = [str(c) for c in _CFG["polarity_classes"]]
+_CHANNEL_SIDE = {1: "caller", 2: "agent"}
 _ROLES = ("agent", "caller")
+_TAG = re.compile(r"\[[^\]]*\]")
 
 
 def iter_source_candidates(
@@ -143,33 +146,45 @@ def read_segments(source_root: Path) -> list[dict]:
     Returns:
         list[dict]: Keys ``utt_id``, ``group`` (call id), ``source`` (wav of the
         speaking side), ``start`` and ``duration`` in seconds, and ``label``.
+        Segments whose human transcript is empty or only tags such as ``[noise]``
+        are skipped.
 
     Raises:
         ValueError: If a segment carries an unexpected class set.
     """
     audio = source_root / str(_CFG["audio_subdir"])
     rows = []
+    n_skipped = 0
     for sid in _list_sids(source_root):
         path = source_root / str(_CFG["transcript_subdir"]) / f"{sid}.json"
         segments = json.loads(path.read_text(encoding="utf-8"))
         for seg in segments:
+            if not _TAG.sub("", seg["human_transcript"]).strip():
+                n_skipped += 1
+                continue
             scores = seg["emotion"]
             if sorted(scores) != sorted(_CLASSES):
                 raise ValueError(f"Unexpected classes {sorted(scores)} in {path}")
             role = seg["speaker_role"]
+            # In 37 calls `speaker_role` names the other side's wav; the voice
+            # is in the wav named by `channel_index`.
+            side = _CHANNEL_SIDE[seg["channel_index"]]
             # `start_ms` is the position in the per-side wav; `offset_ms` is not.
             rows.append(
                 {
                     "utt_id": f"hvb-{sid}-{int(seg['index']):04d}-{role}",
                     "group": sid,
-                    "source": str(audio / role / f"{sid}.wav"),
+                    "source": str(audio / side / f"{sid}.wav"),
                     "start": seg["start_ms"] / 1000.0,
                     "duration": seg["duration_ms"] / 1000.0,
                     "label": max(scores, key=scores.get),
                 }
             )
     logger.info(
-        "Read %d segment(s) from %d call(s)", len(rows), len({r["group"] for r in rows})
+        "Read %d segment(s) from %d call(s); skipped %d with no spoken words",
+        len(rows),
+        len({r["group"] for r in rows}),
+        n_skipped,
     )
     return rows
 

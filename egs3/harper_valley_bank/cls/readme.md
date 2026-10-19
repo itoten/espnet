@@ -11,24 +11,31 @@ between a bank agent and a caller, with 59 speakers across the agent and caller
 roles. Each call is stored as two 8 kHz mono wav files, one per side. The
 transcript of a call is a list of segments with a human transcript, a dialog act
 and a softmax over `negative`, `neutral` and `positive`. This recipe makes one
-utterance per segment: 25,730 segments, 12.0 hours in total, 0.03 to 18.7
-seconds long (the 47.3 hours of audio in the repository count both sides of each
-call in full).
+utterance per segment that has spoken words: 19,456 of the 25,730 segments,
+11.4 hours in total, 0.06 to 18.7 seconds long (the 47.3 hours of audio in the
+repository count both sides of each call in full).
 
 The label is the arg-max of the segment's softmax. The README of the corpus
 describes it as the output of Gridspace's emotion model ("emotional valence"), so
 the labels are model outputs, not human judgements, and they measure polarity,
-not discrete emotions. Over the 25,730 segments: 17,149 neutral, 8,148 positive,
-433 negative.
+not discrete emotions. Over the 19,456 segments: 10,960 neutral, 8,080 positive,
+416 negative.
+
+Segment boundaries come from Gridspace's automatic speech recognition (each
+segment ends at the end of its last recognized word), and the label is assigned
+to every segment, including ones with no speech. The 6,274 segments whose human
+transcript is empty or only tags such as `[noise]` or `[music]` are therefore
+excluded.
 
 `start_ms` of a segment is its position in the per-side wav. `offset_ms`, which the
 corpus README describes as the offset from the start of the recording, does not
 match the audio (measured by scanning the energy of the audio around both
-fields); this recipe uses `start_ms`. Thirteen segments start after the end of
-their recording and are dropped. `create_dataset` cuts each segment out of its
-call and converts it to 16 kHz mono with ffmpeg. Many segments are
-very short: 3,068 of the 20,556 train and valid segments are shorter than 0.2 s,
-and `remove_long_short` removes them.
+fields); this recipe uses `start_ms`. The wav is chosen by `channel_index`
+(1 is the caller side, 2 the agent side), not by `speaker_role`: in 37 calls
+the two disagree, and listening shows the voice is in the wav named by
+`channel_index`. `create_dataset` cuts each segment out of its call and
+converts it to 16 kHz mono with ffmpeg. 150 of the segments are shorter than
+0.2 s; `remove_long_short` removes those in train and valid.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -40,8 +47,8 @@ default to `download/` and `data/` under the recipe.
 
 `prepare_source` downloads the repository tarball (676 MB compressed, 2.6 GB
 extracted) from GitHub without a login and extracts it. Measured on one run:
-about 3 minutes to download; `create_dataset`, `remove_long_short` and
-`prepare_labels` together took 3 minutes 5 seconds (8 ffmpeg workers).
+about 3 minutes to download; `create_dataset` took 81 seconds, `remove_long_short`
+14 seconds and `prepare_labels` under a second (8 ffmpeg workers).
 
 ## Splits
 
@@ -52,9 +59,9 @@ callers appear in several calls and therefore in several splits.
 
 | split | utterances | after `remove_long_short` | negative / neutral / positive (filtered) |
 |---|---|---|---|
-| train | 17,973 | 15,304 | 283 / 9,315 / 5,706 |
-| valid | 2,583 | 2,184 | 54 / 1,341 / 789 |
-| test | 5,161 | 5,161 (not filtered) | 96 / 3,415 / 1,650 (unfiltered) |
+| train | 13,599 | 13,488 | 273 / 7,586 / 5,629 |
+| valid | 1,950 | 1,937 | 51 / 1,090 / 796 |
+| test | 3,907 | 3,907 (not filtered) | 92 / 2,160 / 1,655 (unfiltered) |
 
 The label is skewed to neutral and `negative` is rare, so `prepare_labels` writes class
 weights.
@@ -62,9 +69,18 @@ weights.
 ## License and citation
 
 The repository's `LICENSE` file is the Creative Commons Attribution 4.0
-International license. Cite: Mike Wu, Jonathan Nafziger, Anthony Scodary and
-Andrew Maas, "HarperValleyBank: A Domain-Specific Spoken Dialog Corpus",
-[arXiv:2010.13929](https://arxiv.org/abs/2010.13929).
+International license. The corpus README asks for this citation:
+
+```
+@misc{wu2020harpervalleybank,
+  title         = {HarperValleyBank: A Domain-Specific Spoken Dialog Corpus},
+  author        = {Mike Wu and Jonathan Nafziger and Anthony Scodary and Andrew Maas},
+  year          = {2020},
+  eprint        = {2010.13929},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+}
+```
 
 ## Quick start
 
