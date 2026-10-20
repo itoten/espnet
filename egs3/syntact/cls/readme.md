@@ -12,6 +12,12 @@ not human. The release has 6,001 wav files, all 16 kHz mono, 0.82 to 30.51 secon
 long, 11.15 hours in total. The label is the emotion the synthesizer was asked to
 produce, taken from the official `db.emotion.categories.*.desired.csv` tables.
 
+Thirty `neutral` files are byte-identical to the `sad` file with the preceding
+number (same voice, all in the official train set). The cause is not known. Only
+the `sad` file of each pair is kept; the thirty `neutral` files are listed in
+`exclude_files` in `dataset/config.yaml`, and `create_dataset` stops if identical
+files are left. The recipe therefore uses 5,971 of the 6,001 files.
+
 Environment variables (both optional; defaults are `download/` and `data/` under the
 recipe):
 
@@ -31,9 +37,12 @@ The official split is voice-disjoint: `de1`-`de4` train and `de6`/`de7` test. No
 validation set is published, so voice `de3` moves from train to valid.
 Test voices are never seen in training; the valid voice is not seen either.
 
+The per-class columns count the utterances left after `remove_long_short` (the test
+split is not filtered).
+
 | split | utterances | hours | after `remove_long_short` | angry | boredom | fear | happy | neutral | sad |
 |---|---|---|---|---|---|---|---|---|---|
-| train | 2,753 | 5.06 | 2,752 | 365 | 532 | 408 | 509 | 517 | 422 |
+| train | 2,723 | 4.97 | 2,722 | 365 | 532 | 408 | 509 | 487 | 421 |
 | valid | 867 | 1.55 | 867 | 94 | 170 | 133 | 170 | 168 | 132 |
 | test | 2,381 | 4.54 | 2,381 (not filtered) | 394 | 410 | 388 | 396 | 408 | 385 |
 

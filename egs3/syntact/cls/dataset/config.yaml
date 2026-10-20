@@ -26,6 +26,41 @@ builder:
     neutral: neutral
     sadness: sad
 
+  # Exclusions -----------------------------------------------------------
+  # Files left out of every split (see the readme). Each is the neutral-labeled
+  # copy of a sad-labeled recording with byte-identical audio.
+  exclude_files:
+    - synthesized_audio/de1_neutral_p000255.wav
+    - synthesized_audio/de1_neutral_p000507.wav
+    - synthesized_audio/de1_neutral_p002451.wav
+    - synthesized_audio/de1_neutral_p003567.wav
+    - synthesized_audio/de1_neutral_p003819.wav
+    - synthesized_audio/de1_neutral_p005151.wav
+    - synthesized_audio/de1_neutral_p005367.wav
+    - synthesized_audio/de1_neutral_p006771.wav
+    - synthesized_audio/de1_neutral_p007203.wav
+    - synthesized_audio/de2_neutral_p000261.wav
+    - synthesized_audio/de2_neutral_p000441.wav
+    - synthesized_audio/de2_neutral_p000657.wav
+    - synthesized_audio/de2_neutral_p002385.wav
+    - synthesized_audio/de2_neutral_p002457.wav
+    - synthesized_audio/de2_neutral_p006129.wav
+    - synthesized_audio/de2_neutral_p006489.wav
+    - synthesized_audio/de4_neutral_p000381.wav
+    - synthesized_audio/de4_neutral_p000705.wav
+    - synthesized_audio/de4_neutral_p001317.wav
+    - synthesized_audio/de4_neutral_p003297.wav
+    - synthesized_audio/de4_neutral_p003801.wav
+    - synthesized_audio/de4_neutral_p003981.wav
+    - synthesized_audio/de4_neutral_p004269.wav
+    - synthesized_audio/de4_neutral_p004593.wav
+    - synthesized_audio/de4_neutral_p005205.wav
+    - synthesized_audio/de4_neutral_p005313.wav
+    - synthesized_audio/de4_neutral_p006285.wav
+    - synthesized_audio/de4_neutral_p006537.wav
+    - synthesized_audio/de4_neutral_p006861.wav
+    - synthesized_audio/de4_neutral_p007005.wav
+
   # Split -----------------------------------------------------------------
   # Official split: voices de1-de4 train, de6/de7 test (disjoint). No valid
   # set is published, so voice de3 moves from train to valid.

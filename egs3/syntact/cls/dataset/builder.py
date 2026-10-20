@@ -155,8 +155,32 @@ def _download_source(destination: Path) -> None:
         archive_path.unlink(missing_ok=True)
 
 
+def _md5(path: Path) -> str:
+    """Return the MD5 hex digest of a file, read in chunks."""
+    digest = hashlib.md5()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _check_no_duplicates(entries: list[dict[str, str]]) -> None:
+    """Raise if two recordings are byte-identical."""
+    owner: dict[str, str] = {}
+    for entry in entries:
+        digest = _md5(Path(entry["source"]))
+        if digest in owner:
+            raise ValueError(
+                f"Identical file: {entry['utt_id']} and {owner[digest]}; "
+                "add one of them to `exclude_files`"
+            )
+        owner[digest] = entry["utt_id"]
+
+
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings with the official split and desired emotion.
+
+    Files named in ``exclude_files`` are skipped.
 
     Args:
         source_root: Directory holding the ``release_dir`` folder.
@@ -167,12 +191,14 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If an emotion is unknown, a file name does not parse or
-            disagrees with the voice table, or a file is listed twice.
+            disagrees with the voice table, a file is listed twice, an excluded
+            name is not found, or two remaining recordings are byte-identical.
         FileNotFoundError: If a table or a recording is missing.
     """
     release = source_root / str(_CFG["release_dir"])
     with (release / "db.files.csv").open(encoding="utf-8") as fh:
         voice_of = {row["file"]: row["speaker"] for row in csv.DictReader(fh)}
+    excluded = {str(n) for n in _CFG["exclude_files"]}
     entries = []
     seen: set[str] = set()
     for split, table in _CFG["tables"].items():
@@ -193,6 +219,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
             if name in seen:
                 raise ValueError(f"Recording listed twice: {name}")
             seen.add(name)
+            if name in excluded:
+                excluded.discard(name)
+                continue
             wav = release / name
             if not wav.is_file():
                 raise FileNotFoundError(f"Missing recording: {wav}")
@@ -205,8 +234,11 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     "label": _EMOTION_MAP[row["emotion"]],
                 }
             )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No SyntAct audio under {source_root}")
+    _check_no_duplicates(entries)
     logger.info(
         "Read %d utterance(s) from %d voice(s)",
         len(entries),
