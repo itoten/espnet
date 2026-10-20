@@ -4,16 +4,24 @@ Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling +
 head) on the RML Emotion Database alone and scores it on its own test split,
 classifying each utterance into one of six emotions.
 
-**License: Unknown.** The Kaggle page lists the license as "Unknown", and no
-terms of use were found. Check with the Ryerson Multimedia Lab before using the
-data beyond internal research.
+**License: Unknown.** The Kaggle page, published under the account Ryerson
+Multimedia Lab, lists the license as "Unknown" and states no terms of use.
+An archived copy (2015) of the lab's original page
+([Wayback Machine](https://web.archive.org/web/20150514235638/http://www.rml.ryerson.ca/rml-emotion-database.html))
+says the data is for research and non-commercial use only; it is a reference, not
+an authoritative source. Check with the lab before using the data beyond
+internal research.
 
 [RML Emotion Database](https://www.kaggle.com/datasets/ryersonmultimedialab/ryerson-emotion-database)
 (Ryerson Multimedia Lab, Kaggle) is a set of 720 acted audio-visual clips, 120
 in each of six emotions: `angry`, `disgust`, `fear`, `happy`, `sad` and
-`surprise` (there is no neutral class). The Kaggle release is avi video with a
-stereo audio track (44.1 kHz in 669 clips, 48 kHz in 51), 2.13 to 8.37 s long,
-0.99 hours in total. `create_dataset` extracts the audio as 16 kHz mono wav with ffmpeg.
+`surprise` (there is no neutral class). The Kaggle description says that "about
+500 samples" were selected by a listening test; the download has no marker for
+which clips these are, so this recipe uses every clip except six exact duplicates
+(714 in all). The Kaggle release is avi
+video with a stereo audio track (44.1 kHz in 669 clips, 48 kHz in 51), 2.13 to
+8.37 s long, 0.99 hours in total; the Kaggle description says 22,050 Hz and a
+single channel. `create_dataset` extracts the audio as 16 kHz mono wav with ffmpeg.
 
 Files are laid out as `s<N>/s<N>/[f<M><lang>/]<emo><take>.avi`. The emotion is
 the two-letter code in the file name (`an`, `di`, `fe`, `ha`, `sa`, `su`). `s1`
@@ -21,7 +29,9 @@ to `s8` are treated as 8 speakers, which the Kaggle page does not confirm. Subje
 `s3` to `s8` have language folders (`eng`, `chi`, `per`, `urd`, `pjb`, `sdh`, `hnh`); `s1`
 and `s2` have none. The meaning of the language codes is taken from their
 spelling, not from any documentation. Eleven clips form five groups of byte-identical files
-(same subject, folder and emotion); they are kept.
+(same subject, folder and emotion). Only the lowest take number of each group is
+kept; the other six are listed in `exclude_files` in `dataset/config.yaml`, and
+`create_dataset` stops if identical files are left.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -46,9 +56,9 @@ approximate and the labels are not balanced across splits.
 
 | split | utterances | subjects |
 |---|---|---|
-| train | 420 | s1, s4, s7, s8 |
+| train | 415 | s1, s4, s7, s8 |
 | valid | 80 | s3 |
-| test | 220 | s2, s5, s6 |
+| test | 219 | s2, s5, s6 |
 
 No clip is shorter than the 0.2 s floor of `remove_long_short`, and none is longer than 30 s.
 

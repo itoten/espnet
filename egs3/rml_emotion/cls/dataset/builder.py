@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import re
@@ -53,6 +54,15 @@ def iter_source_candidates(
     if env_value:
         yield Path(env_value).expanduser()
     yield recipe_root / _CFG["dataset_path"]
+
+
+def _md5(path: Path) -> str:
+    """Return the MD5 hex digest of a file, read in chunks."""
+    digest = hashlib.md5()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _iter_avi(root: Path) -> Iterator[tuple[Path, re.Match]]:
@@ -112,6 +122,8 @@ def resolve_data_root(recipe_root: Path) -> Path:
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings, taking the label from the file name.
 
+    Files named in ``exclude_files`` are skipped.
+
     Args:
         source_root: Corpus root from :func:`resolve_source_root`.
 
@@ -120,11 +132,17 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         subject folder) and ``label``.
 
     Raises:
-        ValueError: If a file's emotion code is unknown.
+        ValueError: If a file's emotion code is unknown, an excluded name is
+            not found, or two remaining recordings are byte-identical.
         FileNotFoundError: If no recording is found.
     """
+    excluded = set(_CFG["exclude_files"])
     entries = []
     for avi, fields in _iter_avi(source_root):
+        rel = avi.relative_to(source_root).as_posix()
+        if rel in excluded:
+            excluded.discard(rel)
+            continue
         if fields["emotion"] not in _EMOTION_MAP:
             raise ValueError(
                 f"Unknown emotion code {fields['emotion']!r} in {avi}. "
@@ -139,14 +157,30 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "label": _EMOTION_MAP[fields["emotion"]],
             }
         )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No RML recordings under {source_root}")
+    _check_no_duplicates(entries)
     logger.info(
         "Read %d utterance(s) from %d subject(s)",
         len(entries),
         len({e["group"] for e in entries}),
     )
     return entries
+
+
+def _check_no_duplicates(entries: list[dict[str, str]]) -> None:
+    """Raise if two recordings are byte-identical."""
+    owner: dict[str, str] = {}
+    for entry in entries:
+        digest = _md5(Path(entry["source"]))
+        if digest in owner:
+            raise ValueError(
+                f"Identical file: {entry['utt_id']} and {owner[digest]}; "
+                "add one of them to `exclude_files`"
+            )
+        owner[digest] = entry["utt_id"]
 
 
 def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:

@@ -18,6 +18,17 @@ builder:
     sa: sad
     su: surprise
 
+  # Exclusions -----------------------------------------------------------
+  # Files left out of every split (see the readme).
+  exclude_files:
+    # Each group is byte-identical; the lowest take number is kept.
+    - s5/s5/f1eng/ha3.avi
+    - s7/s7/f3pjb/an3.avi
+    - s7/s7/f3pjb/su3.avi
+    - s7/s7/f3pjb/su4.avi
+    - s8/s8/f3chi/an2.avi
+    - s8/s8/f3chi/sa2.avi
+
   # Split -----------------------------------------------------------------
   # No partition is published. Whole subject folders (s1 ... s8, assumed to be
   # 8 speakers) are assigned at random to test, then valid, then train.
