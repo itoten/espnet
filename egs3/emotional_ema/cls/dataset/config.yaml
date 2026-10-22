@@ -1,8 +1,10 @@
 builder:
   # Source layout ---------------------------------------------------------
   # `EMA_5EMO_NSF/<jn|jr|kf>/wav_mat/ema_5emo_<speaker>_<emo>_<rate>_<set>_utt<N>.wav`
-  # plus `pssg_short/wav_mat/` for the passages. The emotion is the intended
-  # (prompted) one.
+  # plus `pssg_short/wav_mat/` for the passages, and one `<group>_best_emo` table
+  # (`<utterance> <code>` per line) in each of `jn/`, `jr/`, `kf/`, `pssg_short/`.
+  # The label is the final label of the listener evaluation, not the prompted
+  # emotion.
   source_env_var: EMOTIONAL_EMA
   dataset_path: download
 
@@ -14,16 +16,21 @@ builder:
   archive_md5: 92dd86193f6e8b63207767f533471bff
   # Fewer files means an interrupted extraction.
   expected_files: 953
+  # The label tables are extracted next to the recordings.
+  label_table_suffix: _best_emo
+  expected_label_tables: 4
   remove_archive: true
 
   # Labels ----------------------------------------------------------------
-  # The emotion code in the file name to manifest label.
-  emotion_map:
-    ang: angry
-    fea: fear
-    hap: happy
-    neu: neutral
-    sad: sad
+  # The code in `*_best_emo` to manifest label. The archive does not explain the
+  # codes; they follow the column order (neu, ang, hap, sad, fea) of the
+  # per-listener evaluation file.
+  label_map:
+    "1": neutral
+    "2": angry
+    "3": happy
+    "4": sad
+    "5": fear
 
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each

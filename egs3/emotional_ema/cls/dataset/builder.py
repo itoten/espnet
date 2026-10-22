@@ -35,7 +35,7 @@ def _load_builder_config() -> dict:
 
 
 _CFG = _load_builder_config()
-_EMOTION_MAP = {str(k): str(v) for k, v in _CFG["emotion_map"].items()}
+_LABEL_MAP = {str(k): str(v) for k, v in _CFG["label_map"].items()}
 
 
 def iter_source_candidates(
@@ -61,21 +61,21 @@ def iter_source_candidates(
 def resolve_source_root(
     recipe_root: Path, source_dir: str | Path | None = None
 ) -> Path:
-    """Return the first candidate holding at least one Emotional EMA recording.
+    """Return the first candidate holding the recordings and the label tables.
 
-    Recordings are searched recursively, since they sit in a single
-    `EMA_5EMO_NSF/` directory.
+    Both are searched recursively, since they sit in a single `EMA_5EMO_NSF/`
+    directory.
 
     Args:
         recipe_root: Resolved recipe directory.
         source_dir: Explicit location, tried first when given.
 
     Returns:
-        Path: Corpus root holding all
-        ``<speaker>_S<scene>_<trial>_<emotion>.wav`` files below it.
+        Path: Corpus root holding ``expected_files`` recordings and
+        ``expected_label_tables`` label tables below it.
 
     Raises:
-        FileNotFoundError: If no candidate holds ``expected_files`` recordings.
+        FileNotFoundError: If no candidate qualifies.
     """
     checked = []
     for candidate in iter_source_candidates(recipe_root, source_dir):
@@ -85,6 +85,7 @@ def resolve_source_root(
                 1 for wav in candidate.rglob("*.wav") if FILENAME_RE.match(wav.name)
             )
             >= _CFG["expected_files"]
+            and len(_label_tables(candidate)) >= _CFG["expected_label_tables"]
         ):
             return candidate
         checked.append(str(candidate))
@@ -92,8 +93,8 @@ def resolve_source_root(
         "Complete Emotional EMA audio not found. Checked:\n  "
         + "\n  ".join(checked)
         + f"\nSet ${_CFG['source_env_var']} to a directory holding the "
-        "extracted `EMA_5EMO_NSF/` directory, or let `prepare_source` download it from "
-        "Zenodo."
+        "extracted `EMA_5EMO_NSF/` directory (recordings and `*_best_emo` label "
+        "tables), or let `prepare_source` download it from Zenodo."
     )
 
 
@@ -112,8 +113,13 @@ def resolve_data_root(recipe_root: Path) -> Path:
     return recipe_root / _CFG["data_path"]
 
 
+def _label_tables(root: Path) -> list[Path]:
+    """Return the listener label tables below ``root``."""
+    return sorted(root.rglob("*" + str(_CFG["label_table_suffix"])))
+
+
 def _extract_wavs(archive: Path, destination: Path) -> None:
-    """Extract the WAV files of the archive into ``destination``.
+    """Extract the WAV files and label tables of the archive into ``destination``.
 
     Args:
         archive: ``.zip`` archive to read.
@@ -127,7 +133,9 @@ def _extract_wavs(archive: Path, destination: Path) -> None:
     root = destination.resolve()
     with zipfile.ZipFile(archive) as zf:
         for member in zf.namelist():
-            if not member.lower().endswith(".wav"):
+            if not member.lower().endswith(
+                (".wav", str(_CFG["label_table_suffix"]))
+            ):
                 continue
             if member.startswith("__MACOSX/"):
                 continue
@@ -164,8 +172,38 @@ def _download_source(destination: Path) -> None:
         archive_path.unlink(missing_ok=True)
 
 
+def read_labels(source_root: Path) -> dict[str, str]:
+    """Read the final listener label of every utterance.
+
+    Args:
+        source_root: Corpus root with the label tables somewhere below it.
+
+    Returns:
+        dict[str, str]: Recording name without extension to manifest label.
+
+    Raises:
+        ValueError: If a code is unknown or an utterance is listed twice.
+    """
+    labels: dict[str, str] = {}
+    for table in _label_tables(source_root):
+        for line in table.read_text(encoding="utf-8").splitlines():
+            fields = line.split()
+            if not fields:
+                continue
+            name, code = fields[0], fields[1]
+            if code not in _LABEL_MAP:
+                raise ValueError(
+                    f"Unknown label code {code!r} for {name} in {table}. "
+                    f"Known: {sorted(_LABEL_MAP)}"
+                )
+            if name in labels:
+                raise ValueError(f"Utterance listed twice in the label tables: {name}")
+            labels[name] = _LABEL_MAP[code]
+    return labels
+
+
 def read_entries(source_root: Path) -> list[dict[str, str]]:
-    """Collect the recordings, taking the label from the file name.
+    """Collect the recordings, taking the label from the listener evaluation.
 
     Args:
         source_root: Corpus root with the recordings somewhere below it.
@@ -175,10 +213,11 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If a file's emotion code is unknown, or two files share a
-            name (the name is the utterance id).
+        ValueError: If a recording has no label, a label has no recording, or
+            two files share a name (the name is the utterance id).
         FileNotFoundError: If no recording is found.
     """
+    labels = read_labels(source_root)
     entries = []
     seen: dict[str, Path] = {}
     skipped = 0
@@ -187,11 +226,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         if fields is None:
             skipped += 1
             continue
-        if fields["emotion"] not in _EMOTION_MAP:
-            raise ValueError(
-                f"Unknown emotion code {fields['emotion']!r} in {wav}. "
-                f"Known: {sorted(_EMOTION_MAP)}"
-            )
+        if wav.stem not in labels:
+            raise ValueError(f"No listener label for {wav}")
         if wav.stem in seen:
             raise ValueError(f"Duplicate recording name: {wav} and {seen[wav.stem]}")
         seen[wav.stem] = wav
@@ -200,9 +236,12 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "utt_id": f"emotional_ema-{wav.stem}",
                 "source": str(wav),
                 "speaker": fields["speaker"],
-                "label": _EMOTION_MAP[fields["emotion"]],
+                "label": labels[wav.stem],
             }
         )
+    unused = set(labels) - set(seen)
+    if unused:
+        raise ValueError(f"Labels without a recording: {sorted(unused)[:5]}")
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
     if not entries:
