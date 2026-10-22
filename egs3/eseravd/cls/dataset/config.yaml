@@ -24,6 +24,36 @@ builder:
     "05": disgust
     "06": fear
 
+  # Exclusions -----------------------------------------------------------
+  # Files left out of every split (see the readme): 12 pairs of clips from the
+  # film DRNT hold the same audio under two different emotion labels. Which
+  # label is right cannot be decided, so both clips of each pair are dropped.
+  exclude_files:
+    - 02-01-DRNT-T-0097.wav
+    - 02-01-DRNT-T-0098.wav
+    - 02-01-DRNT-T-0099.wav
+    - 02-01-DRNT-T-0101.wav
+    - 02-02-DRNT-T-0035.wav
+    - 02-02-DRNT-T-0054.wav
+    - 02-02-DRNT-T-0055.wav
+    - 02-02-DRNT-T-0064.wav
+    - 02-02-DRNT-T-0066.wav
+    - 02-02-DRNT-T-0091.wav
+    - 02-02-DRNT-T-0097.wav
+    - 02-02-DRNT-T-0106.wav
+    - 02-03-DRNT-T-0016.wav
+    - 02-03-DRNT-T-0049.wav
+    - 02-03-DRNT-T-0052.wav
+    - 02-04-DRNT-T-0082.wav
+    - 02-04-DRNT-T-0085.wav
+    - 02-05-DRNT-T-0049.wav
+    - 02-05-DRNT-T-0058.wav
+    - 02-06-DRNT-T-0021.wav
+    - 02-06-DRNT-T-0053.wav
+    - 02-06-DRNT-T-0054.wav
+    - 02-06-DRNT-T-0059.wav
+    - 02-06-DRNT-T-0062.wav
+
   # Split -----------------------------------------------------------------
   # No partition or speaker id is published. The clips come from 11 films, so
   # whole films are held out (3 for test, 1 for valid, 7 for training) as the

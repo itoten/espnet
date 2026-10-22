@@ -109,6 +109,8 @@ def _iter_wavs(root: Path) -> Iterator[Path]:
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings, taking the label from the emotion code in the name.
 
+    Files named in ``exclude_files`` are skipped.
+
     Args:
         source_root: Directory holding the release folder (``release_dir``).
 
@@ -118,9 +120,11 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If a name does not parse, the emotion code is unknown or
-            disagrees with the folder, or two files share a name.
+            disagrees with the folder, two files share a name, or an excluded
+            name is not found.
         FileNotFoundError: If no recording is found.
     """
+    excluded = {str(n) for n in _CFG["exclude_files"]}
     entries = []
     seen: dict[str, Path] = {}
     for wav in _iter_wavs(source_root):
@@ -137,6 +141,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         if wav.stem in seen:
             raise ValueError(f"Duplicate recording name: {wav} and {seen[wav.stem]}")
         seen[wav.stem] = wav
+        if wav.name in excluded:
+            excluded.discard(wav.name)
+            continue
         entries.append(
             {
                 "utt_id": f"eseravd-{wav.stem}",
@@ -145,6 +152,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "label": _EMOTION_MAP[fields["code"]],
             }
         )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No E-SERAVD audio under {source_root}")
     logger.info(
