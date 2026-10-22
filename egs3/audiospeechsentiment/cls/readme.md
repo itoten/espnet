@@ -13,6 +13,23 @@ recipe uses only the 250 labelled files: `negative` 87, `positive` 82 and `neutr
 The audio is 44.1 kHz stereo, 1.70 to 3.94 seconds long (0.18 hours); 78 of the
 250 files are stored as 64-bit float rather than 16-bit PCM.
 
+## About the labels
+
+The labels are not emotion categories, and they are not usable for categorical
+emotion recognition. A light check (Whisper large-v3 transcripts of the 250 files,
+not reviewed by a person) found that the spoken sentences are English and that the
+label follows the meaning of the sentence: 67 sentences are recorded two or three
+times (145 files) and every repetition has the same label ("You have given a great
+response." is `positive`, "Your choice is very bad." is `negative`). If the label
+comes from the words rather than the voice, the dataset does not teach
+paralinguistic information and also cannot serve as a sentiment task for speech;
+whether the voice was performed to match the polarity was not checked by
+listening. The F0 medians of the files fall in a narrow range (128 to 148 Hz for
+the 5th to 95th percentile), which suggests one speaker, and the Whisper language
+detector is often unsure (English for 201 of 250 files), which may point to an
+accented speaker. None of this is stated by the uploader. The labelling procedure
+is unknown.
+
 Three environment variables control where the data lives. The last two are optional
 and default to `download/` and `data/` under the recipe.
 
