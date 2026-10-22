@@ -10,6 +10,13 @@ labelled `angry`, `happy`, `neutral` or `sad`, with a speaker id for each clip
 (400 speakers). The clips are already 16 kHz mono; `create_dataset` copies them
 through ffmpeg unchanged in format.
 
+The card says three native Ukrainian speakers labelled each clip and the majority
+vote (at least two of three) is the label; clips without a majority were removed
+(Fleiss' kappa 0.46). The card does not say where the audio comes from.
+
+`h_213_1` is the same recording as `h_212_1` (same speaker and label, confirmed by
+listening), so it is left out (`exclude_files` in `dataset/config.yaml`).
+
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
@@ -31,7 +38,7 @@ split is kept (test 181 clips). A valid split is cut from train by whole speaker
 
 | split | utterances |
 |---|---|
-| train | 708 |
+| train | 707 |
 | valid | 63 |
 | test | 181 |
 

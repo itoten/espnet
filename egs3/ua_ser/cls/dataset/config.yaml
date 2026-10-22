@@ -17,6 +17,11 @@ builder:
   expected_files: 952
   num_workers: 8
 
+  # Files left out of every split (see the readme): `h_213_1` is the same
+  # recording as `h_212_1` (same speaker and label, confirmed by listening).
+  exclude_files:
+    - h_213_1.wav
+
   # Split -----------------------------------------------------------------
   # `dataset.csv` marks every clip train or test, and no speaker is in both.
   # The labels are used as published (angry, happy, neutral, sad). A valid

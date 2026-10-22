@@ -203,8 +203,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If a row has an unknown split, a repeated file name, or
-            no recording.
+            no recording, or a name in ``exclude_files`` is not found.
     """
+    excluded = {str(n) for n in _CFG["exclude_files"]}
     entries = []
     seen = set()
     with (source_root / str(_CFG["metadata_file"])).open(encoding="utf-8") as fh:
@@ -218,6 +219,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
             if not wav.is_file():
                 raise ValueError(f"{name} is listed but missing: {wav}")
             seen.add(name)
+            if name in excluded:
+                excluded.discard(name)
+                continue
             entries.append(
                 {
                     "utt_id": f"ua_ser-{Path(name).stem}",
@@ -227,6 +231,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     "split": row["split"],
                 }
             )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise ValueError("The metadata file has no rows")
     logger.info(
