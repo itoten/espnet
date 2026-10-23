@@ -15,6 +15,13 @@ angry 769, fear 623, playfulness 621, happy 603, sad 546, surprise 508, neutral 
 Speakers are named `female001`-`female005` and `male001`-`male005`; each has 323 to 473
 clips. No duplicate clips were found.
 
+Each clip comes with the sentence read aloud (`text` column; the recipe does not use
+it). The 1,296 sentences were written for one emotion each: none is read in more
+than one emotion, and in the samples we read the wording often shows the emotion.
+A model could therefore partly judge by the wording, not only by the voice. By ear
+the emotions also differ in how they are spoken (listened to on 2026-10-23: four
+clips per emotion, different speakers).
+
 The label is the `emotion` column of the parquet files; `dataset/config.yaml` maps it
 to the manifest label. `playfulness` is kept as its own class, since it has no
 counterpart in the other recipes. The clips are converted to 16 kHz mono with ffmpeg
