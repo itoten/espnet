@@ -108,6 +108,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         FileNotFoundError: If more than ``max_missing_audio`` chunks named in
             the table have no wav file.
     """
+    excluded = {str(n) for n in _CFG["exclude_files"]}
     files: dict[str, Path] = {}
     for wav in sorted(source_root.glob(str(_CFG["audio_glob"]))):
         if wav.name in files:
@@ -131,10 +132,15 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     f"Unknown emotion {emotion!r} for {name}. "
                     f"Known: {sorted(_EMOTION_MAP)}"
                 )
+            call, turn, chunk = fields["call"], fields["turn"], fields["chunk"]
+            # Some names use `V4-10` and others `V4_10`; the list uses `_`.
+            canonical = f"V{call}_{turn} ({chunk}).wav"
+            if canonical in excluded:
+                excluded.discard(canonical)
+                continue
             if name not in files:
                 missing.append(name)
                 continue
-            call, turn, chunk = fields["call"], fields["turn"], fields["chunk"]
             entries.append(
                 {
                     "utt_id": f"anad-V{call}_{turn}_{chunk}",
@@ -144,6 +150,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 }
             )
 
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)[:5]}")
     allowed = int(_CFG["max_missing_audio"])
     if len(missing) > allowed:
         raise FileNotFoundError(
@@ -153,7 +161,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if missing:
         logger.warning("Skipped %d chunk(s) the release does not ship", len(missing))
-    n_unlabeled = len(files) - len(entries)
+    n_unlabeled = len(files) - len(entries) - len(_CFG["exclude_files"])
     if n_unlabeled:
         logger.warning(
             "Ignored %d wav chunk(s) with no label in the table", n_unlabeled

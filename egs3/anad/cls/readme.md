@@ -11,15 +11,23 @@ recordings of live phone calls on Arabic talk shows. The release cuts them into
 (written `surprise` here, as in the other recipes).
 
 Measured on the copy used here: 1,334 chunks that have both a wav file and a
-label, 0.34 hours in total, 0.05 to 1.0 seconds long (104 are shorter than
-0.5 s, 61 shorter than 0.1 s). They are 44.1 kHz stereo as distributed and are
-converted to 16 kHz mono. Classes: angry 723, happy 469, surprise 142.
+label, 0.05 to 1.0 seconds long. They are 44.1 kHz stereo as distributed and are
+converted to 16 kHz mono. 768 of them are excluded (see below), leaving 566:
+angry 404, happy 154, surprise 8. The remaining chunks come almost entirely
+from two calls: V7 (angry, 376) and V8 (happy, 149).
 
 Things to know when reading the scores:
 
 - Every label is constant within a call: calls V1, V3, V8 are `happy`, V2 and
   V6 are `surprise`, V4, V5 and V7 are `angry`. A model can therefore learn the
   call (speaker, line, topic) instead of the emotion.
+- The release describes the labels as given by 18 listeners per video (call),
+  not per chunk. Whether each chunk's audio matches its label has not been
+  checked.
+- 768 chunks are skipped (`exclude_files` in `dataset/config.yaml`): they fall in
+  two groups of near-identical audio (386 and 382 chunks, each about 1 s) that
+  appear under different calls and labels. Six of them, listened to, were the
+  same audio.
 - No speaker id is published. The splits below keep a call's turn together but
   do not hold speakers out.
 - The release is not fully consistent: `ANAD.csv` lists 1,383 chunks, but 49 of
@@ -30,7 +38,9 @@ Things to know when reading the scores:
 
 Kaggle dataset `suso172/arabic-natural-audio-dataset` (version 11, 2017-12-01),
 licence shown on Kaggle: CC BY-NC-SA 4.0 (non-commercial, share-alike). The
-required citation was not checked; see the Kaggle page.
+paper that introduces it is Klaylat et al., "Emotion recognition in Arabic
+speech", Analog Integrated Circuits and Signal Processing 96, 337-351 (2018).
+Whether a citation is required was not checked; see the Kaggle page.
 
 Kaggle requires a login, so the recipe does not download. Download the zip and
 extract only the audio and the table:
@@ -59,9 +69,9 @@ groups are assigned largest first to the split furthest below its target
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 937 | 894 |
-| valid | 131 | 107 |
-| test | 266 | 266 (not filtered) |
+| train | 396 | 349 |
+| valid | 56 | 33 |
+| test | 114 | 114 (not filtered) |
 
 ## Quick start
 
