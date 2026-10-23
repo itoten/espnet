@@ -25,6 +25,23 @@ They are skipped (the log reports the count). The
 dataset description gives 2,312 utterances and 605 for jealousy, which is the number of `.m4a` files
 including 9 of these; those 9 are skipped too because they are not numbered.
 
+## About the labels
+
+The labels may not carry paralinguistic information. By ear, the classes do not
+differ in how they are spoken. A light check (Whisper large-v3 transcripts forced
+to Bangla, 20 files per class, not reviewed by a Bangla speaker) suggests the
+label follows the meaning of the sentence: `sad` files lament ("the happy days are
+over"), `affection` files show care ("don't look at your phone while eating"),
+`jealousy` files resent ("you never looked at me like that"), and `neutral` files
+are short everyday remarks.
+
+The description's five gender-balanced speakers could not be confirmed. By ear
+the files sound like one female voice. With a speaker-verification model
+(`espnet/voxcelebs12_ska_mel`, which has a 24% equal error rate on 1,200 SUBESCO
+files from 20 speakers), 96% of the 2,303 files fall into one cluster at that
+threshold; two SUBESCO female speakers mixed together reach at most 58%.
+Both checks are rough and only suggest these conclusions.
+
 ## Provenance
 
 Mendeley Data, DOI `10.17632/hpfv67fgb8.1`, licence CC BY 4.0 as stated on the
