@@ -12,29 +12,37 @@ is Telugu, recorded through the SurveyLex platform, with 6 emotions (`angry`,
 here has `BESD/<TELUGU|ENGLISH>/<EMOTION>/` folders with 4,204 wav files; the
 folder gives the label.
 
-After the cleaning described below, 4,191 recordings are used: 2,097 English and
-2,094 Telugu, 3.02 hours in total, 0.94 to 5.03 seconds long (median about
+After the cleaning described below, 4,164 recordings are used: 2,096 English and
+2,068 Telugu, 3.00 hours in total, 0.94 to 5.03 seconds long (median about
 2.6 s). They are 48 kHz stereo as distributed and are converted to 16 kHz
-mono. Classes: angry 694, disgust 700, fear 700, happy 699, neutral 699,
-sad 699.
+mono. Classes: angry 694, disgust 699, fear 700, happy 693, neutral 684,
+sad 694.
 
 Things to know when reading the scores:
 
 - The Kaggle text says 4,320 utterances (and 4,200 elsewhere); the release holds
-  4,204 wav files. The shortfall is not explained.
-- No child id is published. File names read `<number>.<T|E><F|M>_<n>_<emotion>_<take>.wav`
-  (for example `1.TF_12_angry_1.wav`); `<n>` ranges from 6 to 13 in the data and
-  is presumably the age, but this is not documented. The running number
-  restarts in every emotion folder, and the same (sex, `<n>`, number) triple
-  occurs in only some of the emotion folders, so the recordings of one child
-  cannot be reliably put together. The split below is therefore a guess at
+  4,204 wav files. The formula it gives (35 children x 2 sexes x 5 sentences x
+  6 emotions x 2 languages) works out to 4,200.
+- File names read `<number>.<T|E><F|M>_<age>_<emotion>_<take>.wav` (for example
+  `1.TF_12_angry_1.wav`). The Kaggle description says the first number is the
+  child's number and the number after the sex letter is the child's age (6 to 12
+  in the description; 6 to 13 in the data). Yet the same (sex, age, number)
+  triple occurs in only some of the emotion folders, so the recordings of one
+  child cannot be reliably put together. The split below is therefore a guess at
   "same child".
 - Cleaning: 10 files sit in a folder that contradicts the emotion in their name
   (five `Angry` files in `FEAR` and five `fear` files in `ANGER`; each is a
   byte-identical copy of the correctly filed one) and are dropped. One
   `... - Copy.wav` file and two files whose identical audio appears under two
-  different labels (`neutral` and `sad`) are dropped too. 26 other groups of
-  byte-identical files with a single label remain.
+  different labels (`neutral` and `sad`) are dropped too.
+- 25 more groups (52 files) hold byte-identical audio under one label. Only the
+  first utterance id of each group is kept, so 27 files are dropped. In most of
+  these groups the copies carry **different child numbers, and in five groups
+  different ages** (for example `neutral` takes 1 to 5 appear both as child 50,
+  age 8 and as child 70, age 7). The release gives no way to tell which child
+  and age are right, so the child number and age of the kept file may be wrong.
+  The emotion label is the same within every group. The groups were found by
+  checksum.
 - File names are inconsistent (`Angry`/`angry`/`anger`, `Disguist`, `neutal`,
   missing separators), so the emotion in the name is only compared with the
   folder by its first two letters.
@@ -71,13 +79,13 @@ out, because the grouping is a guess.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 2,931 | 2,931 |
-| valid | 420 | 420 |
-| test | 840 | 840 (not filtered) |
+| train | 2,913 | 2,913 |
+| valid | 419 | 419 |
+| test | 832 | 832 (not filtered) |
 
-Each split is about half Telugu and half English (train 1,464 Telugu / 1,467
-English, valid and test exactly half), and the six labels are balanced within it
-(test: 140 each).
+Each split is about half Telugu and half English (train 1,446 Telugu / 1,467
+English, valid 209 / 210, test 413 / 419), and the six labels are nearly
+balanced within it (test: 134 to 140).
 
 ## Quick start
 

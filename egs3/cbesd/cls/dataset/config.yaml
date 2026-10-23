@@ -1,9 +1,9 @@
 builder:
   # Source layout ---------------------------------------------------------
   # `BESD/<TELUGU|ENGLISH>/<ANGER|DISGUST|FEAR|HAPPY|NEUTRAL|SAD>/*.wav`, named
-  # like `1.TF_12_angry_1.wav` or `1.EF_12 Angry_1.wav`: a running number,
-  # language (T/E) and sex (F/M), a number that is presumably the child's age,
-  # the emotion and the take. Spelling and separators vary between files.
+  # like `1.TF_12_angry_1.wav` or `1.EF_12 Angry_1.wav`: the child's number,
+  # language (T/E) and sex (F/M), the child's age (both per the Kaggle
+  # description), the emotion and the take. Spelling and separators vary between files.
   source_env_var: CBESD
   dataset_path: download
   audio_subdir: BESD

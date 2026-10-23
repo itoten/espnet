@@ -23,8 +23,8 @@ from espnet3.utils.config_utils import load_config_with_defaults
 
 logger = logging.getLogger(__name__)
 
-# `1.TF_12_angry_1.wav`, `1.EF_12 Angry_1.wav`, `3EF_9 Angry_2.wav`: running
-# number, language, sex, a number (presumably age), emotion, take. Separators
+# `1.TF_12_angry_1.wav`, `1.EF_12 Angry_1.wav`, `3EF_9 Angry_2.wav`: child
+# number, language, sex, age (per the Kaggle description), emotion, take. Separators
 # vary, and one file ends in ` - Copy`.
 NAME_RE = re.compile(
     r"^(?P<num>\d+)\.?\s*(?P<lang>[TE])(?P<sex>[FM])[_-]\s*(?P<age>\d+)\s*[_ ]?\s*"
@@ -109,8 +109,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings, taking the label from the folder.
 
     Files whose name spells another emotion than the folder, byte-identical
-    files filed under different labels, and `- Copy` duplicates are dropped
-    (each count is logged).
+    files filed under different labels, and `- Copy` duplicates are dropped.
+    Of byte-identical files with one label, only the first utterance id is
+    kept (each count is logged).
 
     Returns:
         list[dict[str, str]]: Keys ``utt_id``, ``source``, ``group``, ``lang``,
@@ -163,13 +164,22 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     n_total = len(entries)
     entries = [e for e in entries if len(labels_of[e["digest"]]) == 1]
     n_conflict = n_total - len(entries)
-    if n_mismatch or n_copy or n_conflict:
+    # Same audio under one label but different ids: keep the first id.
+    first_of: dict[str, str] = {}
+    for e in sorted(entries, key=lambda e: e["utt_id"]):
+        first_of.setdefault(e["digest"], e["utt_id"])
+    n_before = len(entries)
+    entries = [e for e in entries if first_of[e["digest"]] == e["utt_id"]]
+    n_same = n_before - len(entries)
+    if n_mismatch or n_copy or n_conflict or n_same:
         logger.warning(
             "Dropped %d file(s) whose name disagrees with the folder, %d duplicate "
-            "copy file(s) and %d file(s) whose audio appears under two labels",
+            "copy file(s), %d file(s) whose audio appears under two labels and "
+            "%d repeated file(s) of the same audio and label",
             n_mismatch,
             n_copy,
             n_conflict,
+            n_same,
         )
     if not entries:
         raise FileNotFoundError(f"No C-BESD audio under {source_root}")
