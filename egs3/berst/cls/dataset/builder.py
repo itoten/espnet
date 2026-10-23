@@ -174,10 +174,12 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         and ``label``.
 
     Raises:
-        ValueError: If an ``affect`` value is unknown or two clips share an id.
+        ValueError: If an ``affect`` value is unknown, two clips share an id, or an
+            `exclude_files` name is absent.
     """
     entries = []
     seen = set()
+    excluded = set(_CFG["exclude_files"])
     for split, split_dir in _SPLIT_DIRS.items():
         for row in _read_metadata(source_root / split_dir):
             affect = row["affect"].strip()
@@ -192,6 +194,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
             if utt_id in seen:
                 raise ValueError(f"Duplicate utterance id: {utt_id}")
             seen.add(utt_id)
+            if utt_id in excluded:
+                excluded.discard(utt_id)
+                continue
             entries.append(
                 {
                     "utt_id": utt_id,
@@ -201,6 +206,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     "label": _EMOTION_MAP[affect],
                 }
             )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     logger.info(
         "Read %d utterance(s) from %d speaker(s)",
         len(entries),

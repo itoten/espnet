@@ -29,6 +29,75 @@ builder:
     sadness: sad
     surprise: surprise
 
+  # Clips left out (utterance ids). The metadata of 5 byte-identical pairs
+  # disagrees, 6 clips hold the phrase three times in one file, 5 more hold
+  # it repeated or begin with the spoken label, and 42 are copies of a clip
+  # that is kept (the first by id).
+  exclude_files:
+    - berst-shout_data_44ec8f04-e3c7-43a7-bcd8-631d7e27c86b-chunk20
+    - berst-shout_data_44ec8f04-e3c7-43a7-bcd8-631d7e27c86b-chunk31
+    - berst-shout_data_44ec8f04-e3c7-43a7-bcd8-631d7e27c86b-chunk41
+    - berst-shout_data_4aa3b670-3ccf-475e-9ac0-6351bb315338-chunkc
+    - berst-shout_data_4bb811d3-48ec-4355-a775-f87a0da6d70a-chunka
+    - berst-shout_data_4c738c2a-08e4-4e9a-a4a9-bae2cc4216bd-chunk01
+    - berst-shout_data_4c738c2a-08e4-4e9a-a4a9-bae2cc4216bd-chunk03
+    - berst-shout_data_4c738c2a-08e4-4e9a-a4a9-bae2cc4216bd-chunk21
+    - berst-shout_data_5213d340-04e4-44c8-a006-9b1f427a53b8-chunka
+    - berst-shout_data_5213d340-04e4-44c8-a006-9b1f427a53b8-chunkb
+    - berst-shout_data_5213d340-04e4-44c8-a006-9b1f427a53b8-chunkc
+    - berst-shout_data_5ad86d48-aa41-477a-90f9-634549962fa9-chunk01
+    - berst-shout_data_5ad86d48-aa41-477a-90f9-634549962fa9-chunk31
+    - berst-shout_data_5ad86d48-aa41-477a-90f9-634549962fa9-chunk40
+    - berst-shout_data_684c15d3-926b-4b86-bb22-7f81d1385312-chunk11
+    - berst-shout_data_684c15d3-926b-4b86-bb22-7f81d1385312-chunk21
+    - berst-shout_data_684c15d3-926b-4b86-bb22-7f81d1385312-chunk23
+    - berst-shout_data_875cf9b4-d152-4397-a353-4605d4ad37ee-chunka
+    - berst-shout_data_8761419c-6380-4c27-bdad-7e1a87782d84-chunka
+    - berst-shout_data_87bcbce3-8294-4d9c-b4a5-0077c7f1ee15-chunka
+    - berst-shout_data_87bcbce3-8294-4d9c-b4a5-0077c7f1ee15-chunkb
+    - berst-shout_data_87bcbce3-8294-4d9c-b4a5-0077c7f1ee15-chunkc
+    - berst-shout_data_8f280ac7-c191-4681-b683-95f5ad1f25a2-chunkc
+    - berst-shout_data_8f4eaa18-cf04-4510-98e7-5ae21d7dea71-chunkc
+    - berst-shout_data_9280d0a4-3ff6-4932-91cc-8b58fa3e0942-chunka
+    - berst-shout_data_9280d0a4-3ff6-4932-91cc-8b58fa3e0942-chunkb
+    - berst-shout_data_9280d0a4-3ff6-4932-91cc-8b58fa3e0942-chunkc
+    - berst-shout_data_92b98903-4c2f-4c83-acdf-d4b976196b77-chunka
+    - berst-shout_data_92b98903-4c2f-4c83-acdf-d4b976196b77-chunkb
+    - berst-shout_data_92b98903-4c2f-4c83-acdf-d4b976196b77-chunkc
+    - berst-shout_data_946043ad-9230-4795-9d60-892c1b287598-chunka
+    - berst-shout_data_946043ad-9230-4795-9d60-892c1b287598-chunkb
+    - berst-shout_data_946043ad-9230-4795-9d60-892c1b287598-chunkc
+    - berst-shout_data_964f36ae-e21e-4e45-8554-43f1fbaf85b8-chunka
+    - berst-shout_data_964f36ae-e21e-4e45-8554-43f1fbaf85b8-chunkb
+    - berst-shout_data_964f36ae-e21e-4e45-8554-43f1fbaf85b8-chunkc
+    - berst-shout_data_9841fc58-3870-4ca5-b439-5465eb3e7b53-chunka
+    - berst-shout_data_9841fc58-3870-4ca5-b439-5465eb3e7b53-chunkb
+    - berst-shout_data_9841fc58-3870-4ca5-b439-5465eb3e7b53-chunkc
+    - berst-shout_data_9c4ded42-d46c-4e81-ab9e-38c09a046bf6-chunka
+    - berst-shout_data_9c4ded42-d46c-4e81-ab9e-38c09a046bf6-chunkb
+    - berst-shout_data_9c4ded42-d46c-4e81-ab9e-38c09a046bf6-chunkc
+    - berst-shout_data_a054afa9-d1cc-4fdd-8cc3-cdd4d868367b-chunka
+    - berst-shout_data_a054afa9-d1cc-4fdd-8cc3-cdd4d868367b-chunkb
+    - berst-shout_data_a054afa9-d1cc-4fdd-8cc3-cdd4d868367b-chunkc
+    - berst-shout_data_a05b07ab-f294-4fd4-a6bb-85c853815fa1-chunka
+    - berst-shout_data_a05b07ab-f294-4fd4-a6bb-85c853815fa1-chunkb
+    - berst-shout_data_a05b07ab-f294-4fd4-a6bb-85c853815fa1-chunkc
+    - berst-shout_data_a528556f-9dd7-4a64-8e57-90b5f2ceb7a5-chunka
+    - berst-shout_data_a528556f-9dd7-4a64-8e57-90b5f2ceb7a5-chunkb
+    - berst-shout_data_a528556f-9dd7-4a64-8e57-90b5f2ceb7a5-chunkc
+    - berst-shout_data_c68b65df-ed10-4475-93b6-d24cb69ccf88-chunk10
+    - berst-shout_data_c68b65df-ed10-4475-93b6-d24cb69ccf88-chunk31
+    - berst-shout_data_c68b65df-ed10-4475-93b6-d24cb69ccf88-chunk40
+    - berst-shout_data_d82e7ae5-9ac0-4eb5-b967-357005577cd9-chunk01
+    - berst-shout_data_d82e7ae5-9ac0-4eb5-b967-357005577cd9-chunk21
+    - berst-shout_data_d82e7ae5-9ac0-4eb5-b967-357005577cd9-chunk40
+    - berst-shout_data_e662146c-b3cd-48d4-989c-7fc9ce5e0b7a-chunk21
+    - berst-shout_data_e662146c-b3cd-48d4-989c-7fc9ce5e0b7a-chunk23
+    - berst-shout_data_e662146c-b3cd-48d4-989c-7fc9ce5e0b7a-chunk25
+    - berst-shout_data_fae767fb-6308-4b1e-9818-71730554d3b9-chunk21
+    - berst-shout_data_fae767fb-6308-4b1e-9818-71730554d3b9-chunk31
+    - berst-shout_data_fae767fb-6308-4b1e-9818-71730554d3b9-chunk41
+
   # Split -----------------------------------------------------------------
   # The published train/validation/test split is used as is. According to the
   # dataset card there is no speaker overlap between the splits.

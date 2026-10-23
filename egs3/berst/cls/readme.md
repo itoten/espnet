@@ -9,14 +9,46 @@ phrase Shouts) is an English corpus of 98 actors who recorded 13 nonsense phrase
 at home on their own smartphones, asking each to speak, raise their voice and
 shout the phrase while moving the phone to different places in the house. The
 recipe uses the speech segments the authors cut from those recordings
-(4,523 clips, 3.73 hours, 1.03 to 22.5 seconds long). The clips are mono, 48 kHz
+(4,523 clips, 3.73 hours, 1.03 to 22.5 seconds long); 63 of them are left out
+(see "Clips left out"), so 4,460 are used. The clips are mono, 48 kHz
 (3,704) or 44.1 kHz (819), so `create_dataset` converts them to 16 kHz with ffmpeg.
 
 The label is the `affect` column of the metadata: the emotion the actor was asked
 to portray. The dataset card states that these labels were not validated by
 listeners. `dataset/config.yaml` maps `anger`, `joy` and `sadness` to `angry`,
 `happy` and `sad`; `disgust`, `fear`, `neutral` and `surprise` are kept. All seven
-classes are roughly balanced in train (454 to 564 clips).
+classes are roughly balanced in train (436 to 561 clips).
+
+## Clips left out
+
+63 clips are listed in `exclude_files` in `dataset/config.yaml` and skipped. The
+list was made from the 4,523 clips; whether other clips share the problems below
+was not checked everywhere (see the last paragraph).
+
+- **Identical audio (52 clips, not counting the 6 below).** 31 groups of clips have byte-identical audio
+  (MD5 of the raw files). In 24 groups the same speaker, emotion and phrase were
+  uploaded in several recordings; one clip per group (the first by utterance id)
+  is kept and 42 are left out. In 5 groups the metadata disagrees (a different
+  speaker, emotion or phrase on the same audio, in train, and one pair across
+  valid and test), so both copies, 10 clips, are left out; the label cannot be
+  trusted either way. In 2 groups, three chunks of one recording are identical
+  (see the next item).
+- **Several takes in one clip (11 clips).** The three chunks of one recording
+  (`chunka`, `chunkb`, `chunkc`) sometimes hold the phrase repeated, as in
+  "A. phrase B. phrase C. phrase": the actor appears to have recorded three
+  levels in one take and the cut was not made. These are left out: the 6 identical
+  clips above (7.85 s and 22.5 s), three clips of speaker `bfd2fa` (the chunks
+  hold all three, the last two, or the last one of the repetitions, plus a spoken
+  "Anger." at the start), one clip of `5b6bd2` (phrase twice) and one of `0140dc`
+  ("A. B. C." read aloud). The `chunkc` clip of `bfd2fa` was dropped only for the
+  spoken label.
+- They could be used after trimming each by hand; that was not done.
+
+Only the 86 clips longer than 6 seconds were transcribed (Whisper large-v3) and
+checked for a repeated phrase (31 of them were not recognised as the phrase,
+mostly because the speech was hard to hear; the ones listened to were fine).
+The other 4,437 clips were not transcribed, so repeated phrases or spoken labels
+in shorter clips may remain.
 
 ## Provenance
 
@@ -57,12 +89,12 @@ The published train / validation / test split is used. It is speaker-disjoint
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 3,503 | 3,503 |
-| valid | 488 | 488 |
-| test | 532 | 532 (not filtered) |
+| train | 3,445 | 3,445 |
+| valid | 487 | 487 |
+| test | 528 | 528 (not filtered) |
 
 The test split is not balanced: `sad` has only 26 clips (angry 99, fear 99, neutral
-94, happy 79, surprise 69, disgust 66), so per-class scores for `sad` are noisy.
+91, happy 79, surprise 68, disgust 66), so per-class scores for `sad` are noisy.
 
 ## Quick start
 
