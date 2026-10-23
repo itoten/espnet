@@ -13,6 +13,18 @@ so `create_dataset` converts them to 16 kHz with ffmpeg. The gender in the file 
 (3,446 male and 1,769 female clips) is the only speaker information; no
 speaker id, video id or transcript is published.
 
+Things to know when reading the scores:
+
+- The clips are not all distinct. 49 pairs (98 clips) are near-identical: the
+  waveforms correlate above 0.98 (mostly 0.9998 or higher) within 10 ms of each
+  other, and the bytes differ. They look like the same 3 seconds saved under two
+  numbers. 3 pairs carry different labels (`Happy_005_Male` / `Neutral_225_Male`,
+  `Fear_646_Male` / `Neutral_024_Male`, `Fear_645_Male` / `Neutral_293_Male`), and
+  20 pairs fall into different splits. Only clips of the same length that line up
+  are found; windows cut at an offset from the same video and overlapping in part
+  were not searched for. All 5,215 clips are used as they are.
+- How the labels were given (listeners or the video context) is not stated.
+
 ## Provenance
 
 figshare article 30218872 (version 3, published 2026-03-17), DOI
