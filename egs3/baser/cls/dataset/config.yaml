@@ -23,6 +23,69 @@ builder:
     NEUTRAL: neutral
     SAD: sad
 
+  # Duplicates ------------------------------------------------------------
+  # Files left out. In each group of identical recordings (byte-identical, or
+  # the same waveform for M_2_MIFTA_S_1_SAD_2/_3) only the lowest take is kept.
+  exclude_files:
+    - F_3_MAHI_S_1_SAD_3.wav
+    - F_4_TABASSUM_S_3_NEUTRAL_3.wav
+    - M_2_MIFTA_S_1_SAD_3.wav
+    - M_2_MIFTA_S_2_HAPPY_3.wav
+    - M_3_MAHMUD_S_2_FEAR_3.wav
+    - M_4_RIAD_S_1_ANGRY_2.wav
+    - M_4_RIAD_S_1_ANGRY_3.wav
+    - M_4_RIAD_S_1_FEAR_2.wav
+    - M_4_RIAD_S_1_FEAR_3.wav
+    - M_4_RIAD_S_1_HAPPY_2.wav
+    - M_4_RIAD_S_1_HAPPY_3.wav
+    - M_4_RIAD_S_1_NEUTRAL_2.wav
+    - M_4_RIAD_S_1_NEUTRAL_3.wav
+    - M_4_RIAD_S_1_SAD_2.wav
+    - M_4_RIAD_S_1_SAD_3.wav
+    - M_4_RIAD_S_2_ANGRY_2.wav
+    - M_4_RIAD_S_2_ANGRY_3.wav
+    - M_4_RIAD_S_2_FEAR_2.wav
+    - M_4_RIAD_S_2_FEAR_3.wav
+    - M_4_RIAD_S_2_HAPPY_2.wav
+    - M_4_RIAD_S_2_HAPPY_3.wav
+    - M_4_RIAD_S_2_NEUTRAL_2.wav
+    - M_4_RIAD_S_2_NEUTRAL_3.wav
+    - M_4_RIAD_S_2_SAD_2.wav
+    - M_4_RIAD_S_2_SAD_3.wav
+    - M_4_RIAD_S_3_ANGRY_2.wav
+    - M_4_RIAD_S_3_ANGRY_3.wav
+    - M_4_RIAD_S_3_FEAR_2.wav
+    - M_4_RIAD_S_3_FEAR_3.wav
+    - M_4_RIAD_S_3_HAPPY_2.wav
+    - M_4_RIAD_S_3_HAPPY_3.wav
+    - M_4_RIAD_S_3_NEUTRAL_2.wav
+    - M_4_RIAD_S_3_NEUTRAL_3.wav
+    - M_4_RIAD_S_3_SAD_2.wav
+    - M_4_RIAD_S_3_SAD_3.wav
+    - M_4_RIAD_S_4_ANGRY_2.wav
+    - M_4_RIAD_S_4_ANGRY_3.wav
+    - M_4_RIAD_S_4_FEAR_2.wav
+    - M_4_RIAD_S_4_FEAR_3.wav
+    - M_4_RIAD_S_4_HAPPY_2.wav
+    - M_4_RIAD_S_4_HAPPY_3.wav
+    - M_4_RIAD_S_4_NEUTRAL_2.wav
+    - M_4_RIAD_S_4_NEUTRAL_3.wav
+    - M_4_RIAD_S_4_SAD_2.wav
+    - M_4_RIAD_S_4_SAD_3.wav
+    - M_4_RIAD_S_5_ANGRY_2.wav
+    - M_4_RIAD_S_5_ANGRY_3.wav
+    - M_4_RIAD_S_5_FEAR_2.wav
+    - M_4_RIAD_S_5_FEAR_3.wav
+    - M_4_RIAD_S_5_HAPPY_2.wav
+    - M_4_RIAD_S_5_HAPPY_3.wav
+    - M_4_RIAD_S_5_NEUTRAL_2.wav
+    - M_4_RIAD_S_5_NEUTRAL_3.wav
+    - M_4_RIAD_S_5_SAD_2.wav
+    - M_4_RIAD_S_5_SAD_3.wav
+    - M_5_JUHAYER_S_3_FEAR_2.wav
+    - M_5_JUHAYER_S_3_FEAR_3.wav
+    - M_5_JUHAYER_S_4_ANGRY_21.wav
+
   # Split -----------------------------------------------------------------
   # No partition is published. Whole speakers are held out: the test split
   # takes one female and one male speaker, the valid split one more speaker,

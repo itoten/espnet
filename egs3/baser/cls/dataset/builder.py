@@ -100,13 +100,18 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         and ``label``.
 
     Raises:
-        ValueError: If a name does not match, an emotion is unknown, or two
-            files map to the same utterance id.
+        ValueError: If a name does not match, an emotion is unknown, two
+            files map to the same utterance id, or an `exclude_files` name is
+            absent.
         FileNotFoundError: If no recording is found.
     """
     entries = []
     seen: set[str] = set()
+    excluded = set(_CFG["exclude_files"])
     for wav in sorted((source_root / str(_CFG["audio_subdir"])).glob("*.wav")):
+        if wav.name in excluded:
+            excluded.discard(wav.name)
+            continue
         fields = NAME_RE.match(wav.name)
         if fields is None:
             raise ValueError(f"Unexpected recording name {wav.name!r}")
@@ -128,6 +133,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "label": _EMOTION_MAP[fields["emotion"]],
             }
         )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No BASER audio under {source_root}")
     logger.info(

@@ -10,7 +10,11 @@ actors aged 12 to 19, six male and six female. The copy used here has **10**
 speakers (five female, five male), each reading 5 sentences in five emotions
 (`angry`, `fear`, `happy`, `neutral`, `sad`) with 3 takes. That gives 750
 recordings, 150 per emotion (75 per speaker), 0.61 hours in total, 1.71 to
-5.01 seconds long. They are 48 kHz mono and are converted to 16 kHz.
+5.01 seconds long. They are 48 kHz mono and are converted to 16 kHz. Why the
+copy has 10 speakers instead of 12 is not known.
+
+58 of the 750 files are duplicates and are excluded (see below), so 692
+recordings are used: angry 139, fear 137, happy 139, neutral 139, sad 138.
 
 The label and the speaker are taken from the file name
 `<F|M>_<n>_<NAME>_S_<sentence>_<EMOTION>_<take>.wav` (for example
@@ -20,10 +24,13 @@ is unknown.
 
 Things to know when reading the scores:
 
-- The recordings are not all distinct. 693 of the 750 files have distinct
-  content (MD5): speaker RIAD's three takes of every sentence and emotion are
-  identical (50 redundant files), JUHAYER has 3 redundant files, and MAHI,
-  MAHMUD, MIFTA and TABASSUM one each. Speaker RIAD is in the test split here.
+- Duplicates are excluded (`exclude_files` in `dataset/config.yaml`). 692 of the
+  750 files have distinct content. Speaker RIAD's three takes of every sentence
+  and emotion are byte-identical (50 redundant files); JUHAYER has 3 redundant
+  files, and MAHI, MAHMUD, MIFTA and TABASSUM one each, and the two takes
+  `M_2_MIFTA_S_1_SAD_2` and `_3` have different bytes but the same waveform.
+  From each group only the lowest take is kept, 58 files are left out in all.
+  The duplicates were confirmed by listening on 2026-10-23.
 - The file names have a few irregularities: three have no take number
   (`F_1_CHAITY_S_5_SAD_.wav`, `F_2_IRA_S_1_HAPPY_.wav`,
   `M_3_MAHMUD_S_1_NEUTRAL_.wav`), one has take 21
@@ -55,13 +62,14 @@ No partition is published. Whole speakers are held out
 (`split_seed` in `dataset/config.yaml`): one female (`F4`, TABASSUM) and one male
 (`M4`, RIAD) speaker for test, one more (`F1`, CHAITY) for valid, and the other
 seven for training. Scores are therefore speaker-independent, but the
-sentences are shared across splits. Every class has the same count in each split.
+sentences are shared across splits. The duplicates are removed before the split,
+so RIAD (test) has 25 files and TABASSUM (test) 74.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 525 | 525 |
+| train | 518 | 518 |
 | valid | 75 | 75 |
-| test | 150 | 150 (not filtered) |
+| test | 99 | 99 (not filtered) |
 
 ## Quick start
 
