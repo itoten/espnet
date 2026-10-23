@@ -24,10 +24,25 @@ by `create_dataset`.
 
 Hugging Face dataset `ATH-MaaS/CSEMOTIONS` (the repository formerly named
 `AIDC-AI/CSEMOTIONS` redirects there), pinned to commit
-`19498e62e6745cf9ec9b69a44b826caa467eac31`. It is not gated. The licence is
-Apache-2.0. The repository's `NOTICE` file states that the dataset incorporates
-Emotional-Speech-Data (ESD, MIT licence), noting that "this database can only be used
-for research purpose"; which clips come from ESD is not stated, so check this before
+`19498e62e6745cf9ec9b69a44b826caa467eac31`. It is not gated. The dataset card gives
+the licence as Apache-2.0.
+
+The repository's `NOTICE` file also states that the dataset incorporates
+Emotional-Speech-Data (ESD, MIT licence) and notes that "this database can only be
+used for research purpose". It does not say which clips come from ESD. This recipe
+treats the corpus as Apache-2.0 because no ESD material could be found in it
+(checked on 2026-10-23):
+
+- Audio: no clip is a near-duplicate of any of the 35,000 ESD clips (clips of the
+  same length compared by waveform; parts of clips were not compared).
+- Text: ESD's Chinese speakers all read the same 350 sentences (transcribed here
+  with Whisper from one speaker). None of the 1,296 CSEMOTIONS sentences is close
+  to any of them (at most 19% of character pairs shared).
+- The Marco-Voice report describes CSEMOTIONS as newly recorded by its ten voice
+  actors and lists ESD separately as another training set.
+
+The research-only note may therefore come from the Marco-Voice project as a whole,
+which also trained on ESD, but the authors do not say so. Check the `NOTICE` before
 any non-research use.
 
 Two environment variables control where the data lives. Both are optional and
@@ -49,8 +64,8 @@ The corpus publishes no partition. Whole speakers are held out
 (`n_test_speakers`, `n_valid_speakers`, `split_seed` in `dataset/config.yaml`): with
 seed 0, `male003` and `male004` form the test set, `female002` the valid set, and the
 other seven speakers the training set. Scores are therefore speaker-independent, but
-the sentences may be shared with the training set (not checked), and the test speakers
-are both male.
+the sentences are shared: 848 of the 849 test sentences and all 378 valid sentences
+are also read in the training set. The test speakers are both male.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
