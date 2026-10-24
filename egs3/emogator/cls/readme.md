@@ -25,6 +25,32 @@ The label is the category number in the file name `<contributor>-<category>-<ins
 are written `angry` and `sad` to match the other recipes. `create_dataset` converts
 the recordings to 16 kHz mono wav with ffmpeg.
 
+## How the labels were made
+
+(From the paper, Buhl, [arXiv 2301.00508](https://arxiv.org/abs/2301.00508); read on 2026-10-24.)
+
+- **The label is what the speaker meant to express, not what a listener heard.**
+  Each contributor was shown a text prompt describing a situation for each of the 30
+  categories and recorded three bursts per category; the category of the prompt is
+  the label. The paper contrasts this with Hume-VB, whose samples carry ratings from
+  listeners, which "may in some cases be very different than the speaker's intent".
+  There is no listener evaluation in EmoGator. The paper itself suggests the corpus
+  could be used to measure how often listeners recognise the intended category, and
+  notes that some categories (for instance cries of sadness and of amusement) can
+  sound alike.
+- **Quality control was done by one person.** The paper's author was the sole
+  evaluator. Some submissions were silent, contained only noise or
+  read the category names aloud; contributors whose samples had background noise or
+  breath noise were asked to re-record them, and contributors whose responses
+  "didn't convey distinct emotions" were left out of the dataset. How
+  many were left out is not stated.
+- **Possible bias.** The paper says the dataset almost certainly leans towards the
+  emotional expressions of North American English-speaking people, because the sole
+  evaluator shares that background. Contributors' sex, age, language and origin are
+  not in the release.
+- The paper says efforts were made to keep one person from contributing twice, but
+  this cannot be guaranteed.
+
 ## Provenance
 
 GitHub repository `fredbuhl/EmoGator`, pinned to commit
