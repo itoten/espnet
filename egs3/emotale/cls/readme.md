@@ -16,9 +16,18 @@ ffmpeg.
 The label is the enacted emotion, taken from the file name
 `<DK|EN>_<speaker>_<code>_<sentence>.wav` (`A`, `B`, `H`, `N`, `S`), which equals the
 `gt_emotion` column of `annotations.csv` for every file; `dataset/config.yaml` maps
-the codes to labels. The repository also holds listener annotations (categorical
-emotion, arousal, valence and dominance), `speaker_info.csv` and the datasheet, which
-this recipe does not use.
+the codes to labels. The repository also holds `speaker_info.csv` and the datasheet,
+which this recipe does not use.
+
+**Perceived-emotion labels exist but are not used.** `annotations.csv` also holds, for
+every utterance, the judgements of three listeners: a categorical emotion and
+arousal, valence and dominance (1 to 5 in steps of 0.5). (The repository README says
+two annotators, the datasheet and the file have three.) They are valuable because
+several people judged each clip, but this recipe trains on the enacted emotion only.
+Measured on the file: the listeners chose the enacted emotion for 639 (a1), 706 (a2)
+and 507 (a3) of the 800 utterances; all three agree on 465; two or more agree on
+749, and for 113 of those the agreed emotion differs from the enacted one; for 51 the
+three disagree.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -51,11 +60,15 @@ speakers include the three children (ages 9 to 12).
 
 ## License and citation
 
-The repository states no license. Its datasheet says the data is distributed under a
-copyright with no license and asks users to cite the corresponding paper: Maja J. Hjuler,
-Harald V. Skat-Rørdam, Line H. Clemmensen and Sneha Das, "EmoTale: An Enacted Speech-emotion Dataset in Danish", ASRU 2025
-(https://arxiv.org/abs/2508.14548). Check the terms with the authors before
-redistributing the audio.
+**The terms of use are not confirmed.** The repository has no licence file and GitHub
+shows no licence. The datasheet answers the question about licences with "The data
+will be distributed under a copyright. There is no license, but there is a request to
+cite the corresponding paper if the dataset is used." Without a licence, no
+permission to copy, redistribute or use the data is written down. The exact terms are
+to be confirmed by contacting the authors; until then, treat the terms as unknown and
+do not redistribute the audio. Please cite: Maja J. Hjuler, Harald V. Skat-Rørdam,
+Line H. Clemmensen and Sneha Das, "EmoTale: An Enacted Speech-emotion Dataset in
+Danish", ASRU 2025 (https://arxiv.org/abs/2508.14548).
 
 ## Quick start
 
