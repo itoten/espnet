@@ -176,13 +176,14 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``dialog`` and ``label``.
 
     Raises:
-        ValueError: If an emotion is unknown, or a recording disagrees with
-            the metadata on dialogue or speaker.
+        ValueError: If an emotion is unknown, a recording disagrees with the
+            metadata on dialogue or speaker, or an `exclude_files` name is absent.
         FileNotFoundError: If a recording has no metadata entry or none is found.
     """
     metadata = json.loads((source_root / "metadata.json").read_text(encoding="utf-8"))
     entries = []
     skipped = 0
+    excluded = set(_CFG["exclude_files"])
     for wav in sorted((source_root / "data").rglob("*.wav")):
         fields = FILENAME_RE.match(wav.name)
         if fields is None:
@@ -200,9 +201,13 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 f"Unknown emotion {meta['emotion']!r} in {wav}. "
                 f"Known: {sorted(_EMOTION_MAP)}"
             )
+        utt_id = f"dailytalk-d{int(dialog):04d}-u{int(utt):03d}"
+        if utt_id in excluded:
+            excluded.discard(utt_id)
+            continue
         entries.append(
             {
-                "utt_id": f"dailytalk-d{int(dialog):04d}-u{int(utt):03d}",
+                "utt_id": utt_id,
                 "source": str(wav),
                 "speaker": fields["speaker"],
                 "dialog": dialog,
@@ -211,6 +216,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No DailyTalk audio under {source_root}")
     names = Counter(e["utt_id"] for e in entries)

@@ -28,6 +28,11 @@ builder:
     disgust: disgust
     surprise: surprise
 
+  # Utterances left out (utterance ids). `d1253-u009` has byte-identical audio to
+  # `d1121-u009`, which lies in another split; the valid copy is dropped.
+  exclude_files:
+    - dailytalk-d1253-u009
+
   # Split -----------------------------------------------------------------
   # No partition is published and both speakers appear in every dialogue, so
   # whole dialogues are assigned at random to 70/10/20.
