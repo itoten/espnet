@@ -11,10 +11,26 @@ The Kaggle archive has 7,735 wav files in folders named after the recording plac
 The label is the emotion in the file name
 `<keyword>-<environment>-<emotion>-<stamp>-<user hash>.wav`.
 
-After removing 90 duplicate recordings (identical md5) and 164 clips tagged `none`,
-7,481 utterances remain, all 16 kHz mono and 1.96 to 3.75 seconds long, 6.34 hours
+Clips left out (counts from the build log): 1,117 clips are dropped by label or
+keyword, and 88 more are dropped as duplicates (identical md5) of a clip that is kept,
+so 6,530 utterances remain, all 16 kHz mono and 1.96 to 3.75 seconds long, 5.54 hours
 in total. The four labels are `angry`, `calm`, `fear` (`Fearful` in the file names)
 and `happy`.
+
+- **`background` clips are left out (1,116 files).** The paper and README describe
+  `background` as the absence of a keyword: sounds that are not words, such as
+  birds, road noise or white noise. Although these files carry emotion tags
+  (calm 880, fearful 53, happy 19, angry 1 and `None` 163), listening to samples
+  (2026-10-24) found only background sound and no speech, so the tags describe no
+  speech emotion. The `background` files also account for 163 of the 164 files
+  tagged `None` (the other one is an `unknown` clip); all files tagged `None` are
+  dropped. The paper does not explain what `None` means; it is not the `calm` class.
+- **`unknown` clips are kept (1,191 files).** They are spoken words that are not
+  among the six keywords (for example other words and Hindi sentences, from a
+  Whisper transcription of 25 clips).
+- The remaining clips are the six keywords (`help`, `bacho`, `stop`, `no`, `go`,
+  `yes`) and `unknown`, spoken in `calm`, `happy`, `angry` and `fearful` styles, each
+  also tagged with an environment (`safe`, `scream`, `glass break`, `gunshots`).
 
 Environment variables (both optional; defaults are `download/` and `data/` under the
 recipe):
@@ -40,9 +56,9 @@ in `dataset/config.yaml`), so the splits share speakers and scores are optimisti
 
 | split | utterances | hours | after `remove_long_short` | angry | calm | fear | happy |
 |---|---|---|---|---|---|---|---|
-| train | 5,238 | 4.44 | 5,238 | 778 | 2,654 | 1,122 | 684 |
-| valid | 748 | 0.63 | 748 | 111 | 379 | 160 | 98 |
-| test | 1,495 | 1.27 | 1,495 (not filtered) | 222 | 758 | 320 | 195 |
+| train | 4,570 | 3.88 | 4,570 | 777 | 2,039 | 1,084 | 670 |
+| valid | 653 | 0.55 | 653 | 111 | 291 | 155 | 96 |
+| test | 1,307 | 1.11 | 1,307 (not filtered) | 222 | 583 | 310 | 192 |
 
 ## License and citation
 

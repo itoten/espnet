@@ -36,6 +36,7 @@ def _load_builder_config() -> dict:
 _CFG = _load_builder_config()
 _EMOTION_MAP = {str(k).lower(): str(v) for k, v in _CFG["emotion_map"].items()}
 _DROP_CODES = {str(c).lower() for c in _CFG["drop_codes"]}
+_DROP_KEYWORDS = {str(k).lower() for k in _CFG["drop_keywords"]}
 
 
 def iter_source_candidates(
@@ -112,8 +113,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings, taking the label from the file name.
 
     Recordings with the same audio content are kept once (the first path in
-    sorted order), and recordings labelled with a ``drop_codes`` value are
-    skipped. Both counts are logged.
+    sorted order), and recordings labelled with a ``drop_codes`` value or
+    holding a ``drop_keywords`` keyword are skipped. Both counts are logged.
 
     Args:
         source_root: Corpus root with the recordings somewhere below it.
@@ -136,7 +137,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         if fields is None:
             raise ValueError(f"Unexpected file name: {wav}")
         emotion = fields["emotion"].lower()
-        if emotion in _DROP_CODES:
+        if emotion in _DROP_CODES or fields["keyword"].lower() in _DROP_KEYWORDS:
             n_dropped += 1
             continue
         if emotion not in _EMOTION_MAP:

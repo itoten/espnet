@@ -14,7 +14,7 @@ builder:
 
   # Labels ----------------------------------------------------------------
   # The emotion in the file name (lower-cased) to manifest label. `none` marks
-  # clips with no emotion (mostly keyword-free background) and is dropped.
+  # clips with no emotion (almost all of them `background`) and is dropped.
   emotion_map:
     angry: angry
     calm: calm
@@ -22,6 +22,11 @@ builder:
     happy: happy
   drop_codes:
     - none
+  # Clips with these keywords are dropped. `background` clips hold only
+  # environmental sound with no speech (listened to), although they carry
+  # emotion tags.
+  drop_keywords:
+    - background
 
   # Split -----------------------------------------------------------------
   # No partition is published. 5,709 of the 7,735 recordings carry one shared
