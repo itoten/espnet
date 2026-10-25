@@ -70,8 +70,9 @@ It means two things:
   for the recordings. So the terms of use of the audio itself are not stated.
 
 The uploader and the collector named in the spreadsheet are the same person, but the
-page does not say what the "original authors" are or what they allow. The terms of
-the recordings have not been confirmed with the author.
+page does not say what the "original authors" are or what they allow. **The terms of
+use of the recordings are to be confirmed by asking the author** (not done yet); until
+then treat them as unknown and do not redistribute the audio.
 
 ## Quick start
 
