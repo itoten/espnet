@@ -9,12 +9,17 @@ speech corpus for emotional speech synthesis, recorded in 2024 by Reykjavik
 University and Grammatek in a soundproofed studio. Ten professional voice
 talents (`F01`-`F05`, `M01`-`M05`) read 340 short sentences in each of six
 styles: `neutral`, `happy`, `sad`, `angry`, `surprise` and `helpful`. `helpful`
-is a speaking style for virtual assistants rather than an emotion; it is one of
-the corpus's six classes and is kept. Non-neutral styles were also read at five
+is a speaking style for virtual assistants. What counts as an emotion is a
+question for psychology and does not matter here: the aim is a general model of
+paralinguistic information in speech, so `helpful` is a class like the others
+(all six are used). Non-neutral styles were also read at five
 intensity levels, which this recipe does not use.
 
 The release holds 21,516 recordings (24.22 hours, 0.85 to 46.5 seconds, 48 kHz
-24-bit mono FLAC). Of these, 1,140 are short readings of numbers and letters
+24-bit mono FLAC). The README of the corpus and the CLARIN-IS page say 21,526 clips;
+the 10 extra are probably the ten `index.tsv` files, since the archive holds
+21,516 FLAC and 10 `index.tsv` files (21,526 files in all). This was not checked
+further. Of these, 1,140 are short readings of numbers and letters
 (`addendum`, `addendum_style2`) that carry no emotion; they are dropped and the
 log reports the count. The remaining 20,376 recordings (23.78 hours) are used:
 3,396 per style, except that speakers `M03` and `M04` skipped two sentences, so
@@ -61,7 +66,8 @@ split is not filtered and holds 4 clips longer than 30 seconds (up to 35 s).
 ## License and citation
 
 The CLARIN-IS item page states that the item is publicly available under CC BY
-4.0 (its description also calls the corpus public domain). Authors: Gunnar Thor
+4.0, while the corpus README and the item description also call the corpus public
+domain. This recipe follows the stricter CC BY 4.0, so attribute the authors. Authors: Gunnar Thor
 Ornolfsson, Atli Thor Sigurgeirsson, Anna Bjork Nikulasdottir and Daniel
 Schnell (Reykjavik University); issued 2025-08-25; handle
 `http://hdl.handle.net/20.500.12537/387`. The corpus provides no citation text
