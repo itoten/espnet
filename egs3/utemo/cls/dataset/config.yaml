@@ -6,7 +6,7 @@ builder:
   dataset_path: download
 
   # Download --------------------------------------------------------------
-  # Mendeley Data x5rmd28h73 (v1), CC BY-NC 3.0; the public file link needs no
+  # Mendeley Data x5rmd28h73 (v2; v2 holds the same zip as v1), CC BY-NC 3.0; the public file link needs no
   # login. 2.5 GB zip. Only the AVI files are kept.
   archive_url: https://data.mendeley.com/public-files/datasets/x5rmd28h73/files/e12e699f-366a-423e-8692-19ff3bb18e79/file_downloaded
   archive_name: Utemo.zip
@@ -25,6 +25,33 @@ builder:
     neutral: neutral
     sadness: sad
     surprise: surprise
+
+  # Duplicates ------------------------------------------------------------
+  # 20 groups of videos with identical video and audio, each the same actor,
+  # emotion and phrase in another repetition. Only the lowest repetition of
+  # each group is kept; these 21 files are left out.
+  exclude_files:
+    - Anger_Actor12_P3_F2.avi
+    - Anger_Actor4_P3_F3.avi
+    - Anger_Actor7_P2_F6.avi
+    - Fear_Actor12_P2_F6.avi
+    - Fear_Actor12_P3_F6.avi
+    - Fear_Actor4_P3_F6.avi
+    - Happiness_Actor12_P3_F1.avi
+    - Happiness_Actor14_P3_F3.avi
+    - Happiness_Actor14_P3_F4.avi
+    - Happiness_Actor14_P3_F5.avi
+    - Happiness_Actor3_P3_F2.avi
+    - Neutral_Actor2_P3_F10.avi
+    - Neutral_Actor2_P3_F9.avi
+    - Surprise_Actor13_P3_F1.avi
+    - Surprise_Actor13_P3_F2.avi
+    - Surprise_Actor13_P3_F3.avi
+    - Surprise_Actor13_P3_F4.avi
+    - Surprise_Actor13_P3_F5.avi
+    - Surprise_Actor13_P3_F6.avi
+    - Surprise_Actor13_P3_F7.avi
+    - Surprise_Actor5_P3_F7.avi
 
   # Split -----------------------------------------------------------------
   # No partition is published. Whole actors are held out (14 actors): 3 for

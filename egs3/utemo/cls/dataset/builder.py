@@ -176,14 +176,18 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If a file's emotion is unknown, or two files share a name
-            (the name is the utterance id).
+        ValueError: If a file's emotion is unknown, two files share a name
+            (the name is the utterance id), or an `exclude_files` name is absent.
         FileNotFoundError: If no recording is found.
     """
     entries = []
     seen: dict[str, Path] = {}
     skipped = 0
+    excluded = set(_CFG["exclude_files"])
     for avi in sorted(source_root.rglob("*.avi")):
+        if avi.name in excluded:
+            excluded.discard(avi.name)
+            continue
         fields = FILENAME_RE.match(avi.name)
         if fields is None:
             skipped += 1
@@ -207,6 +211,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No UTeMo videos under {source_root}")
     logger.info(

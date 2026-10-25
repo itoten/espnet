@@ -7,8 +7,8 @@ utterance into one of seven emotions.
 UTeMo (Universidad Tecnologica de la Mixteca Emotion Dataset) is an acted
 audiovisual corpus in Mexican Spanish: 14 actors (7 female, 7 male, as stated by
 the authors) performed sentences in the six basic emotions plus neutral. The
-release has 1,801 AVI videos, which are 2.01 hours of audio in total and
-1.9 to 9.9 seconds each. The audio stream of every video is 48 kHz mono 16-bit PCM.
+release (Mendeley Data version 2) has 1,801 AVI videos, which are 2.01 hours of audio in total and
+1.9 to 9.9 seconds each; 1,780 are used (21 duplicates are left out, see below). The audio stream of every video is 48 kHz mono 16-bit PCM.
 
 The label is the emotion word in the file name
 `<Emotion>_Actor<n>_P<m>_F<l>.avi` (actor 1-14, repetition 1-3, phrase 1-10);
@@ -19,10 +19,12 @@ calling the videos "validated".
 
 Class distribution of all 1,801 recordings: 254 neutral, 249 angry, 244 disgust,
 244 fear, 242 happy, 289 sad and 279 surprise. The corpus is not balanced
-per actor (110 to 144 recordings each). 20 groups of byte-identical videos
-(21 surplus files) exist, always the same actor, emotion and phrase in a
-different repetition; they are kept, and the actor-held-out split keeps them
-inside one split.
+per actor (110 to 144 recordings each). 20 groups of videos with identical video
+and audio streams exist (21 surplus files), always the same actor, emotion and
+phrase in a different repetition. Only the lowest repetition of each group is
+kept; the 21 others are listed in `exclude_files` in `dataset/config.yaml`. The
+1,780 recordings used are 252 neutral, 246 angry, 244 disgust, 241 fear, 237 happy,
+289 sad and 271 surprise.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -33,7 +35,7 @@ default to `download/` and `data/` under the recipe.
 ## Download
 
 `prepare_source` downloads `Utemo.zip` (2.5 GB, SHA-256 checked) from
-[Mendeley Data](https://data.mendeley.com/datasets/x5rmd28h73/1) through its public
+[Mendeley Data](https://data.mendeley.com/datasets/x5rmd28h73/2) (version 2) through its public
 file link, with no login, extracts the AVI files and deletes the archive. Measured
 on one run: 17 minutes 53 seconds to download (about 2.3 MB/s) and 14 seconds to
 extract; `create_dataset`, `remove_long_short` and `prepare_labels` together took
@@ -50,15 +52,15 @@ smaller in valid and test than in train.
 
 | split | utterances | after `remove_long_short` |
 |---|---|---|
-| train | 1,191 | 1,191 |
-| valid | 244 | 244 |
-| test | 366 | 366 (not filtered) |
+| train | 1,176 | 1,176 |
+| valid | 240 | 240 |
+| test | 364 | 364 (not filtered) |
 
 | split | angry | disgust | fear | happy | neutral | sad | surprise |
 |---|---|---|---|---|---|---|---|
-| train | 160 | 156 | 156 | 154 | 202 | 186 | 177 |
-| valid | 36 | 35 | 35 | 35 | 22 | 40 | 41 |
-| test | 53 | 53 | 53 | 53 | 30 | 63 | 61 |
+| train | 158 | 156 | 155 | 150 | 202 | 186 | 169 |
+| valid | 35 | 35 | 33 | 34 | 22 | 40 | 41 |
+| test | 53 | 53 | 53 | 53 | 28 | 63 | 61 |
 
 ## License and citation
 
