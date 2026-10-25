@@ -34,8 +34,8 @@ builder:
     slightlyAngry: slightly_angry
     angry: angry
     veryAngry: very_angry
-  # Not an emotion of the annotation scheme (the readme lists five states);
-  # presumably unusable audio, but its meaning is not documented.
+  # Not an emotion of the annotation scheme (the readme lists five states). A
+  # listened sample was silence or clips without a possible emotion label.
   drop_states:
     - garbage
 

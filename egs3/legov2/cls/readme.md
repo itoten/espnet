@@ -13,7 +13,10 @@ utterance in 302 calls; the labels follow the scheme `friendly`, `neutral`,
 `slightly angry`, `angry`, `very angry`, stored in the `EmotionalState` column of
 `interactions.csv`. 4,832 utterances carry a label and a recording. 589 of them are
 labelled `garbage`, a value that is not in the annotation scheme and whose meaning
-is not documented; the recipe leaves them out. The remaining 4,243 utterances from
+is not documented. Listening to a sample of them (24 clips drawn at random, a few
+of them played) showed silence or clips that no emotion could be assigned to
+(median length 1.0 s, mostly one-word replies, key presses or empty recognition
+results), so the recipe leaves them out. The remaining 4,243 utterances from
 291 calls last 1.97 hours in total, 0.58 to 21.7 seconds each. The recordings are
 8 kHz mono telephone speech, so `create_dataset` converts them to 16 kHz with
 ffmpeg (upsampling).
@@ -26,7 +29,8 @@ ffmpeg (upsampling).
 | very_angry | 104 |
 | friendly | 4 |
 
-`friendly` has only 4 utterances, so it is effectively untrainable and untestable.
+`friendly` has only 4 utterances, so it is effectively untrainable and untestable;
+it is kept as a class anyway.
 The corpus has no speaker id; callers are anonymous and the same person may have
 called more than once.
 
