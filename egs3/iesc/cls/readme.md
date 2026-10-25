@@ -5,10 +5,15 @@ head) on IESC alone and scores it on IESC's own test split, classifying each
 utterance into one of five emotions.
 
 IESC (Indian Emotional Speech Corpora) is an acted English corpus of eight
-north Indian speakers (5 male, 3 female according to the Kaggle description),
-recorded in a closed room with a speech-recorder app. Each speaker reads two
-sentences ("Kids are talking by the door" / "Dogs are sitting by the door")
-several times in each emotion. The folder layout is
+north Indian speakers, recorded in a closed room with a speech-recorder app on a
+mobile phone, with a headset microphone. The paper (Singh and Goel, 2023, Table 2)
+lists the speakers: S1, S2, S3, S6 and S7 are men and S4, S5 and S8 women, aged 23
+to 35. The paper does not say whether they are professional actors. Each speaker reads
+two sentences taken from RAVDESS ("Kids are talking by the door" / "Dogs are
+sitting by the door") several times in each emotion. The paper reports a listening
+check on 60 of the 600 files (10%) by more than 20 people using Google Forms, with an
+average accuracy of 89.96%; the label is the emotion each file was recorded in (its
+folder), not the listeners' answer. The folder layout is
 `Speaker-<n>/<Emotion>/<E>-<take>-<n>-<sentence>.wav`, and the folder names give
 the label.
 
@@ -26,17 +31,21 @@ Things to know when reading the scores:
 - Two pairs of files are byte-identical copies (`Speaker-3/Sad/S-1-3-1.wav` =
   `S-3-3-1.wav`, `Speaker-8/Anger/A-10-8-2.wav` = `A-7-8-2.wav`). They are kept
   as distributed. One file name looks mistyped (`Speaker-8/Sad/S-8-8-18.wav`,
-  where the other takes end in `-1` or `-2`); it is used as is.
+  where the other takes end in `-1` or `-2`); a Whisper transcript reads sentence
+  1, so it is probably `S-8-8-1.wav`. It is used as is.
 - The recording format differs by speaker, and whole speakers are held out, so
   the splits also differ in recording device.
 
 ## Provenance
 
 Kaggle dataset `ybsingh/indian-emotional-speech-corpora-iesc` (version 1,
-2022-01-28), licence shown on Kaggle: Unknown. The paper cited in the dataset
-entry is Singh and Goel, Multimedia Tools and Applications 82, 2023
-(doi:10.1007/s11042-023-14577-w); the citation requested by the authors was not
-checked.
+2022-01-28), licence shown on Kaggle: Unknown. The Kaggle description asks
+users to cite Singh, Y.B. and Goel, S., "A lightweight 2D CNN based approach for
+speaker-independent emotion recognition from speech with new Indian Emotional Speech
+Corpora", Multimedia Tools and Applications 82, 23055-23073 (2023),
+[doi:10.1007/s11042-023-14577-w](https://doi.org/10.1007/s11042-023-14577-w). The
+authors are at Bennett University and KIET Group of Institutions (India). With the
+licence given as Unknown, the terms of use are not stated.
 
 Kaggle requires a login, so the recipe does not download. Download the zip
 (138 MB) and extract it:
