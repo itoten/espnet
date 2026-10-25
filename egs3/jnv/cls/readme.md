@@ -19,7 +19,21 @@ The label is the intended emotion, taken from the file name
 `<speaker>_<emotion>_<id>_<session>.wav`; `dataset/config.yaml` lists the six
 emotions. The session letter is `R` (phrase designated) or `F` (phrase chosen by the
 speaker). The release also holds per-file authenticity and recognizability scores,
-which this recipe does not use.
+which this recipe does not use. All clips are used, including 42 that no listener
+recognised as the intended emotion (forced-choice accuracy 0 in
+`file_forced_choice_accuracy.csv`); the label stays the intended emotion.
+
+**Read this before using the scores**: the vocalizations are written down as
+phrases (for example `あは` for a laugh, `ぐすん` for sobbing, `こら` for anger), and the
+corpus designates them per emotion: `phrases.txt` lists 87 phrases for the regular
+(`R`) session, with 16 for happy, 30 for surprise, 14 for angry, 10 for fear, 10 for
+disgust and 7 for sad. Only 9 of the phrase strings (for example `いや`, `えー`,
+`ああ`) occur under two emotions. The phrase, the sound itself, therefore points to
+the emotion, and the number of clips per class follows the number of phrases (in
+the `R` session 120 surprise against 28 sad). For the 73 `F` clips the speaker chose
+the phrase and the phrases are not recorded, so whether they lean towards
+particular emotions is not known. Treat a high score as partly a result of this
+link between phrase and emotion, not only of prosody.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
