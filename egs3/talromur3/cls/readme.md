@@ -19,9 +19,12 @@ The release holds 21,516 recordings (24.22 hours, 0.85 to 46.5 seconds, 48 kHz
 24-bit mono FLAC). The README of the corpus and the CLARIN-IS page say 21,526 clips;
 the 10 extra are probably the ten `index.tsv` files, since the archive holds
 21,516 FLAC and 10 `index.tsv` files (21,526 files in all). This was not checked
-further. Of these, 1,140 are short readings of numbers and letters
-(`addendum`, `addendum_style2`) that carry no emotion; they are dropped and the
-log reports the count. The remaining 20,376 recordings (23.78 hours) are used:
+further. Of these, 1,140 are an addendum of short readings of numbers and letters
+(`addendum`, `addendum_style2` directories; the corpus README says v1.0 adds the
+alphabet and the numbers 0 to 20). They are not one of the six styles, so the
+recipe leaves them out; the log reports the count. To
+include them, remove them from `drop_styles` in `dataset/config.yaml` and map them
+in `emotion_map`. The remaining 20,376 recordings (23.78 hours) are used:
 3,396 per style, except that speakers `M03` and `M04` skipped two sentences, so
 their styles have 338 recordings each. The label is the style directory name
 given in each speaker's `index.tsv`; `dataset/config.yaml` maps it to the

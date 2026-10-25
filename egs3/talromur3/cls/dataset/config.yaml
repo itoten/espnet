@@ -28,7 +28,8 @@ builder:
     surprised: surprise
     suprised: surprise
     helpful: helpful
-  # Short number and letter readings with no emotion; not used.
+  # The addendum (alphabet and numbers 0-20 read aloud) is not one of the six
+  # styles; left out. Remove it from this list and map it above to use it.
   drop_styles:
     - addendum
     - addendum_style2
