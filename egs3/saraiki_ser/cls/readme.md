@@ -10,8 +10,19 @@ six folders: `angry`, `fear`, `happy`, `neutral`, `sad` and `shock`. The
 recordings are 1.08 to 7.52 s long (1.08 hours in total), 48 kHz mono opus.
 `create_dataset` converts them to 16 kHz wav with ffmpeg. The label is the folder name.
 Five pairs of consecutive files in the same folder (for example
-`Neutral_023` and `Neutral_024`) are byte-identical; they are kept. No speaker id is published, and the
+`Neutral_023` and `Neutral_024`) are byte-identical; they are kept as they are. No speaker id is published, and the
 Kaggle page does not state the number of speakers.
+
+**Warning: this corpus may carry no paralinguistic emotion. Handle it with great
+care.** The Kaggle description says the author prepared lines for each emotion and
+a native speaker read them in that emotion's tone, so the sentence meaning
+differs by class. It does not say the speaker acted the emotion through voice or
+prosody, and in a listening check a single speaker seemed simply to read the
+sentences. If so, a model can score well by learning the words (or the recording
+setup) alone, and the corpus may mislead training, especially when it is mixed
+with corpora whose emotion is in the voice. Be very careful before using it in
+multi-corpus training or reading its scores as speech emotion recognition; a
+text-only baseline on a transcript would show how much the words alone explain.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
