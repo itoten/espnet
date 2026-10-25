@@ -19,6 +19,13 @@ The label is the intended emotion, taken from the file name
 `dataset/config.yaml` maps the emotion codes to labels. `create_dataset` converts
 the recordings to 16 kHz with ffmpeg.
 
+The speakers are students, not trained actors, and the recording room is a
+classroom, so how clearly each one acts the emotion in the voice (the
+paralinguistic part) probably varies, and may be weak for some. A listening check
+found that it depends on the speaker: some perform the emotion convincingly. This
+holds for amateur recordings in general and is not specific to this corpus;
+the corpus is still usable.
+
 Three environment variables control where the data lives. The last two are optional
 and default to `download/` and `data/` under the recipe.
 
