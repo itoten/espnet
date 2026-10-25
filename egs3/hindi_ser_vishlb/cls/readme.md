@@ -10,9 +10,21 @@ in 8 classes over 5 sessions, 3,200 wav files in total (400 per class). The clas
 are `angry` (folder `anger`), `disgust`, `fear`, `happy`, `neutral`, `sad`,
 `sarcastic` and `surprise`; `sarcastic` is kept as released. Speaker, session and
 label come from the folders (`<speaker>/session<N>/<emotion>/`), because two file
-names carry typos (`dusgust`, `happpy`). In a sample of 160 source files, 140 were
-16 kHz and 20 were 48 kHz, all mono, so `create_dataset` converts every file to
-16 kHz with ffmpeg. The clips are 1.15 to 6.1 seconds long and 2.85 hours in total.
+names carry typos (`dusgust`, `happpy`). Of the 3,200 source files, 2,800 are 16 kHz
+and 400 are 48 kHz, all mono, so `create_dataset` converts every file to 16 kHz with
+ffmpeg. The clips are 1.15 to 6.1 seconds long and 2.85 hours in total.
+
+The Kaggle page has no description. The archive holds two documents that serve as the
+description: a Word file ("dataset sentences and details") with the instructions given
+to the speakers (10 neutral sentences about students and studying, with Hindi
+translations of the 8 emotions; it says up to 10 sessions, but the data holds 5) and
+a spreadsheet of the 8 speakers (sex, age 22 to 24; speakers 1 to 4 are women and 5
+to 8 men) collected at ABVV University by Vishal Bhardwaj. The spreadsheet also holds
+personal details of the speakers, which are not reproduced here and not used. The
+files record no consent.
+
+One pair of files is byte-identical: speaker 2, `neutral`, sentence 03, in sessions 2
+and 5 (both in the test split). Both are kept.
 
 Environment variables (both optional; defaults are `download/` and `data/` under the
 recipe):
@@ -44,7 +56,22 @@ appear in training. Every class has the same count in each split.
 ## License
 
 The Kaggle licence field reads "Database: Open Database, Contents: (c) Original
-Authors". The terms of the contents have not been checked further.
+Authors". On Kaggle's licence list this is one of two options under "Open Data
+Commons" (the other being "Database: Open Database, Contents: Database Contents").
+It means two things:
+
+- The **database** (its structure and its selection and arrangement) is under the
+  Open Database License (ODbL 1.0): attribute public use, and offer an adapted
+  database under the ODbL as well.
+- The **contents**, here the recordings, remain the copyright of the original
+  authors. The ODbL states that it does not cover rights in individual contents
+  ("this License does not cover any rights (other than Database Rights or in
+  contract) in individual Contents", section 2.4), and the label names no licence
+  for the recordings. So the terms of use of the audio itself are not stated.
+
+The uploader and the collector named in the spreadsheet are the same person, but the
+page does not say what the "original authors" are or what they allow. The terms of
+the recordings have not been confirmed with the author.
 
 ## Quick start
 
