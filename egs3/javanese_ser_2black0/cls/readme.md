@@ -9,8 +9,10 @@ The corpus is the dataset published in the GitHub repository
 (Javanese, acted). Ten actors each read 4 sentences in 6 emotions, 7 repetitions
 each: 1,680 recordings, 280 per emotion (`neutral`, `sad`, `happy`, `surprise`,
 `fear`, `angry`), 1.49 hours in total, 1.60 to 9.06 seconds long. All are 16 kHz
-16-bit wav; 1,679 are mono and one is stereo (converted to mono). No duplicate
-files were found. The README does not describe the recording conditions, and the
+16-bit wav; 1,679 are mono and one is stereo (converted to mono). No
+byte-identical files were found, but two pairs from actor 06 are nearly the same
+sound (`06-03-04_04`/`_05`, surprise; `06-02-05_03`/`_04`, fear; same length, sample
+differences of at most 0.00037). Both copies are used. The README does not describe the recording conditions, and the
 actors' gender is not recorded in the release.
 
 ## Labels
