@@ -8,7 +8,6 @@ import re
 import shutil
 import subprocess
 import tarfile
-from collections import Counter
 from importlib import resources
 from pathlib import Path
 from random import Random
@@ -35,7 +34,6 @@ def _load_builder_config() -> dict:
 
 _CFG = _load_builder_config()
 _EMOTION_MAP = {str(k): str(v) for k, v in _CFG["emotion_map"].items()}
-_DROP_EMOTIONS = {str(e) for e in _CFG["drop_emotions"]}
 
 
 def iter_source_candidates(
@@ -172,7 +170,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Returns:
         list[dict[str, str]]: Keys ``utt_id``, ``source``, ``speaker`` and
-        ``label``. Recordings of emotions in ``drop_emotions`` are left out.
+        ``label``.
 
     Raises:
         ValueError: If a file name, its emotion folder or its speaker folder
@@ -182,7 +180,6 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     entries = []
     seen: dict[str, Path] = {}
     skipped = 0
-    dropped: Counter = Counter()
     for wav in sorted(source_root.rglob("*.wav")):
         fields = FILENAME_RE.match(wav.name)
         if fields is None:
@@ -193,9 +190,6 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         folder_speaker, _, folder_emotion = wav.parent.name.partition(" ")
         if (folder_speaker, folder_emotion) != (speaker, emotion):
             raise ValueError(f"File name and folder disagree: {wav}")
-        if emotion in _DROP_EMOTIONS:
-            dropped[emotion] += 1
-            continue
         if emotion not in _EMOTION_MAP:
             raise ValueError(
                 f"Unknown emotion {emotion!r} in {wav}. Known: {sorted(_EMOTION_MAP)}"
@@ -214,8 +208,6 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
-    for emotion, count in dropped.items():
-        logger.warning("Dropped %d recording(s) of emotion %r", count, emotion)
     if not entries:
         raise FileNotFoundError(f"No Lithuanian emotion audio under {source_root}")
     logger.info(

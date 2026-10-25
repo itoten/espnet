@@ -26,10 +26,9 @@ builder:
     Pasislykstejimas: disgust
     Liudesys: sad
     Neutrali: neutral
-  # `Ilgesys` (longing) is not among the seven emotions the corpus describes;
-  # it has 9 recordings, all from speaker 5.
-  drop_emotions:
-    - Ilgesys
+    # Not among the seven emotions the corpus describes; 9 recordings, all from
+    # speaker 5. Kept as its own class.
+    Ilgesys: longing
 
   # Split -----------------------------------------------------------------
   # No partition is published. Whole speakers are held out: 2 for test, 1 for
