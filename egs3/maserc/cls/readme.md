@@ -31,6 +31,19 @@ suffix is not a consistent emotion code (`Sad-2` in `student` files, `Sad-5` in
 That leaves 772 recordings in 129 sessions, 0.80 hours, 1.4 to 12.3 seconds long:
 132 angry, 129 surprise, 128 each of fear, happy and neutral, 127 sad.
 
+Things to know when reading the scores:
+
+- Seven pairs of recordings remain whose 16 kHz audio is identical although the
+  files differ in bytes (one is 32-bit float, the other 16-bit PCM): the six
+  emotions of `student 37` and `student 38`, and the angry clips of `student 33` and
+  `student 34`. They are used as they are.
+- Listening to a few clips, the paralinguistic emotion (prosody, voice quality)
+  was hard to hear; whether this comes from the acting or from cultural
+  differences is not known. The dataset page says three annotators verified the
+  labels by majority vote (Cohen's kappa at least 0.78), but their individual
+  judgements are not in the archive, so the label is the emotion each file was
+  recorded as. Take the scores with some care.
+
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
