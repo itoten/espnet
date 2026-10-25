@@ -95,13 +95,19 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If an emotion directory is unknown or a name repeats.
+        ValueError: If an emotion directory is unknown, a name repeats, or an
+            `exclude_files` path is absent.
         FileNotFoundError: If no recording is found.
     """
     entries = []
     seen: set[str] = set()
+    excluded = set(_CFG["exclude_files"])
     for wav in _list_wavs(source_root):
         emotion, speaker = wav.parent.name, wav.parent.parent.name
+        rel = f"{speaker}/{emotion}/{wav.name}"
+        if rel in excluded:
+            excluded.discard(rel)
+            continue
         if emotion not in _EMOTION_MAP:
             raise ValueError(
                 f"Unknown emotion directory {emotion!r} for {wav}. "
@@ -119,6 +125,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "label": _EMOTION_MAP[emotion],
             }
         )
+    if excluded:
+        raise ValueError(f"`exclude_files` paths not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No IESC audio under {source_root}")
     logger.info("Read %d recording(s)", len(entries))

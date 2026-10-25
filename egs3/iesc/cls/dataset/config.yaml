@@ -20,6 +20,13 @@ builder:
     Neutral: neutral
     Sad: sad
 
+  # Duplicates ------------------------------------------------------------
+  # Files left out (`<speaker>/<emotion>/<name>`). Each pair is byte-identical
+  # and from one speaker, emotion and sentence; the lower take is kept.
+  exclude_files:
+    - Speaker-3/Sad/S-3-3-1.wav
+    - Speaker-8/Anger/A-10-8-2.wav
+
   # Split -----------------------------------------------------------------
   # No partition is published. Whole speakers are held out: two for test, one
   # for valid, five for train.
