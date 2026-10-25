@@ -19,6 +19,16 @@ The label is the intended emotion, taken from the file name
 `dataset/config.yaml` maps the emotion codes to labels. `create_dataset` converts
 the recordings to 16 kHz with ffmpeg.
 
+**The sentences are shared with CREMA-D.** Four of the five sentence codes (`DFA`
+"Don't forget a jacket", `IEO` "It's eleven o'clock", `IWW` "I wonder what this is
+about", `TAI` "The airplane is almost full") carry the same text and the same
+code as CREMA-D sentences (the CREMA-D readme lists the 12 sentences with these
+codes). The fifth, `TSI`, has the same code but a different text: "The sun is very
+bright" here, "The surface is slick" in CREMA-D. This was found by transcribing 8
+files per code with Whisper large-v3 (not checked by hand); neither the Kaggle page
+nor the files say that the sentences were borrowed. When SES-ED and CREMA-D are
+used together, the same texts occur in both corpora.
+
 The speakers are students, not trained actors, and the recording room is a
 classroom, so how clearly each one acts the emotion in the voice (the
 paralinguistic part) probably varies, and may be weak for some. A listening check
