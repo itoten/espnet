@@ -19,6 +19,23 @@ The label is the intended emotion, taken from the file name
 `dataset/config.yaml` maps the emotion codes to labels. `create_dataset` converts
 the recordings to 16 kHz with ffmpeg.
 
+**The sentences are the Spanish versions of SES-ED's, which share four with
+CREMA-D.** Transcribing 8 files per code with Whisper large-v3 (not checked by
+hand) gave the same five sentences as SES-ED in Spanish: `DFA` "No olvides la
+chamarra", `IEO` "Son las 11 en punto", `IWW` "Me pregunto de qué se trata esto",
+`TAI` "El avión está casi lleno" and `TSI` "El sol está muy brillante". In SES-ED the
+first four codes carry the same English text and code as CREMA-D sentences ("Don't
+forget a jacket", "It's eleven o'clock", "I wonder what this is about", "The
+airplane is almost full"), so these are their Spanish translations; `TSI` differs
+from CREMA-D's TSI ("The surface is slick"). Neither the Kaggle page nor the files
+say that the sentences were borrowed.
+
+The speakers are the same students as in SES-ED, recorded in the same classroom,
+so the same caveat applies: how clearly each one acts the emotion in the voice
+(the paralinguistic part) probably varies by speaker, and may be weak for some.
+This was heard in SES-ED; it was not checked separately for SES-SD. It holds for
+amateur recordings in general and is not specific to this corpus.
+
 Three environment variables control where the data lives. The last two are optional
 and default to `download/` and `data/` under the recipe.
 
