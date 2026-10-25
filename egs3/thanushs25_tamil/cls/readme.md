@@ -12,7 +12,11 @@ copies (`happy/audio_11.wav` = `happy/audio_22.wav`,
 `neutral/audio_8.wav` = `neutral/audio_9.wav`), so 193 distinct recordings
 remain (1.09 hours in total, 2.7 to 140.5 seconds long). The files are 44.1 or
 48 kHz stereo, so `create_dataset` converts them to 16 kHz mono with ffmpeg.
-Many recordings are long: 29 of the 195 exceed 30 seconds.
+Many recordings are long: 29 of the 195 exceed 30 seconds. Two more pairs are
+the same sound without being byte-identical (`happy/audio_33` and `happy/audio_0`
+decode to identical 16 kHz audio; `angry/audio_31` and `audio_32` are almost
+identical, correlation 0.9994). All four are kept for now; the question is to be
+reopened when it is decided that the corpus will be used.
 
 The label is the name of the folder a recording sits in; `dataset/config.yaml` maps it
 to the manifest label. The repository also holds `final_data/fear/documentation.pdf`,
@@ -23,8 +27,11 @@ a printout of an unrelated notebook (natural language to SQL); it is not used.
 The dataset card states no licence, no source of the recordings, no recording
 conditions, no speaker information and no labelling procedure. Whether the labels
 describe acted emotion or were assigned some other way is therefore unknown, and
-so is the right to redistribute the audio. Check with the uploader before using it
-beyond local experiments.
+so is the right to redistribute the audio. The licence and the origin are to be
+asked of the uploader (not yet done), and the data stays on hold until then;
+use it only for local experiments. A listening check found that the clips sound
+like film or television audio (Whisper transcripts also read as colloquial Tamil
+dialogue), which makes the rights question more pressing.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
