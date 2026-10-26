@@ -31,6 +31,71 @@ builder:
     - O
     - X
 
+  # Duplicates ------------------------------------------------------------
+  # 53 clusters of recordings with the same sound (decoded-identical or a
+  # waveform correlation above 0.9), mostly the same tape under names that
+  # differ in one letter (`rmn_e655a` / `rmn_e655b`). In a cluster with one
+  # label only the first file by name is kept. The 3 clusters whose files carry
+  # different labels are left out entirely. 57 files in all.
+  exclude_files:
+    - rmn_e004a_17.1-2_18.wav
+    - rmn_e007b_165.1-2_275.wav
+    - rmn_e007c_159.1-2_14.wav
+    - rmn_e018a_112.1-2_552.wav
+    - rmn_e018a_112.1-2_714.wav
+    - rmn_e018a_44.1-2_17.wav
+    - rmn_e018a_44.1-2_48.wav
+    - rmn_e308b_13.1-2_175.wav
+    - rmn_e308b_13.1-2_991.wav
+    - rmn_e325b_10.1-2_439.wav
+    - rmn_e484b_2.1-2_1193.wav
+    - rmn_e484b_2.1-2_193.wav
+    - rmn_e484b_2.1-2_264.wav
+    - rmn_e484b_2.1-2_935.wav
+    - rmn_e484b_2.1-2_936.wav
+    - rmn_e484c_13.1-2_117.wav
+    - rmn_e484c_13.1-2_226.wav
+    - rmn_e484c_13.1-2_292.wav
+    - rmn_e484c_13.1-2_303.wav
+    - rmn_e484c_13.1-2_42.wav
+    - rmn_e484c_13.1-2_47.wav
+    - rmn_e484c_13.1-2_642.wav
+    - rmn_e484c_13.1-2_69.wav
+    - rmn_e513b_9.1-2_413.wav
+    - rmn_e578b_5.1-2_14.wav
+    - rmn_e578b_5.1-2_951.wav
+    - rmn_e620c_14.1-2_169.wav
+    - rmn_e635b_8.1-2_188.wav
+    - rmn_e643b_13.1-2_183.wav
+    - rmn_e643b_13.1-2_408.wav
+    - rmn_e643b_13.1-2_481.wav
+    - rmn_e643b_13.1-2_540.wav
+    - rmn_e649b_1.1-2_1516.wav
+    - rmn_e649b_1.1-2_1617.wav
+    - rmn_e649b_1.1-2_491.wav
+    - rmn_e655a_3.1-2_535.wav
+    - rmn_e655a_3.1-2_636.wav
+    - rmn_e655b_3.1-2_1162.wav
+    - rmn_e655b_3.1-2_1621.wav
+    - rmn_e655b_3.1-2_2241.wav
+    - rmn_e655b_3.1-2_2477.wav
+    - rmn_e655b_3.1-2_2501.wav
+    - rmn_e655b_3.1-2_332.wav
+    - rmn_e655b_3.1-2_540.wav
+    - rmn_e655b_3.1-2_649.wav
+    - rmn_e655b_3.1-2_740.wav
+    - rmn_e655b_3.1-2_784.wav
+    - rmn_e655b_3.1-2_96.wav
+    - rmn_e665b_3.1-2_299.wav
+    - rmn_e665b_3.1-2_805.wav
+    - rmn_e667b_3.1-2_67.wav
+    - rmn_e685b_3.1-2_113.wav
+    - rmn_e685b_3.1-2_475.wav
+    - rmn_e691b_7.1-2_228.wav
+    - rmn_e691b_7.1-2_229.wav
+    - rmn_e691b_7.1-2_263.wav
+    - rmn_e691b_7.1-2_270.wav
+
   # Split -----------------------------------------------------------------
   # No partition or speaker id is published (`Split_Set` is `NA` and `SpkrID`
   # is `Unknown` for every file). Utterances sharing the file-name prefix

@@ -166,18 +166,22 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If a row carries an emotion code that is neither kept nor
-            listed for dropping.
+            listed for dropping, or an `exclude_files` name is absent.
         FileNotFoundError: If a recording named in the table is absent.
     """
     audio_dir = source_root / str(_CFG["audio_subdir"])
     entries = []
     dropped: dict[str, int] = {}
+    excluded = set(_CFG["exclude_files"])
     with (source_root / str(_CFG["labels_csv"])).open(
         "r", encoding="utf-8", newline=""
     ) as fh:
         for row in csv.DictReader(fh):
             name = row["FileName"].strip()
             code = row["EmoClass"].strip()
+            if name in excluded:
+                excluded.discard(name)
+                continue
             if code in _DROP_CODES:
                 dropped[code] = dropped.get(code, 0) + 1
                 continue
@@ -199,6 +203,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     "label": _EMOTION_CODES[code],
                 }
             )
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if dropped:
         logger.info(
             "Dropped %d recording(s) by emotion code (%s); see dataset/config.yaml",
