@@ -24,8 +24,10 @@ keeps 1,267 of them (2.11 hours):
 
 The label is the first word of the file name (`Angry_male_44_1_9-xjWLfu.wav`,
 `sad_chunk_3.wav`, `sad0.wav`). Names are otherwise irregular (a `fmale` typo, a
-random suffix on some files, `sad` files without gender, age or session), which
-is why speakers are not parsed. The paper says 1,322 samples per modality; the
+random suffix on some files, `sad` files without gender, age or session). The
+paper says the file name holds a gender, an age, a numeric `UserID` assigned to each
+speaker ("allowing for tracking of multiple samples from the same individual") and a
+sample number; the irregular names are why speakers are not parsed here. The paper says 1,322 samples per modality; the
 file counts in the release do not match that, and the cause was not investigated.
 The source audio is 48 kHz stereo 16-bit; `create_dataset` converts it to 16 kHz
 mono. Durations range from 1 to 51 seconds (median 6; all are whole seconds), so
@@ -47,13 +49,29 @@ a browser-like `User-Agent`, so the recipe sends one. The dataset is the authors
 own upload and is licensed CC BY 4.0 (the license field of the Mendeley listing).
 Please cite the paper above.
 
+**Source rights.** The audio is cut from Moroccan reality TV shows, radio programs,
+podcasts and interviews found online. The paper (Data in Brief 62 (2025) 112005, CC BY)
+says in its Ethics Statement: "All data used in this study were derived from publicly
+available, non-identifiable sources, and no personally identifiable information is
+present." and "Authors have considered and followed the source websites' ToS,
+privacy laws, and user consents. Copyright: The data does NOT belong to users (e.g.,
+social media). The data are published for free through user consent, and they can be
+consumed by anyone who has access to the Internet, so ethical approval has not been
+sought." It also says "We are not using the data for any fraudulent activities such as
+making a profit (e.g., Business)", and in the collection section "Since all data were
+obtained from publicly available online sources, no explicit consent was required for
+collection and use." These are the authors' assertions. The paper names no source
+program or site and gives no terms of service, so they cannot be checked, and it says
+nothing about non-commercial use. Whether the clips are open data, and whether
+non-commercial terms apply, is unconfirmed.
+
 ## Splits
 
 The release publishes no partition. Recordings are split 70/10/20 at random
 within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
-`dataset/config.yaml`). The names carry a gender, an age and a session number,
-but the release does not say they identify a speaker, so speakers are not held
-out and the splits probably share speakers.
+`dataset/config.yaml`). The names carry a gender, an age and a `UserID` that the
+paper says identifies a speaker, but they are irregular (see above), so speakers
+are not held out and the splits probably share speakers.
 
 | split | recordings | after `remove_long_short` | angry | happy | neutral | sad |
 |---|---|---|---|---|---|---|

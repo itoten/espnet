@@ -9,7 +9,8 @@ speech: 700 clips of about 3 seconds, 100 for each of `angry`, `disgust`, `fear`
 `happy`, `neutral`, `sad` and `surprise`, the same seven labels the other recipes
 share. According to the dataset card of the copy used here, the clips are cut
 from YouTube videos of spontaneous speech, the label is the dominant emotion
-(some clips mix two), and some clips are code-mixed or entirely in a foreign
+perceived by listening (the card does not say who listened or how many people; no
+agreement figure is given; some clips mix two emotions), and some clips are code-mixed or entirely in a foreign
 language. The speakers are not identified.
 
 ## What is used
@@ -24,6 +25,19 @@ are 44.1 kHz stereo; `create_dataset` converts them to 16 kHz mono 16-bit WAV.
 Durations range from 1.5 to 4.5 seconds (median 3.0), so `remove_long_short`
 drops nothing.
 
+**Formats and labels.** The card says 16-bit PCM, 44.1 kHz stereo, but the files are
+mixed: the 40 `neutral` clips are compressed audio (20 MP3 and 20 AAC, with a `.WAV`
+extension) and no other label has any, and 20 `happy` clips are mono and 16 are
+48 kHz. The format therefore differs by label; all clips are used as they are.
+Four clips marked `[NO_SPEECH]` in the copy's transcripts (disgust 2, fear 1, sad 1)
+have no human voice but a label; they are used too.
+
+**Source rights.** The clips are cut from YouTube videos. The card of the copy says
+only that the data come from YouTube videos in natural conditions and gives CC BY 4.0
+as the license; it names no source videos and says nothing about the rights of the
+videos, and there is no paper. Whether the clips can be used as open data, and whether
+non-commercial terms apply, is unconfirmed.
+
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
@@ -36,8 +50,8 @@ default to `download/` and `data/` under the recipe.
 Face API and downloads them with 8 threads. Hugging Face lists each file's size
 and SHA-256, and both are checked. No login is needed for this copy; the original
 repository asks for one. Because the copy is not the original authors' upload,
-its contents rest on the copy's author having kept the original files unchanged,
-which was not checked against the original.
+the copy's author could have changed the files. The Hugging Face LFS hashes of all
+700 audio files are the same in the copy and in the original, so the audio is the same.
 
 ## Splits
 
