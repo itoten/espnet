@@ -36,6 +36,20 @@ builder:
     neutral: neutral
     positive: happy
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one (5
+  # utterances; the first of each pair by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  # Four groups of the same sound carry different labels and are not listed.
+  exclude_duplicates: false
+  duplicate_ids:
+    - dusha-bf3b68cae0f64a6c464d77cce8f59052
+    - dusha-f60d3834c47b11de9aa0087c044eb72a
+    - dusha-803882cf6feb732c047243873a015e77
+    - dusha-691fcc12ee001779ebd79b5ef4f80011
+    - dusha-f8987e287a79b38ab038c586b666e1b6
+
   # Split -----------------------------------------------------------------
   # The release's train/test partition is kept. The validation set is taken
   # from train, in whole `source_id` groups, until `valid_ratio` of the train

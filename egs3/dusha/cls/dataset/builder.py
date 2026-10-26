@@ -234,6 +234,25 @@ def _read_source_ids(path: Path) -> dict[str, str]:
     return source_ids
 
 
+def _drop_duplicates(entries: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Remove the listed same-sound, same-label utterances if switched on.
+
+    Applies only when ``exclude_duplicates`` is true. Each listed utterance has
+    the same sound and label as one that is kept.
+
+    Raises:
+        ValueError: If a listed id is not among ``entries``.
+    """
+    if not _CFG["exclude_duplicates"]:
+        return entries
+    drop = {str(i) for i in _CFG["duplicate_ids"]}
+    kept = [e for e in entries if e["utt_id"] not in drop]
+    missing = drop - {e["utt_id"] for e in entries}
+    if missing:
+        raise ValueError(f"`duplicate_ids` not found: {sorted(missing)}")
+    return kept
+
+
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the utterances of the two official setup files.
 
@@ -271,6 +290,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                     "label": _EMOTION_MAP[emotion],
                 }
             )
+    entries = _drop_duplicates(entries)
     logger.info("Read %d utterance(s)", len(entries))
     return entries
 

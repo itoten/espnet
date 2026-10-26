@@ -7,9 +7,14 @@ recording into one of four emotions.
 [Dusha](https://github.com/salute-developers/golos/tree/master/dusha) (Kondratenko et
 al., arXiv:2212.12266) is Russian speech, annotated on a
 crowd-sourcing platform. The release has a crowd
-subset (`crowd.tar`) and a podcast subset. The paper's abstract calls the two
-subsets acted and real-life (podcasts), so the crowd subset is presumably the
-acted one. Only the crowd subset is used. The labels are `angry`, `sad`,
+subset (`crowd.tar`) and a podcast subset (audio is not distributed for the
+podcasts, only links, for licensing reasons). According to the paper, the crowd
+subset is acted: non-professional actors on Yandex Toloka read phrases taken
+from requests to a voice assistant (chit-chat, pre-selected with a text
+classifier so that emotional phrases are over-represented), each phrase with one
+of two suggested emotions; 201,850 recordings from 2,068 speakers, with
+differing equipment and background noise (children, animals, street). Only the
+crowd subset is used. The labels are `angry`, `sad`,
 `neutral` and `happy` (the release calls happiness `positive`; it is renamed to
 match the other recipes). There is no
 `disgust`, `fear` or `surprise`.
@@ -18,8 +23,10 @@ match the other recipes). There is no
 
 The labels are the release's own aggregated labels, read from the two files in its
 `paper_setups.tgz` (`crowd_large.jsonl` for train, `crowd_test.jsonl` for test).
-How the paper aggregates the annotations, and with what agreement threshold, was
-not checked. These files list 146,715 train and 13,651 test utterances (160,366,
+The paper aggregates the annotations with the Dawid-Skene algorithm and an
+agreement threshold of 0.9; whether these two files follow exactly that rule was
+not checked (the paper's table lists 164,387 crowd utterances including an
+`other` class, the files 160,366). These files list 146,715 train and 13,651 test utterances (160,366,
 202.5 hours); the rest of `crowd.tar` (utterances that are in neither file) is not
 extracted. Durations range from 0.86 to 29.88 seconds (median 4.34), so
 `remove_long_short` drops nothing. Every recording is already 16 kHz mono 16-bit
@@ -50,11 +57,45 @@ before redistributing anything derived from it, and cite Kondratenko, Sokolov, K
 Kutuzov, Savushkin and Minkin, "Large Raw Emotional Dataset with Aggregation
 Mechanism" (arXiv:2212.12266).
 
+## Annotation and label quality
+
+Measured on the files used here (160,366 utterances; not
+taken from the paper).
+
+- The aggregated label is the annotators' perception, not the actor's intention.
+  The intended emotion (`speaker_emo` in the markup) equals the aggregated label
+  for 71.5% of the utterances. Intended `sad` ended up `neutral` 23,610 times and
+  `sad` 20,635 times; intended `angry` ended up `neutral` 7,644 times and `angry`
+  14,235 times; intended `positive` ended up `neutral` 6,436 times and `positive`
+  11,746 times.
+- Annotators passed a training and an exam (above 80%) and received control
+  tasks with known answers (the paper). The markup has 2 to 149 annotations per
+  utterance (median 4); on average 90.6% of an utterance's annotations agree with
+  its aggregated label. Annotators heard the audio only.
+- 1,517 train utterances are the control tasks themselves (`golden_emo` set, no
+  text, no `source_id`); they carry many annotations each.
+- The phrases are not independent of the emotions, but a phrase does not predict
+  the label across speakers: for test utterances whose phrase also occurs in
+  train, the train majority label is right 49.9% of the time (always `neutral`:
+  59.3% on the same utterances).
+- `source_id` is documented as the speaker (podcast) id; train has 1,870 values
+  and test 190, with no overlap.
+- Four groups of utterances with the same sound carry different labels (sad vs
+  neutral); see "Duplicates".
+
+## Duplicates
+
+Nine groups of recordings have the same sound (identical after decoding, or a
+waveform correlation of 0.998 or more). Five groups are pairs with the same label;
+with `exclude_duplicates: true` the later one of each pair (`duplicate_ids`) is
+dropped, `false` (the default) keeps both. Four groups carry different labels
+(sad against neutral); they are kept and not listed in the config.
+
 ## Splits
 
 The release's train/test partition is kept. The validation set is carved out of
-train: whole `source_id` groups (the last column of the annotation files; what it
-identifies, probably the speaker, is not confirmed) are moved to valid until 10% of the train
+train: whole `source_id` groups (the last column of the annotation files, documented in the
+paper as the unique id of the speaker) are moved to valid until 10% of the train
 utterances are reached (`valid_ratio`, `split_seed` in `dataset/config.yaml`), so valid shares no
 `source_id` with train. Utterances without a `source_id` (1,517 of the 146,715
 listed train utterances; none in test) are treated as groups of one. The listed
