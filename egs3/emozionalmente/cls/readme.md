@@ -15,6 +15,25 @@ The corpus publishes a speaker-independent train/dev/test split, stratified
 by emotion, gender and age, and this recipe reads it from
 `metadata/split/*.csv` rather than rebuilding it.
 
+## Data and ratings
+
+The 6,902 clips (0.76 to 13.9 seconds, 3.81 seconds on average, 16 kHz mono) were acted
+by 431 amateur actors, each saying 18 sentences with the seven emotional intentions,
+and were mostly recorded with non-professional equipment. The label is the intention
+of the actor, not a vote. Besides the audio, the corpus holds the demographics of the
+actors and of the 829 evaluators, and the 34,510 evaluations (five per clip, with an
+audio-quality flag). A listener's single answer equals the intention for 66.4% of the
+judgements and the strict majority of the five equals it for 5,025 of 6,902 clips; the
+ratings are not used here.
+
+## License and citation
+
+The Zenodo record
+[10.5281/zenodo.12616095](https://doi.org/10.5281/zenodo.12616095) is licensed CC BY 4.0.
+Cite F. Catania, J. W. Wilke and F. Garzotto, "Emozionalmente: A Crowdsourced Corpus of
+Simulated Emotional Speech in Italian", IEEE Transactions on Audio, Speech and Language
+Processing 33, pp. 1142-1155, 2025.
+
 ## Quick start
 
 ```bash

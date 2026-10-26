@@ -17,9 +17,21 @@ https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
 `$KAGGLE_API_TOKEN`). `JLCORPUS` points at an existing corpus tree, or where
 to download it to.
 
+Seven pairs of clips have the same or nearly the same sound: six are the `a` and `b`
+versions of one sentence by `female1` in `excited` (`5a`/`5b`, `6a`/`6b` and `9a`/`9b`,
+takes 1 and 2), and one is `male2_neutral_15b_1`/`15b_2`. They are kept as they are.
+
 The corpus publishes no partition, and it has four speakers. One is held out
 for test; validation is drawn from the remaining three, because a second
 held-out speaker would leave two for training.
+
+## License and citation
+
+The Kaggle listing gives the licence CC0 1.0. The corpus README asks users to cite Jesin
+James, Li Tian and Catherine Watson, "An Open Source Emotional Speech Corpus for Human
+Robot Interaction Applications", Interspeech 2018. The corpus was evaluated in a
+perception test with 120 participants; the survey links are in the README and the
+ratings are not bundled.
 
 ## Quick start
 
