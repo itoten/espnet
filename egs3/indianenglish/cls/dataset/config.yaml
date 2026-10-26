@@ -17,6 +17,9 @@ builder:
   # content, one is kept when they share a label, and none when the labels differ
   # (two pairs). `expected_files` is what remains.
   listed_wavs: 747
+  # Byte-identical recordings with one label are kept once when true; false keeps
+  # every copy (the count check is then skipped). Label-conflicting copies are always dropped.
+  exclude_duplicates: true
   expected_files: 695
 
   # Labels ----------------------------------------------------------------

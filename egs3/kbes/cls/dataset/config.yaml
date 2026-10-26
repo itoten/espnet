@@ -12,6 +12,9 @@ builder:
   # The listing gives each file's size and SHA-256, which are checked.
   dataset_url: https://data.mendeley.com/public-api/datasets/vsn37ps3rx
   user_agent: Mozilla/5.0
+  # Byte-identical recordings with one label are kept once when true; false keeps
+  # every copy (the count check is then skipped). Label-conflicting copies are always dropped.
+  exclude_duplicates: true
   expected_files: 900
   # Files left after dropping repeated content (see `read_entries`).
   expected_entries: 880

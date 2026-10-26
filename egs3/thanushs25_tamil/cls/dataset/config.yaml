@@ -12,6 +12,9 @@ builder:
   repo_id: Thanushs25/tamil-audio-emotion-classification
   revision: 2a01784b7a9d8d7fbd36a7d2480214d9a26e5312
   # Fewer files means an interrupted download.
+  # Byte-identical recordings with one label are kept once when true; false keeps
+  # every copy (the count check is then skipped). Label-conflicting copies are always dropped.
+  exclude_duplicates: true
   expected_files: 195
   download_workers: 4
 

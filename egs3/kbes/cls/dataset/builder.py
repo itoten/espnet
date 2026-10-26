@@ -229,11 +229,12 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     for copies in groups.values():
         if len({label for label, _ in copies}) > 1:
             continue
-        label, wav = copies[0]
-        entries.append(
-            {"utt_id": f"kbes-{wav.stem}", "source": str(wav), "label": label}
-        )
-    if len(entries) != _CFG["expected_entries"]:
+        kept = copies[:1] if _CFG["exclude_duplicates"] else copies
+        for label, wav in kept:
+            entries.append(
+                {"utt_id": f"kbes-{wav.stem}", "source": str(wav), "label": label}
+            )
+    if _CFG["exclude_duplicates"] and len(entries) != _CFG["expected_entries"]:
         raise ValueError(
             f"Found {len(entries)} usable recordings, expected "
             f"{_CFG['expected_entries']}"

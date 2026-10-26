@@ -228,7 +228,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         if len({item[2] for item in same}) > 1:
             n_conflict += 1
             continue
-        if same[0][0] != wav:
+        if _CFG["exclude_duplicates"] and same[0][0] != wav:
             n_dup += 1
             continue
         take = counter[(group, label)] = counter.get((group, label), 0) + 1

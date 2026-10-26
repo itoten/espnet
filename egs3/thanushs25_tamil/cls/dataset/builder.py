@@ -169,7 +169,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 f"Known: {sorted(_EMOTION_MAP)}"
             )
         digest = hashlib.md5(wav.read_bytes()).hexdigest()
-        if digest in seen:
+        if _CFG["exclude_duplicates"] and digest in seen:
             logger.warning("%s duplicates %s; skipped", wav, seen[digest])
             continue
         seen[digest] = wav

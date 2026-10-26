@@ -18,6 +18,9 @@ builder:
   # different labels (Disappointment/Male/0737.wav and Neutral/Male/0704.wav).
   # Both are left out, so `expected_files` is 3218.
   listed_wavs: 3220
+  # Byte-identical recordings with one label are kept once when true; false keeps
+  # every copy (the count check is then skipped). Label-conflicting copies are always dropped.
+  exclude_duplicates: true
   expected_files: 3218
 
   # Labels ----------------------------------------------------------------
