@@ -14,6 +14,30 @@ The corpus has one speaker, so no split can hold speakers out; the partition
 is stratified by emotion instead (20% valid, 20% test), which
 `dataset/config.yaml`'s ratios and seed control.
 
+## Data
+
+EMNS is acted British English speech by one female speaker in her twenties,
+reading narrative sentences "for games, television and graphic novels" in eight
+styles. `metadata.csv` also holds an intensity `level` (0 to 10), the
+sentence text, a `description` (the reading instruction, for example emphasis on given
+words), a `status` and the path of the recording. The recipe uses only the label.
+The release used here has 1,181 recordings (2.32 hours, 1.9 to 15.3 seconds, 48 kHz
+mono Opus). The classes are disgust 162, happy 157, surprised 151, excited 150,
+neutral 149, sad 147, sarcastic 139 and angry 126.
+
+`metadata.csv` has 1,205 rows, but 24 are marked `Needs Updating` and their recordings
+(`wavs/*.webm`) are not in `cleaned_webm/`; only the 1,181 `Complete` rows have audio. The
+24 rows cannot be used and are not read. Why they have no audio is not stated (the
+OpenSLR page also offers the unprocessed recordings, `raw_webm.tar.xz`, which was not
+checked).
+
+## License and citation
+
+OpenSLR lists the corpus under Apache 2.0. Cite the corpus as given on
+[OpenSLR 136](https://www.openslr.org/136/): "EMNS /Imz/ Corpus: An emotive
+single-speaker dataset for narrative storytelling in games, television and graphic
+novels".
+
 ## Quick start
 
 ```bash
