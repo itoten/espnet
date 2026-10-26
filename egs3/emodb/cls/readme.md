@@ -42,6 +42,16 @@ training speaker. The default is speaker 13.
 | valid | 13 | 81 |
 | test | 12, 14, 15, 16 | 332 |
 
+## License and citation
+
+The Zenodo record of EmoDB 2.0 (Burkhardt, Paeschke, Kienast, Sendlmeier and Weiss,
+published 2025-11-19) lists the licence CC BY 4.0, which this recipe follows. The
+older EmoDB pages may state other terms; the 2.0 release is what is downloaded here.
+Ten actors (five women, five men) acted ten German sentences (five short, five
+longer) in seven emotions in an anechoic chamber. Cite the Zenodo record
+[10.5281/zenodo.17651657](https://doi.org/10.5281/zenodo.17651657) and the original
+EmoDB paper, [Burkhardt et al., Interspeech 2005](https://www.isca-archive.org/interspeech_2005/burkhardt05_interspeech.html).
+
 ## Quick start
 
 ```bash
