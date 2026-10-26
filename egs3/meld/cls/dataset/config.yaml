@@ -52,9 +52,12 @@ builder:
     valid: manifest/valid.tsv
     test: manifest/test.tsv
 
-  # Utterances whose audio is far longer than the annotated turn. Unlike the
-  # duration filter, this list also applies to the test split, which is kept
-  # unfiltered so that scores stay comparable with the ESPnet2 recipe.
+  # Four utterances that cannot be used. Two have no usable audio (the mp4 of
+  # train Ross-dia125-utt3 is corrupt, the mp4 of valid Phoebe-dia110-utt7 is
+  # missing). The other two, in test, have a CSV time span of about 305 s and
+  # 235 s, so the clip is minutes long for a single label. Unlike the duration
+  # filter, this list also applies to the test split, which is kept unfiltered
+  # so that scores stay comparable with the ESPnet2 recipe.
   excluded_utterance_ids:
     - Ross-dia125-utt3-sea4-epi18-train
     - Phoebe-dia110-utt7-sea6-epi11-valid
