@@ -43,8 +43,23 @@ default to `download/` and `data/` under the recipe.
 (500 MB) with 8 threads, and checks each one's size and SHA-256 against the listing.
 Mendeley rejects requests that do not send a browser-like `User-Agent`, so the
 recipe sends one. The dataset is licensed CC BY 4.0 (the license field of the
-Mendeley listing). Please cite the paper above. The clips come from third-party
-videos; the paper states that the authors checked there are no copyright issues.
+Mendeley listing). Please cite the paper above.
+
+**Source rights.** The clips are cut from third-party videos. The paper's Ethics
+Statements (Data in Brief 51 (2023) 109741, CC BY) say: "Emotional speech dialogs
+are extracted from publicly available Telefilm, Drama, TV Series and Web Series in
+YouTube and Facebook. YouTube is also the main source of Facebook videos through the
+given link. YouTube videos are usable for derivative works through the license to
+other users. Authors ensure that there are no copyright issues on video clips used
+in this study to prepare the speech emotion dataset. Individually, all the actors are
+professional and dialogs were performed for public audience acting in Telefilm,
+Drama, TV Series and Web Series. Moreover, actors have been fully anonymized in the
+speech dialog data samples of the developed dataset."
+This is the authors' own assertion. The paper does not list the source videos or say
+which of them carry a license that allows reuse, and the release holds only the WAV
+files, so the statement cannot be checked from the release. Whether the clips are
+open or restricted for use is therefore unconfirmed; the CC BY 4.0 above is the
+license the authors give to their own cutting and labeling.
 
 ## Splits
 
