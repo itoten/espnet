@@ -41,6 +41,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 174 |
 | test | 347 |
 
+## Listening test
+
+Each speaker listened to their own recordings and had a third person of their choice judge them, and recordings without the intended emotion were re-recorded (paper); a validation subset was also judged by three volunteers. The individual results are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

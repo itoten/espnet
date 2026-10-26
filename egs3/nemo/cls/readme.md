@@ -44,6 +44,10 @@ out, so all three splits contain all nine speakers.
 | valid | 449 |
 | test | 897 |
 
+## Listening test
+
+Doubtful recordings were removed after a human evaluation, so that only recordings expressing the intended emotion remain (paper). The number of evaluators and the method are not stated and the ratings are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

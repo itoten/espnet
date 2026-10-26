@@ -42,6 +42,10 @@ all 6 speakers.
 | valid | 668 |
 | test | 1335 |
 
+## Listening test
+
+A perception test covers every recording: 720 raters in 18 groups, 40 raters per recording, chose the emotion and rated its intensity from 1 to 9. The per-recording accuracy (the share of the 40 who chose the intended emotion) is in `Corpus information.xlsx` on the OSF project: mean 0.763, minimum 0.475, and 137 recordings below 0.5. The ratings are not used here.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

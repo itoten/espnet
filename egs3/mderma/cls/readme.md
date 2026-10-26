@@ -75,6 +75,10 @@ depends on the network (Mendeley was slow here).
 
 The downloaded audio takes 1.4 GB and the converted data 235 MB.
 
+## Listening test
+
+Five native Moroccan Arabic speakers listened to every segment separately, and only segments on which at least three agreed were kept (Fleiss' kappa 0.89, per the paper). The individual judgements are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

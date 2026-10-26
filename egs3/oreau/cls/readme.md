@@ -48,6 +48,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 44 |
 | test | 85 |
 
+## Listening test
+
+Version 2 keeps the recordings that a perception test showed were recognised by more than 50% of the listeners and judged natural (434 of the 502 of version 1). The individual results are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

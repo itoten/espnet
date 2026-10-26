@@ -45,6 +45,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 300 |
 | test | 601 |
 
+## Listening test
+
+Twelve annotators labelled each utterance and the label is the majority vote (Cohen's kappa about 64%, "substantial"). The individual ratings are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

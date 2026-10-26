@@ -42,6 +42,10 @@ all 6 talkers.
 | valid | 180 |
 | test | 360 |
 
+## Listening test
+
+Ten young adult listeners rated the category, arousal, pleasantness and goodness of fit of the recordings, and clips far from the mean of their emotion were removed (Morgan, 2019). The ratings are available from the author on request and are not in the release.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

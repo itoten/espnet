@@ -51,6 +51,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 325 |
 | test | 648 |
 
+## Listening test
+
+The labels are the majority vote of raters who listened and chose the emotion they perceived: five raters for the first 52 folders and three other raters for the folders added later. The individual ratings are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

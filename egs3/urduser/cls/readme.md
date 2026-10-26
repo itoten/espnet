@@ -76,6 +76,10 @@ depends on the network.
 
 The downloaded audio takes 1.9 GB and the converted data 343 MB.
 
+## Listening test
+
+The authors labelled the clips (one labelled, a second checked, a third spot-checked). A validation by about 100 university students, ten clips each, agreed with the labels in 94% of the answers (paper); the individual results are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

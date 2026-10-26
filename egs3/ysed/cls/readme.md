@@ -61,6 +61,10 @@ for part of this one, so treat it as an upper bound.
 
 The extracted audio takes 667 MB and the converted data 114 MB.
 
+## Listening test
+
+Six judges listened to the recordings, and a recording was kept only if at least four of them agreed on its emotion (Fleiss' kappa 0.9, per the paper). The individual judgements are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

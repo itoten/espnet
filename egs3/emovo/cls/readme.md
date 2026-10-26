@@ -43,6 +43,10 @@ splits contain all six speakers.
 | valid | 56 |
 | test | 119 |
 
+## Listening test
+
+The paper reports a listening test on 2 of the 14 sentences by two groups of 12 listeners (24 in all), who chose between two emotions: the overall accuracy was 80%, with joy and disgust the hardest. Only these totals are in the paper; the individual results are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

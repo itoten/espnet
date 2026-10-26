@@ -47,6 +47,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 148 |
 | test | 293 |
 
+## Listening test
+
+The paper reports a perception test with 15 raters (8 men, 7 women; students and staff of two universities), about 33 clips each: the intended emotion was perceived in 80.5% of the cases (the most frequently chosen emotion counts). Surprise was the hardest (confused with happy). Only the confusion matrix is in the paper; the ratings are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

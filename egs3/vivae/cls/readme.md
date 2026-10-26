@@ -67,6 +67,10 @@ depends on the network.
 The extracted audio takes 85 MB and the converted data 33 MB. `prepare_source`
 deletes the zip after a successful extraction.
 
+## Listening test
+
+A core set of 480 recordings was selected by a perception test of authenticity (Zenodo description); the full set of 1,085 used here also contains recordings that were not selected. The individual judgements are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

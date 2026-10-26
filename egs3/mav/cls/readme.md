@@ -54,6 +54,10 @@ Frédéric Gosselin, "The Montreal Affective Voices: A validated set of nonverba
 affect bursts for research on auditory affective processing", Behavior Research
 Methods 40(2), 531-539, 2008, https://doi.org/10.3758/BRM.40.2.531.
 
+## Listening test
+
+Thirty participants rated each vocalization for the 8 emotions (valence, arousal and intensity); the Zenodo description gives a mean recognition of 68%. The per-clip ratings are not in the release.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

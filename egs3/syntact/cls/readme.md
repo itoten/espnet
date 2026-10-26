@@ -53,6 +53,10 @@ split is not filtered).
 The Zenodo record states CC BY 4.0. Please cite Burkhardt, Eyben and Schuller (2022), the
 DCLRL workshop paper at LREC 2022 linked above.
 
+## Listening test
+
+The label is the emotion specified for the synthesis, not a human or classifier judgement. The paper reports a separate forced-choice listening experiment with 20 people (accuracy 0.35 to 0.6); its results are not in the release.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

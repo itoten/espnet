@@ -45,6 +45,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 162 |
 | test | 323 |
 
+## Listening test
+
+The paper reports a crowd-sourced forced-choice test: 60 clips with balanced emotions, 30 clips for each of 30 workers; the accuracy is 94.21% (87.37% when the nonverbal part is left out). The individual results are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

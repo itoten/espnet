@@ -41,6 +41,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 40 |
 | test | 80 |
 
+## Listening test
+
+Four students from two universities labelled the clips from audio and video together, and a clip was kept with a label only if at least two agreed (paper). The individual ratings are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

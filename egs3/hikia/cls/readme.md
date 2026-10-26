@@ -47,6 +47,10 @@ speakers.
 The utterances are 0.24 s or longer, so `remove_long_short` drops none for being
 short.
 
+## Listening test
+
+Eight graduate students rated 576 recordings in random order, choosing one of the four emotions or `unknown`; the 88 recordings for which all eight chose another emotion were removed, leaving the 488 here. The raters' accuracy is 63.17% (63.2% of the votes agree with the intended emotion; sad 81.6%, happy 62.7%, neutral 54.6%, angry 50.4%). `annotation/human.csv` in the release holds the eight votes of every recording (letters `a` angry, `e` happy, `d` sad, `n` neutral, `u` unknown, which differ from the file-name letters); the majority equals the intended emotion for 330 clips. The votes are not used here.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

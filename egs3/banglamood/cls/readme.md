@@ -82,6 +82,10 @@ depends on the network.
 
 The downloaded audio takes 963 MB and the converted data 327 MB.
 
+## Listening test
+
+Three native Bangla annotators, each given a share of the videos, labelled the clips from the tone, facial expressions and scenario as well as the audio. Whether more than one annotator judged each clip is not stated, and no ratings are distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

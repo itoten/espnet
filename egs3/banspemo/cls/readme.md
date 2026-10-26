@@ -43,6 +43,10 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 | valid | 78 |
 | test | 156 |
 
+## Listening test
+
+The paper reports a perception test with 10 raters (5 men, 5 women; not among the speakers, with acting experience, untrained), each of whom rated every recording: the most frequently chosen emotion equals the intended one for 76.05% of the clips. Only the confusion matrix is in the paper; the ratings are not distributed.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one
