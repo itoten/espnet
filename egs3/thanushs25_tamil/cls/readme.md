@@ -81,3 +81,5 @@ python run.py --stages infer measure \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
+
+**Duplicates.** `exclude_duplicates` in `dataset/config.yaml` (default `true`) keeps one recording per group of byte-identical files with one label (2 extra copies are dropped); `false` keeps every copy. Copies with conflicting labels are always dropped.

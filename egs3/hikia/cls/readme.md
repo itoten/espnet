@@ -67,3 +67,5 @@ python run.py --stages infer measure \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
+
+**Duplicates.** 1 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).

@@ -62,3 +62,5 @@ python run.py --stages measure \
 
 `JLCORPUS_OUTPUT` must already point at the prepared data; `create_dataset`
 writes it there if it does not.
+
+**Duplicates.** 7 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
