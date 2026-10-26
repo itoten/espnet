@@ -31,9 +31,9 @@ model:
       normalize:
         _target_: espnet3.systems.cls.model.WaveformNormalize
         stats_file: ${stats_dir}/train/feats_stats.npz
-    # iemocap's native label set (6 classes). `token_list` ends
+    # iemocap's native label set (11 classes). `token_list` ends
     # with `<unk>`, not a class.
-    num_classes: 6
+    num_classes: 11
     head_size: 1024
     head_layers: 1
     dropout: 0.5
