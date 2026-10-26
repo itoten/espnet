@@ -215,12 +215,14 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If a name carries an emotion outside ``emotion_map``, or an
-            `exclude_files` name is absent.
+            `duplicate_files` name is absent.
         FileNotFoundError: If no recording is found.
     """
     entries = []
     skipped = 0
-    excluded = set(_CFG["exclude_files"])
+    excluded = (
+        set(_CFG["duplicate_files"]) if _CFG["exclude_duplicates"] else set()
+    )
     for wav in sorted(source_root.glob("*.wav")):
         if wav.name in excluded:
             excluded.discard(wav.name)
@@ -250,7 +252,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
     if excluded:
-        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
+        raise ValueError(f"`duplicate_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No SUBESCO audio under {source_root}")
 

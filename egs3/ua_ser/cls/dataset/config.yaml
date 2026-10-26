@@ -19,7 +19,10 @@ builder:
 
   # Files left out of every split (see the readme): `h_213_1` is the same
   # recording as `h_212_1` (same speaker and label, confirmed by listening).
-  exclude_files:
+  # `exclude_duplicates: true` leaves these files out (the first file of each group
+  # is kept); `false` uses every file.
+  exclude_duplicates: true
+  duplicate_files:
     - h_213_1.wav
 
   # Split -----------------------------------------------------------------

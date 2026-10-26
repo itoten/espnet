@@ -26,7 +26,10 @@ builder:
   # Duplicates ------------------------------------------------------------
   # Files left out. In each group of identical recordings (byte-identical, or
   # the same waveform for M_2_MIFTA_S_1_SAD_2/_3) only the lowest take is kept.
-  exclude_files:
+  # `exclude_duplicates: true` leaves these files out (the first file of each group
+  # is kept); `false` uses every file.
+  exclude_duplicates: true
+  duplicate_files:
     - F_3_MAHI_S_1_SAD_3.wav
     - F_4_TABASSUM_S_3_NEUTRAL_3.wav
     - M_2_MIFTA_S_1_SAD_3.wav

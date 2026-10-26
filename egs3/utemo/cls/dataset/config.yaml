@@ -30,7 +30,10 @@ builder:
   # 20 groups of videos with identical video and audio, each the same actor,
   # emotion and phrase in another repetition. Only the lowest repetition of
   # each group is kept; these 21 files are left out.
-  exclude_files:
+  # `exclude_duplicates: true` leaves these files out (the first file of each group
+  # is kept); `false` uses every file.
+  exclude_duplicates: true
+  duplicate_files:
     - Anger_Actor12_P3_F2.avi
     - Anger_Actor4_P3_F3.avi
     - Anger_Actor7_P2_F6.avi

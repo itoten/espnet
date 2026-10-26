@@ -30,7 +30,10 @@ builder:
 
   # Utterances left out (utterance ids). `d1253-u009` has byte-identical audio to
   # `d1121-u009`, which lies in another split; the valid copy is dropped.
-  exclude_files:
+  # `exclude_duplicates: true` leaves these files out (the first file of each group
+  # is kept); `false` uses every file.
+  exclude_duplicates: true
+  duplicate_files:
     - dailytalk-d1253-u009
 
   # Split -----------------------------------------------------------------

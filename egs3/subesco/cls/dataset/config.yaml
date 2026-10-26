@@ -36,7 +36,10 @@ builder:
   # has the same speaker, sentence and emotion except one pair (M_09 S4 take 5 and
   # S5 take 1, both neutral). The first file of each pair by name is kept and the
   # second is left out.
-  exclude_files:
+  # `exclude_duplicates: true` leaves these files out (the first file of each group
+  # is kept); `false` uses every file.
+  exclude_duplicates: true
+  duplicate_files:
     - F_01_OISHI_S_4_SAD_3.wav
     - F_01_OISHI_S_8_HAPPY_2.wav
     - F_01_OISHI_S_9_ANGRY_2.wav

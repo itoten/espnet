@@ -23,7 +23,10 @@ builder:
   # Duplicates ------------------------------------------------------------
   # Files left out (`<speaker>/<emotion>/<name>`). Each pair is byte-identical
   # and from one speaker, emotion and sentence; the lower take is kept.
-  exclude_files:
+  # `exclude_duplicates: true` leaves these files out (the first file of each group
+  # is kept); `false` uses every file.
+  exclude_duplicates: true
+  duplicate_files:
     - Speaker-3/Sad/S-3-3-1.wav
     - Speaker-8/Anger/A-10-8-2.wav
 

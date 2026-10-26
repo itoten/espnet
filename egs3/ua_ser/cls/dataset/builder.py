@@ -203,9 +203,13 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If a row has an unknown split, a repeated file name, or
-            no recording, or a name in ``exclude_files`` is not found.
+            no recording, or a name in ``duplicate_files`` is not found.
     """
-    excluded = {str(n) for n in _CFG["exclude_files"]}
+    excluded = (
+        {str(n) for n in _CFG["duplicate_files"]}
+        if _CFG["exclude_duplicates"]
+        else set()
+    )
     entries = []
     seen = set()
     with (source_root / str(_CFG["metadata_file"])).open(encoding="utf-8") as fh:
@@ -232,7 +236,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 }
             )
     if excluded:
-        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
+        raise ValueError(f"`duplicate_files` names not found: {sorted(excluded)}")
     if not entries:
         raise ValueError("The metadata file has no rows")
     logger.info(

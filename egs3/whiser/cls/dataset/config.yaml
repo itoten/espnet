@@ -34,16 +34,26 @@ builder:
   # Duplicates ------------------------------------------------------------
   # 53 clusters of recordings with the same sound (decoded-identical or a
   # waveform correlation above 0.9), mostly the same tape under names that
-  # differ in one letter (`rmn_e655a` / `rmn_e655b`). In a cluster with one
-  # label only the first file by name is kept. The 3 clusters whose files carry
-  # different labels are left out entirely. 57 files in all.
+  # differ in one letter (`rmn_e655a` / `rmn_e655b`).
+  #
+  # The 3 clusters whose files carry different labels cannot be judged, so all
+  # of their 6 files are always left out.
   exclude_files:
+    - rmn_e018a_112.1-2_714.wav
+    - rmn_e018a_44.1-2_17.wav
+    - rmn_e655a_3.1-2_535.wav
+    - rmn_e655a_3.1-2_636.wav
+    - rmn_e655b_3.1-2_540.wav
+    - rmn_e655b_3.1-2_649.wav
+
+  # In each of the other 50 clusters (one label) the first file by name is kept.
+  # `exclude_duplicates: true` leaves out the other 51 files; `false` uses them.
+  exclude_duplicates: true
+  duplicate_files:
     - rmn_e004a_17.1-2_18.wav
     - rmn_e007b_165.1-2_275.wav
     - rmn_e007c_159.1-2_14.wav
     - rmn_e018a_112.1-2_552.wav
-    - rmn_e018a_112.1-2_714.wav
-    - rmn_e018a_44.1-2_17.wav
     - rmn_e018a_44.1-2_48.wav
     - rmn_e308b_13.1-2_175.wav
     - rmn_e308b_13.1-2_991.wav
@@ -73,16 +83,12 @@ builder:
     - rmn_e649b_1.1-2_1516.wav
     - rmn_e649b_1.1-2_1617.wav
     - rmn_e649b_1.1-2_491.wav
-    - rmn_e655a_3.1-2_535.wav
-    - rmn_e655a_3.1-2_636.wav
     - rmn_e655b_3.1-2_1162.wav
     - rmn_e655b_3.1-2_1621.wav
     - rmn_e655b_3.1-2_2241.wav
     - rmn_e655b_3.1-2_2477.wav
     - rmn_e655b_3.1-2_2501.wav
     - rmn_e655b_3.1-2_332.wav
-    - rmn_e655b_3.1-2_540.wav
-    - rmn_e655b_3.1-2_649.wav
     - rmn_e655b_3.1-2_740.wav
     - rmn_e655b_3.1-2_784.wav
     - rmn_e655b_3.1-2_96.wav
