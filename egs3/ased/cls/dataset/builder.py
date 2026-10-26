@@ -162,14 +162,23 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If a file's emotion code is unknown, or two files share a
-            name (the name is the utterance id).
+        ValueError: If a file's emotion code is unknown, two files share a name
+            (the name is the utterance id), or a `duplicate_files` name is absent
+            while `exclude_duplicates` is on.
         FileNotFoundError: If no recording is found.
     """
     entries = []
     seen: dict[str, Path] = {}
     skipped = 0
+    duplicates = (
+        {str(n).lower() for n in _CFG["duplicate_files"]}
+        if _CFG["exclude_duplicates"]
+        else set()
+    )
     for wav in sorted(source_root.rglob("*.wav")):
+        if wav.name.lower() in duplicates:
+            duplicates.discard(wav.name.lower())
+            continue
         fields = FILENAME_RE.match(wav.name)
         if fields is None:
             skipped += 1
@@ -199,6 +208,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
+    if duplicates:
+        raise ValueError(f"`duplicate_files` names not found: {sorted(duplicates)}")
     if not entries:
         raise FileNotFoundError(f"No ASED audio under {source_root}")
     logger.info(

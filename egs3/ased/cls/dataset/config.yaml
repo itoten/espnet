@@ -22,6 +22,67 @@ builder:
     n: neutral
     s: sad
 
+  # Duplicates ------------------------------------------------------------
+  # 53 pairs of recordings with the same sound, always the same speaker, sentence
+  # and emotion in repetitions 1 and 2 (28 pairs would fall in different splits
+  # of a random split). With `exclude_duplicates: true` the second file of each
+  # pair is left out; set it to false to use every file.
+  exclude_duplicates: true
+  duplicate_files:
+    - a5-02-02-01-37.wav
+    - a5-03-02-01-21.wav
+    - a5-03-02-01-25.wav
+    - a5-04-02-01-21.wav
+    - a5-05-02-01-21.wav
+    - a5-05-02-01-25.wav
+    - a5-06-02-01-21.wav
+    - a5-06-02-01-25.wav
+    - a5-07-02-01-21.wav
+    - a5-07-02-01-25.wav
+    - a5-07-02-02-63.wav
+    - f2-01-02-01-37.wav
+    - f2-03-02-01-21.wav
+    - f2-04-01-01-25.wav
+    - f2-05-02-01-13.wav
+    - f2-05-02-01-21.wav
+    - f2-05-02-02-50.wav
+    - f2-06-02-01-21.wav
+    - f2-07-02-01-25.wav
+    - h3-01-02-01-49.wav
+    - h3-01-02-02-08.wav
+    - h3-02-02-01-49.wav
+    - h3-03-02-01-21.wav
+    - h3-04-02-01-21.wav
+    - h3-06-02-01-11.wav
+    - h3-06-02-01-21.wav
+    - h3-07-01-01-25.wav
+    - h3-07-02-01-21.wav
+    - h3-07-02-01-31.wav
+    - n1-02-02-01-37.wav
+    - n1-03-02-01-21.wav
+    - n1-03-02-01-25.wav
+    - n1-04-02-01-21.wav
+    - n1-04-02-01-25.wav
+    - n1-05-02-01-21.wav
+    - n1-05-02-01-25.wav
+    - n1-06-02-01-21.wav
+    - n1-06-02-01-25.wav
+    - n1-06-02-01-58.wav
+    - n1-07-02-01-21.wav
+    - n1-07-02-01-25.wav
+    - n1-07-02-01-29.wav
+    - n1-07-02-02-53.wav
+    - s4-03-02-01-21.wav
+    - s4-03-02-01-23.wav
+    - s4-03-02-01-25.wav
+    - s4-04-02-01-21.wav
+    - s4-05-02-01-21.wav
+    - s4-05-02-01-25.wav
+    - s4-06-02-01-21.wav
+    - s4-07-02-01-21.wav
+    - s4-07-02-01-25.wav
+    - s4-07-02-02-57.wav
+
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each
   # label; speakers are not held out.

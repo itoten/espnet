@@ -22,6 +22,13 @@ so names are matched ignoring case. The recordings are already 16 kHz mono;
 `create_dataset` still passes them through ffmpeg so every recipe writes the
 same format.
 
+53 pairs of recordings have the same sound (always one speaker, one sentence and one
+emotion in repetitions 1 and 2, so the second "repetition" is a copy of the first). With
+`exclude_duplicates: true` in `dataset/config.yaml` (the default) the second file of
+each pair is left out and 2,421 recordings are used; with `false` all 2,474 are used. For sentences 03 to
+07, 37 speakers have all 50 files and 28 speakers have none, although the README says
+each recording was judged separately.
+
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
@@ -31,7 +38,8 @@ default to `download/` and `data/` under the recipe.
 ## Download
 
 `prepare_source` downloads the repository archive from GitHub, pinned to the
-latest commit. The repository's README states no license or terms of use.
+latest commit. The repository's README states no license or terms of use. The licence is to be asked of the
+authors (not yet done); until then use the data only for local experiments.
 
 ## Splits
 
