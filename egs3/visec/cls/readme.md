@@ -17,10 +17,16 @@ recordings were made or labelled.
 ## Provenance
 
 The original repository (`hustep-lab/ViSEC` on Hugging Face) answers 401. The recipe
-uses a **third-party copy**, `Dennis290/ViSEC` (pinned to commit
+uses a **re-upload under a different account**, `Dennis290/ViSEC` (pinned to commit
 `70f4b62f432d85c0b52dee3855a5f8dd244f093a`, not gated, one 367 MB parquet file,
-SHA-256 checked). Its card says `cc-by-4.0` and asks to cite the paper above; the
-terms of the original release could not be checked.
+SHA-256 checked, created 2026-09-08). Whether this account belongs to the authors, and
+whether the copy equals the original, is unknown, so it may be an unofficial mirror.
+Its card says `cc-by-4.0` and asks to cite the paper above; the terms of the original
+release could not be checked. The paper's abstract says the data were collected from
+public media, so the rights in the audio are also unclear.
+
+**The corpus is on hold**: use it only for local experiments until the official source
+is confirmed and the licence is clear.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
