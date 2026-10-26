@@ -29,6 +29,19 @@ default to `download/` and `data/` under the recipe.
 `prepare_source` downloads `albemo-v1.0.zip` (92 MB) from
 [Zenodo](https://zenodo.org/records/21638085). The corpus is CC BY 4.0.
 
+## Listening test
+
+The release holds a blind forced-choice listening test of every clip: four native Albanian
+raters (`ev01` to `ev04`) gave 1,260 judgements, three independent ones per clip
+(a rater never judged a recording of their own). The raters picked the intended emotion
+in 73% of the judgements (chance is 14%; kappa 0.59 per the Zenodo record), and the
+per-rater files are in `evaluations/`, with a summary. The strict majority differs from the
+intended emotion for 63 clips and no rater picked it for 31. These ratings are a useful
+human reference and for later analysis; the recipe does not use them, and the label is
+the intended emotion (the folder name). In the files, `audit_ev01_sp04.csv` to
+`audit_ev01_sp08.csv` are named ev01 but carry `rater` ev02, so counting by that column
+gives sp05 to sp08 only two raters.
+
 ## Splits
 
 The corpus publishes no partition. Utterances are split 70/10/20 at random

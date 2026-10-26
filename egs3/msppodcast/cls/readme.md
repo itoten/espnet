@@ -22,6 +22,16 @@ All outputs (manifests, token list, class weights, 16 kHz WAV files) go to
 `$MSPPODCAST_OUTPUT`; the Train and Development partitions are used for
 training and validation, Test1/Test2 only as extra test sets.
 
+## Data, annotators and licence
+
+MSP-Podcast (Lotfian and Busso, 2019) is natural English speech cut from podcasts, with
+emotion annotated by crowd workers: the consensus class comes from their votes, and
+arousal, valence and dominance scores are annotated as well (arXiv 2509.09791 reports
+1,446,270 annotations by 13,280 annotators). The recipe uses only the consensus class. Access needs a signed agreement with the MSP
+lab: use is limited to internal non-commercial research, the data must not be
+redistributed, and Lotfian and Busso (2019) must be cited. The raw release holds 8,180
+files in 2,760 groups of byte-identical audio; they have not been examined and are kept.
+
 ## Running
 
 ```bash

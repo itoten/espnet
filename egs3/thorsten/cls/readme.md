@@ -18,6 +18,15 @@ this recipe are speaker-dependent. The split works on sentences instead: all
 eight recordings of a sentence go to the same split, so the same German text
 never appears in both train and test.
 
+## Data and licence
+
+The corpus is one German speaker reading the same 300 sentences in 8 ways. The release
+used here has 2,399 recordings (the `whisper` directory has 299, the description says
+300 per style; 2,400 in all), 22.05 kHz mono 16-bit, about 2.9 hours. `drunk`, `sleepy`
+and `whisper` are used as classes like the others. The licence is CC0 1.0 (Zenodo
+[5525023](https://zenodo.org/records/5525023), also OpenSLR 110). There is no listening
+test.
+
 ## Quick start
 
 ```bash

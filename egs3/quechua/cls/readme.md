@@ -18,6 +18,15 @@ valid, a6 test) after the metadata repairs `dataset/config.yaml` documents
 (two mis-spelled emotions, two mis-typed speaker ids, 42 mis-attributed
 `happy` recordings).
 
+## Data, ratings and licence
+
+The 12,420 recordings (about 15 hours; 0.75 to 21.8 seconds; mostly 44.1 kHz mono) are
+the full grid of 6 actors, 9 emotions and 230 script items (words and sentences, with
+Spanish translations in `Script.xlsx`). Besides the discrete emotion, `Labels/` holds
+valence, arousal and dominance ratings by four raters; they are not used here. The
+licence is CC BY 4.0 (figshare 20292516). Cite the Scientific Data paper of the corpus
+(Nature Scientific Data 2022, [doi:10.1038/s41597-022-01855-9](https://www.nature.com/articles/s41597-022-01855-9)).
+
 ## Quick start
 
 ```bash

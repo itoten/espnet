@@ -30,7 +30,18 @@ default to `download/` and `data/` under the recipe.
 `prepare_source` downloads the corpus from the public MEGA folder linked on the
 corpus's own page (about 410 MB, with its documentation). MEGA encrypts files
 client-side, so the builder decrypts them itself with the folder key from that
-link. The page offers the corpus for non-commercial research use.
+link. The corpus page says the corpus is publicly available for research purposes
+(the words "research non-commercial" there are about an extended version built from
+recordings sent to the authors' web site); there is no licence file.
+
+## Listening test
+
+The corpus page reports a subjective evaluation of the database (Vryzas et al.,
+Audio Mostly 2018, "Subjective Evaluation of a Speech Emotion Recognition
+Interaction Framework"): human listeners recognised the intended emotion about 74% of
+the time. This figure is a rough human reference for the five classes. The number of
+listeners and the per-utterance answers are not in the release, and the labels used here
+are the intended emotions.
 
 ## Splits
 
