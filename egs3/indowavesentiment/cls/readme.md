@@ -28,7 +28,7 @@ The files do not match: 210 are 44.1 kHz and 90 are 48 kHz, all mono 16-bit PCM
 WAV with ffmpeg. Durations after conversion range from 3.00 to 3.80 seconds (median
 3.00), so `remove_long_short` drops nothing. The description says each actor
 repeated "the same sentence" three times across the five emotions; the sentence
-is not given, and the recordings were not listened to.
+is not given. A Whisper transcription of 12 randomly chosen recordings gave the same sentence for all of them, "Kualitas HP ini cukup bagus." (Indonesian, "The quality of this phone is quite good"); this comes from the automatic transcription only and was not checked by a person.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.

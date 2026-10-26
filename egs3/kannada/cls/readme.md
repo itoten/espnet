@@ -39,9 +39,9 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 
 | split | utterances |
 |---|---|
-| train | 324 |
+| train | 322 |
 | valid | 48 |
-| test | 96 |
+| test | 93 |
 
 ## Quick start
 
@@ -60,4 +60,4 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-**Duplicates.** 1 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
+**Duplicates.** Three pairs of recordings have the same sound. In two pairs the files carry different emotions (`09-03-02` surprise and `09-04-02` happy; `13-04-04` happy and `13-06-04` neutral); none of these four is used (`conflicting_ids`). In the third, `09-06-04` and `09-06-05` (both `neutral`, different sentence numbers), `09-06-05` is dropped with `exclude_duplicates: true` (the default); `false` keeps both. This leaves 463 recordings (464 with `false`).

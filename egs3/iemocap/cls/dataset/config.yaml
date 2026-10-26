@@ -10,9 +10,10 @@ builder:
   # not downloaded here. Point `IEMOCAP` at a copy holding `Session1`-`Session5`.
 
   # Labels ----------------------------------------------------------------
-  # `happy` and `excited` stay separate classes. Codes not listed here
-  # (`fru`, `sur`, `dis`, `oth`, `xxx`) are dropped. Scripted and improvised
-  # dialogs are both used.
+  # Every code in the evaluation files is a class; none is dropped. `happy`
+  # and `excited` stay separate classes. `xxx` marks utterances for which the
+  # release found no majority label (its README); it is kept as its own class
+  # `no_majority`. Scripted and improvised dialogs are both used.
   emotion_map:
     ang: angry
     hap: happy
@@ -20,6 +21,11 @@ builder:
     sad: sad
     neu: neutral
     fea: fear
+    fru: frustrated
+    sur: surprise
+    dis: disgust
+    oth: other
+    xxx: no_majority
 
   # Split -----------------------------------------------------------------
   # Utterances are split at random within each label; sessions and speakers

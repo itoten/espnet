@@ -145,7 +145,7 @@ def _read_emo_evaluation(session_dir: Path) -> dict[str, str]:
 
 
 def read_entries(source_root: Path) -> list[dict[str, str]]:
-    """Collect the recordings whose label is in ``emotion_map``.
+    """Collect the recordings that have a label in ``emotion_map``.
 
     Args:
         source_root: Corpus root holding the ``SessionN/`` directories.

@@ -2,27 +2,43 @@
 
 Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
 head) on IEMOCAP alone and scores it on IEMOCAP's own test split, classifying
-each utterance into one of six emotions.
+each utterance into one of eleven classes.
 
 [IEMOCAP](https://sail.usc.edu/iemocap/) is English dyadic conversation,
 scripted and improvised, recorded in five sessions of two actors each. The
 labels are read from the release's own `Session*/dialog/EmoEvaluation/*.txt`,
 and the audio from `Session*/sentences/wav/`, which is already 16 kHz mono.
 
-Six of the eleven label codes are used, and `hap` and `exc` stay separate
-classes rather than being merged as in the common four-class setup:
+Every label code in the evaluation files is a class and none is dropped, so that
+filtering (rare classes, `no_majority`, ...) can be decided later. `hap` and `exc`
+stay separate classes rather than being merged as in the common four-class setup:
 
 | code | label | utterances |
 |---|---|---|
+| `xxx` | `no_majority` | 2507 |
+| `fru` | `frustrated` | 1849 |
 | `neu` | `neutral` | 1708 |
 | `ang` | `angry` | 1103 |
 | `sad` | `sad` | 1084 |
 | `exc` | `excited` | 1041 |
 | `hap` | `happy` | 595 |
+| `sur` | `surprise` | 107 |
 | `fea` | `fear` | 40 |
+| `oth` | `other` | 3 |
+| `dis` | `disgust` | 2 |
 
-The other codes (`fru`, `sur`, `dis`, `oth`, `xxx`) are dropped, leaving 5571
-of the 10039 utterances. Both scripted and improvised dialogs are used.
+All 10039 utterances are used. `xxx` is the release's mark for utterances for
+which no majority label could be assigned among the annotators (its README); it is
+kept as the class `no_majority`. `disgust` (2) and `other` (3) are far too small to
+learn from but are kept. Both scripted and improvised dialogs are used.
+
+## Listening test
+
+Each utterance was evaluated categorically by at least three annotators (and
+dimensionally by at least two) from the set angry, happy, sad, neutral, frustrated,
+excited, fearful, surprised, disgusted and other (the release's README). The label
+here is the majority of these evaluations. The individual evaluations are in the
+`EmoEvaluation` files and are not used here.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -44,11 +60,11 @@ and speakers are not held out, so all three splits contain all ten speakers.
 
 | split | utterances |
 |---|---|
-| train | 3899 |
-| valid | 557 |
-| test | 1115 |
+| train | 7027 |
+| valid | 1004 |
+| test | 2008 |
 
-One training utterance is longer than 30 s and is removed by
+Two training utterances are longer than 30 s and are removed by
 `remove_long_short`.
 
 ## Quick start

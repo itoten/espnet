@@ -14,8 +14,10 @@ Engineering). No paper is linked to the dataset.
 ## What is used
 
 Only `Original_dataset.zip` is used. The dataset's other zip, `Augmented.zip`, is
-presumably the augmented set the description mentions (pitch shifting, time
-stretching and noise addition, 3,000 samples); its content was not inspected and it is not used.
+the augmented set the description mentions (pitch shifting, time
+stretching and noise addition, 3,000 samples). It holds 2,241 recordings, three times
+the original 747, and none of the original recordings (compared by CRC32 and size);
+it is not used.
 
 The zip holds 747 recordings, in one folder per emotion (`Happy/001.wav`, ...). The
 dataset description says the original set has 1,000 samples; the zip does not, and

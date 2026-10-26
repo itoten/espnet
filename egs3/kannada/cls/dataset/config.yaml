@@ -27,11 +27,19 @@ builder:
   # Duplicates ------------------------------------------------------------
   # Recordings with the same sound (identical after decoding, or a waveform
   # correlation of 0.998 or more) and the same label as another one
-  # (1 utterances; the first of each group by id is kept). With
+  # (1 utterance; the first of each group by id is kept). With
   # `exclude_duplicates: true` these are left out; `false` uses every recording.
-  exclude_duplicates: false
+  exclude_duplicates: true
   duplicate_ids:
     - kannada-09-06-05-neutral
+
+  # Recordings with the same sound but different labels (two pairs, 4
+  # utterances) are ambiguous; none of them is used.
+  conflicting_ids:
+    - kannada-09-03-02-surprise
+    - kannada-09-04-02-happy
+    - kannada-13-04-04-happy
+    - kannada-13-06-04-neutral
 
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each

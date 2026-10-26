@@ -239,6 +239,11 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         len(entries),
         len({e["speaker"] for e in entries}),
     )
+    conflicting = {str(i) for i in _CFG["conflicting_ids"]}
+    missing = conflicting - {e["utt_id"] for e in entries}
+    if missing:
+        raise ValueError(f"`conflicting_ids` not found: {sorted(missing)}")
+    entries = [e for e in entries if e["utt_id"] not in conflicting]
     return _drop_duplicates(entries)
 
 
