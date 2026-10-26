@@ -29,6 +29,46 @@ builder:
     SAD: sad
     SURPRISE: surprise
 
+  # Duplicates ------------------------------------------------------------
+  # 31 pairs of recordings with the same performance (decoded waveform
+  # correlation 1.0000; 2 pairs identical sample for sample, the others differ by
+  # a few tens of milliseconds of padding or by under 7% of the peak). Every pair
+  # has the same speaker, sentence and emotion except one pair (M_09 S4 take 5 and
+  # S5 take 1, both neutral). The first file of each pair by name is kept and the
+  # second is left out.
+  exclude_files:
+    - F_01_OISHI_S_4_SAD_3.wav
+    - F_01_OISHI_S_8_HAPPY_2.wav
+    - F_01_OISHI_S_9_ANGRY_2.wav
+    - F_03_SMITA_S_2_HAPPY_2.wav
+    - F_03_SMITA_S_4_NEUTRAL_3.wav
+    - F_03_SMITA_S_4_NEUTRAL_5.wav
+    - F_04_SWARNALI_S_1_ANGRY_3.wav
+    - F_04_SWARNALI_S_2_DISGUST_4.wav
+    - F_04_SWARNALI_S_3_SURPRISE_4.wav
+    - F_04_SWARNALI_S_5_FEAR_3.wav
+    - F_04_SWARNALI_S_7_SURPRISE_4.wav
+    - F_06_SIMI_S_2_SAD_5.wav
+    - F_07_TITHI_S_3_FEAR_3.wav
+    - F_09_CHAITY_S_2_DISGUST_4.wav
+    - F_09_CHAITY_S_8_SAD_4.wav
+    - F_10_FAHMEE_S_4_SAD_5.wav
+    - F_10_FAHMEE_S_5_DISGUST_2.wav
+    - F_10_FAHMEE_S_7_SAD_3.wav
+    - F_10_FAHMEE_S_8_ANGRY_4.wav
+    - F_10_FAHMEE_S_9_DISGUST_5.wav
+    - M_02_NIPUN_S_2_ANGRY_2.wav
+    - M_02_NIPUN_S_8_SAD_2.wav
+    - M_02_NIPUN_S_9_DISGUST_2.wav
+    - M_03_ILIAS_S_6_SURPRISE_4.wav
+    - M_03_ILIAS_S_9_SAD_5.wav
+    - M_04_BIBHAS_S_5_SURPRISE_2.wav
+    - M_05_DURANTO_S_9_ANGRY_5.wav
+    - M_07_SIBLY_S_1_HAPPY_4.wav
+    - M_07_SIBLY_S_4_ANGRY_4.wav
+    - M_07_SIBLY_S_6_SAD_3.wav
+    - M_09_SHUMANTA_S_5_NEUTRAL_1.wav
+
   # Split -----------------------------------------------------------------
   # No partition is published: the corpus paper describes the recordings and a
   # listening test, and defines no train/test division.
@@ -53,6 +93,11 @@ builder:
     test: manifest/test.tsv
 
   # Build outputs ---------------------------------------------------------
+  # 724 recordings are stereo and their right channel is nearly silent (a left
+  # median of -13 dB against -81 dB on the right), so averaging the channels
+  # would halve the level. `build()` keeps the left channel; a mono recording has
+  # only that one, so the other 6,276 are unchanged.
+  channel: 0
   # The corpus is 48 kHz 32-bit, so `build()` resamples every recording to
   # 16 kHz 16-bit mono and writes it under `wav_subdir`. Set `SUBESCO_OUTPUT`
   # to keep those files outside the recipe.

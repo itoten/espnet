@@ -214,12 +214,17 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         ``label``.
 
     Raises:
-        ValueError: If a name carries an emotion outside ``emotion_map``.
+        ValueError: If a name carries an emotion outside ``emotion_map``, or an
+            `exclude_files` name is absent.
         FileNotFoundError: If no recording is found.
     """
     entries = []
     skipped = 0
+    excluded = set(_CFG["exclude_files"])
     for wav in sorted(source_root.glob("*.wav")):
+        if wav.name in excluded:
+            excluded.discard(wav.name)
+            continue
         fields = parse_filename(wav.name)
         if fields is None:
             skipped += 1
@@ -244,6 +249,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if skipped:
         logger.warning("Skipped %d file(s) with an unexpected name", skipped)
+    if excluded:
+        raise ValueError(f"`exclude_files` names not found: {sorted(excluded)}")
     if not entries:
         raise FileNotFoundError(f"No SUBESCO audio under {source_root}")
 
@@ -384,6 +391,7 @@ class SUBESCOBuilder(DatasetBuilder):
         wav_dir = data_root / str(_CFG["wav_subdir"])
         wav_dir.mkdir(parents=True, exist_ok=True)
         sampling_rate = str(_CFG["sampling_rate"])
+        channel = int(_CFG["channel"])
 
         entries = read_entries(source_root)
         assignment = assign_splits([e["speaker"] for e in entries])
@@ -401,8 +409,8 @@ class SUBESCOBuilder(DatasetBuilder):
                         ffmpeg,
                         "-i",
                         entry["source"],
-                        "-ac",
-                        "1",
+                        "-af",
+                        f"pan=mono|c0=c{channel}",
                         "-ar",
                         sampling_rate,
                         "-sample_fmt",
