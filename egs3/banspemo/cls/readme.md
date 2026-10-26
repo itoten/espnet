@@ -6,7 +6,7 @@ utterance into one of six emotions.
 
 [BanSpEmo](https://data.mendeley.com/datasets/rdwn4bs5ky/1) (a Bangla emotional
 speech corpus; arXiv:2312.14020) is acted Bangla speech: 22 non-professional
-speakers (11 male, 11 female) read 12 sentences, in two sets of six, in the six
+speakers (11 male, 11 female) each read one set of six sentences (18 speakers read set 1, 4 read set 2; 12 sentences in all) in the six
 emotions `angry`, `disgust`, `fear`, `happy`, `sad` and `surprise`. There are 792
 recordings (132 per emotion), 1.39 hours in total, each 2.4 to 11.9 seconds
 long. There is no `neutral`.

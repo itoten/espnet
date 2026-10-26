@@ -26,9 +26,9 @@ builder:
   # Duplicates ------------------------------------------------------------
   # Recordings with the same sound (identical after decoding, or a waveform
   # correlation of 0.998 or more) and the same label as another one
-  # (7 utterances; the first of each group by id is kept). With
+  # (8 utterances; the first of each group by id is kept). With
   # `exclude_duplicates: true` these are left out; `false` uses every recording.
-  exclude_duplicates: false
+  exclude_duplicates: true
   duplicate_ids:
     - banglaser-a02-03-01-03-02-01-03-02
     - banglaser-a15-03-01-01-01-03-03-15
@@ -37,6 +37,7 @@ builder:
     - banglaser-a29-03-01-01-01-03-03-29
     - banglaser-a30-03-01-02-01-02-03-30
     - banglaser-a30-03-01-04-02-01-03-30
+    - banglaser-a32-03-01-03-02-03-03-32
 
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each

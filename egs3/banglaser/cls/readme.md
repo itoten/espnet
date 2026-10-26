@@ -43,8 +43,8 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 
 | split | utterances |
 |---|---|
-| train | 1026 |
-| valid | 148 |
+| train | 1022 |
+| valid | 144 |
 | test | 293 |
 
 ## Listening test
@@ -68,4 +68,6 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-**Duplicates.** 7 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
+**Duplicates.** 8 pairs of recordings have the same sound (identical after decoding, or a waveform correlation of 0.998 or more), all with the same label. Seven are another repetition of the same speaker, sentence and emotion; one is the same `surprise` clip in the folders of actors 16 and 19. With `exclude_duplicates: true` (the default) one of each pair is dropped (`duplicate_ids`, 1,459 recordings left); `false` keeps both.
+
+**Intensity labels.** The intensity field of the file name is not independent of the emotion: `angry` and `surprise` are always strong and the others always normal. Do not use it as a separate label, or as evidence about intensity, without accounting for this.

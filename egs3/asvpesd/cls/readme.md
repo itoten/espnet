@@ -13,7 +13,7 @@ files; the rest are non-speech vocalizations such as laughs and cries) and the
 seven emotions shared with the other corpora, `neutral`, `happy`, `sad`,
 `angry`, `fear`, `disgust` and `surprise`. The 314 speech recordings labelled
 boredom, excited, pleasure, pain or disappointment are left out, which leaves
-3,241 recordings, 5.48 hours, from 76 speakers. Each is 0.4 to 30.6 seconds
+3,241 recordings, 5.48 hours, from 76 `actor_N` folders (a folder is a source folder, not a verified single speaker). Each is 0.4 to 30.6 seconds
 long. The speech is in several languages, mostly Chinese and English. The
 classes are very uneven, from 997 `neutral` down to 76 `disgust`.
 
@@ -22,8 +22,8 @@ The label comes from the file name,
 (e.g. `03-01-06-01-02-12-02-01-01-16-04.wav`); the emotion codes are 02 neutral,
 03 happy, 04 sad, 05 angry, 06 fearful, 07 disgust and 08 surprised, and the
 vocal channel is 01 for speech, as in the Zenodo description. The number of
-fields varies between files, so only the first four are read. The speaker is
-taken from the `actor_N` folder. The recordings are already 16 kHz mono;
+fields varies between files, so only the first four are read. The `speaker` field is
+the `actor_N` folder number. The recordings are already 16 kHz mono;
 `create_dataset` still passes them through ffmpeg.
 
 Two environment variables control where the data lives. Both are optional and
@@ -42,14 +42,14 @@ corpus is CC BY 4.0.
 
 The corpus publishes no partition. Utterances are split 70/10/20 at random
 within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
-`dataset/config.yaml`). Speakers are not held out, so the splits share all
-76 speakers.
+`dataset/config.yaml`). The `actor_N` folders are not held out, so the splits share all
+76 folders.
 
 | split | utterances |
 |---|---|
-| train | 2268 |
-| valid | 325 |
-| test | 648 |
+| train | 2248 |
+| valid | 322 |
+| test | 641 |
 
 ## Listening test
 
@@ -72,4 +72,8 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-**Duplicates.** 14 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
+**Duplicates.** 22 pairs of recordings have the same sound (identical after decoding, or a waveform correlation of 0.998 or more). In 8 pairs (16 recordings) the two files carry different emotions; none of them is used (`conflicting_ids`). In the other 14 pairs the emotion is the same; with `exclude_duplicates: true` (the default) one of each pair is dropped (`duplicate_ids`), and `false` keeps both. This leaves 3,211 recordings (3,225 with `false`).
+
+**Infant voices.** The 25 speech recordings under `Bonus/` (folders `actor_50` and `actor_150`) are described as infant voices; the Whisper transcripts are repeated or meaningless words, so they look like babbling by young children (not listened to). They are used by default; set `exclude_bonus: true` to leave them out.
+
+**Source.** Part of the corpus is taken from films, videos and websites, so the rights of the original recordings may differ from the CC BY 4.0 of the release.

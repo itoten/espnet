@@ -35,7 +35,7 @@ builder:
   # correlation of 0.998 or more) and the same label as another one
   # (14 utterances; the first of each group by id is kept). With
   # `exclude_duplicates: true` these are left out; `false` uses every recording.
-  exclude_duplicates: false
+  exclude_duplicates: true
   duplicate_ids:
     - asvpesd-a14-03-01-03-01-14-14-02-03-01
     - asvpesd-a15-03-01-03-01-18-15-01-03-01
@@ -51,6 +51,32 @@ builder:
     - asvpesd-a38-03-01-02-02-11-38-02-03-01
     - asvpesd-a54-03-01-05-01-03-54-02-02-02-15-01
     - asvpesd-a9-03-01-03-01-31-09-02-03-01-77
+
+  # Recordings with the same sound but different labels (8 pairs, 16
+  # utterances) are ambiguous; none of them is used.
+  conflicting_ids:
+    - asvpesd-a10-03-01-02-01-02-10-02-03-01
+    - asvpesd-a10-03-01-08-01-06-10-02-03-01
+    - asvpesd-a3-03-01-02-01-37-03-02-03-01
+    - asvpesd-a3-03-01-08-01-27-03-02-03-01
+    - asvpesd-a35-03-01-02-01-06-35-03-03-01
+    - asvpesd-a35-03-01-04-01-06-35-03-03-01
+    - asvpesd-a35-03-01-02-02-01-35-03-03-01-01
+    - asvpesd-a35-03-01-04-02-01-35-03-03-01-01
+    - asvpesd-a35-03-01-04-02-01-35-03-03-01
+    - asvpesd-a35-03-01-06-02-01-35-03-03-01
+    - asvpesd-a35-03-01-04-02-02-35-03-03-01-02
+    - asvpesd-a35-03-01-06-02-02-35-03-03-01-02
+    - asvpesd-a35-03-01-04-02-12-35-03-03-01
+    - asvpesd-a35-03-01-05-02-12-35-03-03-01
+    - asvpesd-a35-03-01-05-01-08-35-03-03-01
+    - asvpesd-a35-03-01-07-01-08-35-03-03-01
+
+  # The 25 speech recordings under `Bonus/` (folders actor_50 and actor_150) are
+  # infant and child voices, mostly babbling and repeated words. They are used by
+  # default; `exclude_bonus: true` leaves them out.
+  exclude_bonus: false
+  bonus_dir: Bonus
 
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each

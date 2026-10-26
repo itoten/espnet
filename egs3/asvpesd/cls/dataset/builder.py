@@ -237,6 +237,10 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         if fields["emotion"] not in _EMOTION_MAP:
             skipped += 1
             continue
+        if _CFG["exclude_bonus"] and str(_CFG["bonus_dir"]) in wav.relative_to(
+            source_root
+        ).parts:
+            continue
         actor = folder["actor"]
         utt_id = f"asvpesd-a{actor}-{wav.stem}"
         if utt_id in seen:
@@ -258,6 +262,11 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         len({e["speaker"] for e in entries}),
         skipped,
     )
+    conflicting = {str(i) for i in _CFG["conflicting_ids"]}
+    missing = conflicting - {e["utt_id"] for e in entries}
+    if missing:
+        raise ValueError(f"`conflicting_ids` not found: {sorted(missing)}")
+    entries = [e for e in entries if e["utt_id"] not in conflicting]
     return _drop_duplicates(entries)
 
 
