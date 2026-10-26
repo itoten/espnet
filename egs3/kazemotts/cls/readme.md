@@ -26,7 +26,11 @@ default to `download/` and `data/` under the recipe.
 
 `prepare_source` downloads `EmoKaz.zip` (10.5 GB) from Hugging Face, checks its
 sha256 against the hash on the Hub, and extracts only the WAV files. The
-corpus is CC BY 4.0.
+corpus is CC BY 4.0 (stated on the authors' download form; the Hugging Face card itself
+has no license field). The authors' form, linked from the card, offers the data by
+FTP after registration; the Hugging Face repository is public and needs no login, which
+is what this recipe uses. The form asks research users to cite the dataset and
+commercial users to state "This product/service utilises the ISSAI KazEmoTTS dataset."
 
 ## Splits
 
