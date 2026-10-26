@@ -17,6 +17,8 @@ letters agree with the `emo` column of the release's `annotation.csv` for all
 488 files. The recordings are 48 kHz stereo, so `create_dataset` converts them
 to 16 kHz mono with ffmpeg.
 
+The label is the emotion the voice actors were asked to express (the target emotion), not what listeners heard. The release also has a perceived-emotion annotation by eight listeners for every recording (see "Listening test"); it is not used as the label here.
+
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
@@ -40,7 +42,7 @@ speakers.
 
 | split | utterances |
 |---|---|
-| train | 341 |
+| train | 340 |
 | valid | 49 |
 | test | 98 |
 
@@ -68,4 +70,4 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-**Duplicates.** 1 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
+**Duplicates.** `F5_S03_1_a` and `F5_S03_4_a` (both `angry`) are the same recording (byte-identical). With `exclude_duplicates: true` (the default) `F5_S03_4_a` is dropped (`duplicate_ids`), leaving 487 recordings; `false` keeps both.

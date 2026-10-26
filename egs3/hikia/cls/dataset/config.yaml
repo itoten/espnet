@@ -25,9 +25,9 @@ builder:
   # Duplicates ------------------------------------------------------------
   # Recordings with the same sound (identical after decoding, or a waveform
   # correlation of 0.998 or more) and the same label as another one
-  # (1 utterances; the first of each group by id is kept). With
+  # (1 utterance; the first of each group by id is kept). With
   # `exclude_duplicates: true` these are left out; `false` uses every recording.
-  exclude_duplicates: false
+  exclude_duplicates: true
   duplicate_ids:
     - hikia-F5_S03_4_a
 

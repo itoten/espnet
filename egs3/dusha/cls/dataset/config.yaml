@@ -41,7 +41,6 @@ builder:
   # correlation of 0.998 or more) and the same label as another one (5
   # utterances; the first of each pair by id is kept). With
   # `exclude_duplicates: true` these are left out; `false` uses every recording.
-  # Four groups of the same sound carry different labels and are not listed.
   exclude_duplicates: false
   duplicate_ids:
     - dusha-bf3b68cae0f64a6c464d77cce8f59052
@@ -49,6 +48,19 @@ builder:
     - dusha-803882cf6feb732c047243873a015e77
     - dusha-691fcc12ee001779ebd79b5ef4f80011
     - dusha-f8987e287a79b38ab038c586b666e1b6
+
+  # Four groups of the same sound carry different labels (sad against
+  # neutral; 9 utterances); the label cannot be trusted, so none is used.
+  conflicting_ids:
+    - dusha-4634c3fe96e2ca81c49dd2cf7de6c2dd
+    - dusha-91196990724712a570320dda04786cf6
+    - dusha-c37668266c9a424236690e7c8244d5bd
+    - dusha-31d64b1319eae0811506e7e78b142e47
+    - dusha-f5169b5d64a70f617cf02c15728cb4d1
+    - dusha-87df3995cbc298047c3153da70e0eab0
+    - dusha-9e99f0132ad504efd098f6085e33caee
+    - dusha-b707c1a9131273de1a6ccf723be99de9
+    - dusha-e1b2bbfcf4a8534f2a17133506d6ed5d
 
   # Split -----------------------------------------------------------------
   # The release's train/test partition is kept. The validation set is taken

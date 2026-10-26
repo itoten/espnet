@@ -27,7 +27,8 @@ The paper aggregates the annotations with the Dawid-Skene algorithm and an
 agreement threshold of 0.9; whether these two files follow exactly that rule was
 not checked (the paper's table lists 164,387 crowd utterances including an
 `other` class, the files 160,366). These files list 146,715 train and 13,651 test utterances (160,366,
-202.5 hours); the rest of `crowd.tar` (utterances that are in neither file) is not
+202.5 hours); 9 of them are left out as same-sound utterances with conflicting
+labels (see "Duplicates"). The rest of `crowd.tar` (utterances that are in neither file) is not
 extracted. Durations range from 0.86 to 29.88 seconds (median 4.34), so
 `remove_long_short` drops nothing. Every recording is already 16 kHz mono 16-bit
 WAV, so `build()` references the files where they lie and converts nothing. A file
@@ -81,15 +82,15 @@ taken from the paper).
 - `source_id` is documented as the speaker (podcast) id; train has 1,870 values
   and test 190, with no overlap.
 - Four groups of utterances with the same sound carry different labels (sad vs
-  neutral); see "Duplicates".
+  neutral) and are left out; see "Duplicates".
 
 ## Duplicates
 
 Nine groups of recordings have the same sound (identical after decoding, or a
 waveform correlation of 0.998 or more). Five groups are pairs with the same label;
 with `exclude_duplicates: true` the later one of each pair (`duplicate_ids`) is
-dropped, `false` (the default) keeps both. Four groups carry different labels
-(sad against neutral); they are kept and not listed in the config.
+dropped, `false` (the default) keeps both. Four groups (9 utterances) carry
+different labels (sad against neutral); none of them is used (`conflicting_ids`).
 
 ## Splits
 
@@ -104,7 +105,7 @@ sets share none.
 
 | split | utterances | after `remove_long_short` | angry | happy | neutral | sad |
 |---|---|---|---|---|---|---|
-| train | 132006 | 132006 | 12790 | 12558 | 87223 | 19435 |
+| train | 131997 | 131997 | 12790 | 12558 | 87218 | 19431 |
 | valid | 14709 | 14709 | 1597 | 1619 | 9894 | 1599 |
 | test | 13651 | (not filtered) | 1332 | 1215 | 8948 | 2156 |
 
