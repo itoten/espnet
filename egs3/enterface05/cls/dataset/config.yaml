@@ -37,23 +37,19 @@ builder:
     sadness: sad
     surprise: surprise
 
-  # Two of the 44 subject directories are not part of the corpus: the corpus
-  # page reports 42 subjects, and exactly 42 directories hold the expected 30
-  # recordings. Subject 6 is unsegmented -- its six files run 56 to 107
-  # seconds, a whole session per emotion, against 1.1 to 5.4 seconds everywhere
-  # else -- and subject 23 is missing three recordings.
-  #
-  # Subject 6 is worth naming here rather than leaving to `remove_long_short`:
-  # that filter runs on train and valid but not on test, so whether those
-  # session recordings get scored would depend on where they landed.
+  # Subject 6 is left out for now: its six files run 56 to 107 seconds, a whole
+  # session per emotion, against 1.1 to 5.4 seconds everywhere else, and
+  # `remove_long_short` drops clips over 30 seconds from train and valid but not
+  # from test. Subject 23 is missing three recordings (happiness, sentences 1 to
+  # 3) but its 27 other recordings are used. The corpus page reports 42
+  # subjects; the release has 44 directories.
   exclude_speakers:
     - 6
-    - 23
 
   # Split -----------------------------------------------------------------
   # No partition is published. Speaker ids are sorted numerically and dealt out
   # in this order, which keeps the split reproducible from the corpus alone.
-  # The counts have to add up to the 42 speakers left after
+  # The counts have to add up to the 43 speakers left after
   # `exclude_speakers`; a mismatch is an error rather than a silent
   # reassignment.
   #
@@ -65,7 +61,7 @@ builder:
   # nationality, nothing but the recordings -- so there is nothing here to
   # balance against, and subject numbering may follow the recording order.
   split_speaker_counts:
-    train: 32
+    train: 33
     valid: 5
     test: 5
 

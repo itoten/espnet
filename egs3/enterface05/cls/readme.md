@@ -19,9 +19,15 @@ let `$ENTERFACE05` hold the already-unpacked tree) for `prepare_source` to
 extract. Labels and speakers come from directory names, not file names,
 which carry typos.
 
+The release holds 1,293 AVI files in 44 subject directories (the corpus page
+reports 42 subjects). 42 subjects have the expected 30 recordings (5 sentences in
+each of 6 emotions). Subject 23 lacks 3 (happiness, sentences 1 to 3) and its 27 files
+are used. Subject 6 is not segmented: it has one file per emotion, 56 to 107
+seconds each (a whole session), against 1.1 to 5.4 seconds for the others, so its 6
+files are left out for now. 1,287 recordings from 43 subjects are used.
+
 The corpus publishes no partition. Speaker ids are sorted and dealt out to
-train/valid/test; two of the 44 subject directories (an unsegmented one and
-one missing recordings) are excluded.
+train/valid/test (33, 5 and 5 speakers).
 
 ## Quick start
 
