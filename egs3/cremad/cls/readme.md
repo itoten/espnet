@@ -13,6 +13,39 @@ The corpus has no official partition. Speaker ids are sorted and dealt out to
 train/valid/test, which keeps the split reproducible from the corpus alone;
 `dataset/config.yaml` holds the per-split speaker counts.
 
+## Data
+
+CREMA-D (Cao et al., IEEE Transactions on Affective Computing 2014) has 7,442 clips
+from 91 actors (48 male, 43 female, aged 20 to 74, of several ethnicities), who each
+read 12 sentences in six emotions and four intensity levels (low, medium, high,
+unspecified). The audio is 1.27 to 5.0 seconds long, about 5.3 hours in total.
+The corpus also holds the video and the MP3 and FLV versions, which this recipe does not use.
+
+The label is the emotion the actor was asked to act. Crowd workers (2,443 people)
+also rated the clips; their votes are in `processedResults/`. Judged by the audio alone,
+the majority vote equals the acted emotion for only 3,388 of the 7,442 clips (45.5%),
+against 5,136 for the face alone and 5,569 for audio and video together. The ratings are
+not used here; the label is the acted emotion only.
+
+Five pairs of clips have the same sound, always from one actor. In four pairs the names
+carry different emotions (`1006_TIE_HAP_XX`/`1006_TIE_NEU_XX`,
+`1013_WSI_DIS_XX`/`1013_WSI_SAD_XX`, `1017_IWW_ANG_XX`/`1017_IWW_FEA_XX`,
+`1067_IEO_DIS_LO`/`1067_IEO_FEA_LO`); the fifth pair has two sentences with the same
+emotion (`1045_ITH_DIS_XX`/`1045_IWL_DIS_XX`). All are in the training split and are
+kept as they are, for the record.
+
+The sentence codes `DFA`, `IEO`, `IWW` and `TAI` are also used, with the same text, by
+SES-ED (English) and, as translations, by SES-SD. SES-ED's `TSI` has the same code but a
+different sentence ("The sun is very bright", against "The surface is slick" here). So
+the same texts occur when these corpora are used together.
+
+## License and citation
+
+Open Database License 1.0 for the database, Database Contents License 1.0 for the
+contents (`LICENSE.txt`). Cite Cao, Cooper, Keutmann, Gur, Nenkova and Verma, "CREMA-D:
+Crowd-sourced Emotional Multimodal Actors Dataset", IEEE Transactions on Affective
+Computing 5(4), 2014.
+
 ## Quick start
 
 ```bash
