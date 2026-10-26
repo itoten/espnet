@@ -40,6 +40,17 @@ builder:
     Sad: sad
     Frustrated: frustrated
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (3 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - thaiser-s001_con_actor002_impro1_28
+    - thaiser-s048_con_actor136_impro6_9
+    - thaiser-s078_con_actor195_impro12_8
+
   # Split -----------------------------------------------------------------
   # No partition is published with the archive. Utterances are split at random
   # within each label; speakers are not held out, so the splits share all 20

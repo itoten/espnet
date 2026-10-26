@@ -50,6 +50,34 @@ builder:
     "29": sympathy
     "30": triumph
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (20 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - emogator-000104-27-2
+    - emogator-000142-02-3
+    - emogator-000156-21-2
+    - emogator-000160-11-2
+    - emogator-000160-15-2
+    - emogator-000160-19-3
+    - emogator-000160-23-3
+    - emogator-000183-09-3
+    - emogator-000202-03-2
+    - emogator-000202-07-2
+    - emogator-000212-07-3
+    - emogator-000234-24-3
+    - emogator-000240-23-2
+    - emogator-000242-10-2
+    - emogator-000242-13-3
+    - emogator-000242-14-3
+    - emogator-000247-06-2
+    - emogator-000294-02-3
+    - emogator-000295-12-2
+    - emogator-000317-25-2
+
   # Split -----------------------------------------------------------------
   # No partition is published. Whole contributors are held out (357 in total,
   # each with all 30 categories three times): 71 for test (20%), 36 for valid

@@ -27,6 +27,15 @@ builder:
     sarcastic: sarcastic
     surprise: surprise
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (1 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - hindi_ser_vishlb-2-5-neutral-03
+
   # Split -----------------------------------------------------------------
   # No partition is published. The 8 speakers read the same 10 sentences, so
   # whole speakers are held out: 2 for test, 1 for valid, 5 for training.

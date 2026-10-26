@@ -105,6 +105,25 @@ def resolve_data_root(recipe_root: Path) -> Path:
     return recipe_root / _CFG["data_path"]
 
 
+def _drop_duplicates(entries: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Leave out the utterances listed in ``duplicate_ids`` of the config.
+
+    Applies only when ``exclude_duplicates`` is true. Each listed utterance has
+    the same sound and label as one that stays.
+
+    Raises:
+        ValueError: If a listed id is not among ``entries``.
+    """
+    if not _CFG["exclude_duplicates"]:
+        return entries
+    drop = {str(i) for i in _CFG["duplicate_ids"]}
+    kept = [e for e in entries if e["utt_id"] not in drop]
+    missing = drop - {e["utt_id"] for e in entries}
+    if missing:
+        raise ValueError(f"`duplicate_ids` not found: {sorted(missing)}")
+    return kept
+
+
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings, taking the label from the folder name.
 
@@ -133,7 +152,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     if not entries:
         raise FileNotFoundError(f"No Saraiki audio under {source_root}")
     logger.info("Read %d utterance(s)", len(entries))
-    return entries
+    return _drop_duplicates(entries)
 
 
 def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:

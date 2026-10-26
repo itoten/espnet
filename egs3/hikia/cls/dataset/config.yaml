@@ -22,6 +22,15 @@ builder:
     n: neutral
     s: sad
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (1 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - hikia-F5_S03_4_a
+
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each
   # label; speakers are not held out, so every split shares all 8 speakers.

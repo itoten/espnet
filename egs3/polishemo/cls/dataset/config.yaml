@@ -23,6 +23,18 @@ builder:
     s: fear
     n: neutral
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (4 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - polishemo-m1.n_oddaj_3
+    - polishemo-m1.n_tak_5
+    - polishemo-m2.a_nie_4
+    - polishemo-m4.a_oddaj_5
+
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each
   # label; speakers are not held out.

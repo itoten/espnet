@@ -18,6 +18,19 @@ builder:
     Sad: sad
     Shock: shock
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (5 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - saraiki_ser-neutral_024
+    - saraiki_ser-neutral_096
+    - saraiki_ser-shock_041
+    - saraiki_ser-shock_177
+    - saraiki_ser-shock_199
+
   # Split -----------------------------------------------------------------
   # No partition or speaker id is published, so the split is a random one
   # within each label; speakers cannot be held out.

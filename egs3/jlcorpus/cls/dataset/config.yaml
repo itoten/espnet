@@ -39,6 +39,21 @@ builder:
     concerned: concerned
     encouraging: encouraging
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound (identical after decoding, or a waveform
+  # correlation of 0.998 or more) and the same label as another one
+  # (7 utterances; the first of each group by id is kept). With
+  # `exclude_duplicates: true` these are left out; `false` uses every recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - jlcorpus-female1_excited_5b_1
+    - jlcorpus-female1_excited_5b_2
+    - jlcorpus-female1_excited_6b_1
+    - jlcorpus-female1_excited_6b_2
+    - jlcorpus-female1_excited_9b_1
+    - jlcorpus-female1_excited_9b_2
+    - jlcorpus-male2_neutral_15b_2
+
   # Split -----------------------------------------------------------------
   # No partition is published. The corpus has four speakers holding 600
   # utterances each, 60 per emotion, so the counts cannot favour one choice
