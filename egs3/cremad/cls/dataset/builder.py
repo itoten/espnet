@@ -326,12 +326,19 @@ class CremaDBuilder(DatasetBuilder):
         _assert_real_audio(audio_dir)
         data_root = resolve_data_root(recipe_root)
 
+        excluded: set[str] = set()
+        if _CFG["exclude_duplicates"]:
+            excluded |= {str(i) for i in _CFG["duplicate_ids"]}
+        if _CFG["exclude_conflicting"]:
+            excluded |= {str(i) for i in _CFG["conflicting_ids"]}
         entries = []
         skipped = 0
         for wav in sorted(audio_dir.glob("*.wav")):
             fields = parse_filename(wav.name)
             if fields is None or fields["emotion"] not in _EMOTION_CODES:
                 skipped += 1
+                continue
+            if wav.stem in excluded:
                 continue
             entries.append(
                 (

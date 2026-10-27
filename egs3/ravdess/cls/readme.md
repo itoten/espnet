@@ -41,6 +41,21 @@ all 24 actors.
 | valid | 143 |
 | test | 285 |
 
+## Listening test
+
+**RAVDESS was validated by listeners** (Livingstone and Russo, 2018, PLOS ONE 13(5)
+e0196391). All 7,356 recordings of the full database (speech and song, in audio-video,
+video-only and audio-only form; this recipe uses the 1,440 audio-only speech files) were
+rated 10 times each for emotional validity (the rater chose the emotion), intensity and
+genuineness, by 247 untrained research participants from North America, undergraduate
+students at Ryerson University; another 72 participants provided test-retest data. The overall
+proportion of correct answers was 0.72 for speech (unbiased hit rate 0.53); interrater
+agreement was substantial for strong expressions (kappa 0.62) and moderate for normal ones
+(0.53). Over both speech and song, the audio-only presentations were recognised least
+well: 0.60 correct (95% CI 0.59 to 0.61), against 0.81 for audio-video and 0.75 for
+video-only. Per-recording scores are in the paper's supplementary table S1 and not in the
+audio download; the recipe uses the intended emotion of the file name.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one

@@ -64,6 +64,89 @@ builder:
     - Student-dia38-utt4-sea3-epi7-test
     - Phoebe-dia220-utt0-sea2-epi1-test
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound. In MELD, 19 recordings are same-label copies of another and 53 recordings sit in same-sound groups with different labels.
+  # With `exclude_duplicates: true` the same-label copies in `duplicate_ids`
+  # (the first of each group by id is kept) are left out; with
+  # `exclude_conflicting: true` the recordings in `conflicting_ids` (same sound,
+  # different labels) are left out. `false` uses every recording.
+  exclude_duplicates: false
+  exclude_conflicting: false
+  duplicate_ids:
+    - Chandler-dia85-utt1-sea6-epi4-test
+    - Joey-dia662-utt0-sea2-epi2-train
+    - Joey-dia725-utt0-sea7-epi22-train
+    - Joey-dia725-utt2-sea7-epi22-train
+    - Joey-dia85-utt0-sea6-epi4-test
+    - Joey-dia93-utt9-sea6-epi21-test
+    - Kristen-dia851-utt17-sea7-epi17-train
+    - Monica-dia47-utt8-sea6-epi2-test
+    - Monica-dia875-utt10-sea5-epi5-train
+    - Monica-dia926-utt9-sea6-epi2-train
+    - Phoebe-dia100-utt17-sea6-epi5-test
+    - Phoebe-dia41-utt9-sea4-epi14-test
+    - Phoebe-dia45-utt5-sea7-epi1-test
+    - Phoebe-dia491-utt0-sea1-epi3-train
+    - Phoebe-dia725-utt1-sea7-epi22-train
+    - Rachel-dia698-utt1-sea3-epi25-train
+    - Rachel-dia72-utt7-sea8-epi23-test
+    - Ross-dia698-utt0-sea3-epi25-train
+    - Ross-dia84-utt1-sea5-epi13-valid
+  conflicting_ids:
+    - Chandler-dia49-utt8-sea5-epi5-test
+    - Chandler-dia49-utt9-sea5-epi5-test
+    - Joey-dia14-utt1-sea6-epi4-test
+    - Joey-dia14-utt2-sea6-epi4-test
+    - Joey-dia50-utt4-sea6-epi21-train
+    - Joey-dia50-utt5-sea6-epi21-train
+    - Joey-dia71-utt5-sea7-epi19-test
+    - Joey-dia71-utt6-sea7-epi19-test
+    - Julie-dia605-utt5-sea1-epi24-train
+    - Julie-dia605-utt6-sea1-epi24-train
+    - Megan-dia657-utt7-sea7-epi17-train
+    - Megan-dia657-utt8-sea7-epi17-train
+    - Monica-dia184-utt1-sea8-epi14-test
+    - Monica-dia25-utt2-sea3-epi21-test
+    - Monica-dia34-utt13-sea6-epi15-test
+    - Nurse-dia72-utt0-sea8-epi23-test
+    - Phoebe-dia100-utt10-sea6-epi5-test
+    - Phoebe-dia100-utt11-sea6-epi5-test
+    - Phoebe-dia100-utt5-sea6-epi5-test
+    - Phoebe-dia100-utt6-sea6-epi5-test
+    - Phoebe-dia100-utt7-sea6-epi5-test
+    - Phoebe-dia14-utt0-sea6-epi4-test
+    - Phoebe-dia184-utt2-sea8-epi14-test
+    - Phoebe-dia376-utt3-sea7-epi22-train
+    - Phoebe-dia725-utt3-sea7-epi22-train
+    - Phoebe-dia77-utt0-sea8-epi24-valid
+    - Phoebe-dia95-utt10-sea5-epi15-test
+    - Phoebe-dia95-utt11-sea5-epi15-test
+    - Rachel-dia25-utt3-sea3-epi21-test
+    - Rachel-dia312-utt14-sea3-epi25-train
+    - Rachel-dia312-utt5-sea3-epi25-train
+    - Rachel-dia34-utt14-sea6-epi15-test
+    - Rachel-dia433-utt1-sea8-epi24-train
+    - Rachel-dia698-utt3-sea3-epi25-train
+    - Rachel-dia698-utt7-sea3-epi25-train
+    - Rachel-dia72-utt1-sea8-epi23-test
+    - Rachel-dia72-utt2-sea8-epi23-test
+    - Rachel-dia72-utt3-sea8-epi23-test
+    - Richard-dia53-utt0-sea6-epi24-train
+    - Ross-dia312-utt13-sea3-epi25-train
+    - Ross-dia312-utt4-sea3-epi25-train
+    - Ross-dia312-utt8-sea3-epi25-train
+    - Ross-dia585-utt7-sea3-epi6-train
+    - Ross-dia585-utt9-sea3-epi6-train
+    - Ross-dia698-utt2-sea3-epi25-train
+    - Ross-dia698-utt4-sea3-epi25-train
+    - Ross-dia698-utt6-sea3-epi25-train
+    - Ross-dia78-utt6-sea3-epi1-test
+    - Ross-dia78-utt7-sea3-epi1-test
+    - Ross-dia887-utt0-sea6-epi17-train
+    - The_Casting_Director-dia71-utt4-sea7-epi19-test
+    - The_Instructor-dia117-utt8-sea6-epi17-test
+    - Waitress-dia52-utt2-sea6-epi24-valid
+
 dataset:
   # Train and valid read the `remove_long_short` output; test stays unfiltered
   # for ESPnet2 parity. Move this selection to `conf/training.yaml` if a recipe

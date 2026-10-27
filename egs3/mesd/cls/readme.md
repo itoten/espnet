@@ -9,9 +9,8 @@ Speech Database) is Mexican Spanish single-word speech from non-professional
 actors (3 female, 2 male and 6 child voices, per the dataset description),
 with words drawn from two word corpora
 (A and B). This recipe uses the 862 human recordings in six emotions:
-`angry`, `disgust`, `fear`, `happy`, `sad` (144 each) and `neutral` (143),
-with `angry` and `neutral` one child recording short of 144 each in the
-release.
+`disgust`, `fear`, `happy`, `sad` (144 each), `angry` and `neutral` (143 each;
+the release has one child recording fewer than the expected 144 for each).
 
 The label comes from the file name, `<Emotion>_<voice>_<word corpus>_<word>.wav`
 (e.g. `Fear_C_B_oscuridad.wav`, voice `F`/`M`/`C`); no annotation file is read.
@@ -65,4 +64,21 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-**Duplicates.** 1 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
+**Speaker and emotion are tied.** Within each voice type (female, male, child) each
+emotion was recorded by one speaker (or, for children, one pair); for example all
+female `fear` recordings come from one speaker and all female `happy` recordings from
+another, so the speaker's voice reveals the emotion. The file names do not give the
+speaker; this is known from the paper. This is recorded here as a fact and the data
+are used as they are.
+
+**Selection.** The recordings are not rated by listeners. For each voice type the
+authors recorded 1,152 words and kept the 288 whose emotions a cubic SVM classifier
+separated best (paper); a different algorithm could select different recordings.
+Corpus A uses the same 24 words across emotions and voice types, corpus B uses a
+different set of 24 words per emotion. There is no listening test.
+
+**Duplicates.** `Happiness_C_A_dentro` and `Happiness_C_A_lento_dentro` (both
+child, `happy`) are the same sound but their names give different words (`dentro`
+and `lento_dentro`), so one of the names may be a mistake (an inference). They are kept
+by default. `exclude_duplicates: true` in `dataset/config.yaml` drops the second one
+(`duplicate_ids`), leaving 861; the default is `false`.

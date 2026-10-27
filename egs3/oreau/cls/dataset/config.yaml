@@ -26,6 +26,14 @@ builder:
     S: surprise  # surprise
     T: sad       # tristesse
 
+  # Duplicates ------------------------------------------------------------
+  # `sessc/30a07Ca` (angry) and `sesst/41a11Ta` (sad) have identical samples in
+  # both channels but different labels. `41a11Ta`, the likely copy, is listed;
+  # with `exclude_duplicates: true` it is left out, `false` uses both.
+  exclude_duplicates: false
+  duplicate_ids:
+    - oreau-41a11Ta
+
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each
   # label; speakers are not held out.

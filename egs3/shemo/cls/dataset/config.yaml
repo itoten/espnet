@@ -25,6 +25,14 @@ builder:
     S: sad
     W: surprise
 
+  # Duplicates ------------------------------------------------------------
+  # The samples of `M51N09` (neutral) are the same as those of `M50A03` (angry),
+  # so its label does not match its sound. `M51N09` is listed; with
+  # `exclude_duplicates: true` it is left out, `false` uses both.
+  exclude_duplicates: false
+  duplicate_ids:
+    - shemo-M51N09
+
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each
   # label; speakers are not held out.

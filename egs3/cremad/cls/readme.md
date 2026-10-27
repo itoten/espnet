@@ -75,3 +75,11 @@ python run.py --stages measure \
 
 `CREMAD_OUTPUT` must already point at the prepared data; `create_dataset`
 writes it there if it does not.
+
+**Duplicates.** Five pairs of recordings have the same sound (identical after decoding, or a
+waveform correlation of 0.998 or more). One pair has the same label (`1045_ITH_DIS_XX` and
+`1045_IWL_DIS_XX`, both `disgust`); in four pairs the two recordings carry different emotions
+(`1006_TIE_HAP_XX`/`NEU`, `1013_WSI_DIS_XX`/`SAD`, `1017_IWW_ANG_XX`/`FEA`, `1067_IEO_DIS_LO`/`FEA`).
+All are used by default. `exclude_duplicates: true` in `dataset/config.yaml` drops the second
+recording of the same-label pair (`duplicate_ids`), and `exclude_conflicting: true` drops the
+eight recordings of the different-label pairs (`conflicting_ids`); both default to `false`.

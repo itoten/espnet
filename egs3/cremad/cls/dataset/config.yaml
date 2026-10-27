@@ -34,6 +34,26 @@ builder:
     NEU: neutral
     SAD: sad
 
+  # Duplicates ------------------------------------------------------------
+  # Recordings with the same sound. CREMA-D has 5 such pairs: 1 with the same label and 4 with different labels.
+  # With `exclude_duplicates: true` the same-label copies in `duplicate_ids`
+  # (the first of each group by id is kept) are left out; with
+  # `exclude_conflicting: true` the recordings in `conflicting_ids` (same sound,
+  # different labels) are left out. `false` uses every recording.
+  exclude_duplicates: false
+  exclude_conflicting: false
+  duplicate_ids:
+    - 1045_IWL_DIS_XX
+  conflicting_ids:
+    - 1006_TIE_HAP_XX
+    - 1006_TIE_NEU_XX
+    - 1013_WSI_DIS_XX
+    - 1013_WSI_SAD_XX
+    - 1017_IWW_ANG_XX
+    - 1017_IWW_FEA_XX
+    - 1067_IEO_DIS_LO
+    - 1067_IEO_FEA_LO
+
   # Speaker-independent split ---------------------------------------------
   # CREMA-D publishes no official partition. Speaker IDs are sorted and dealt
   # out in this order, which keeps the split reproducible from the corpus

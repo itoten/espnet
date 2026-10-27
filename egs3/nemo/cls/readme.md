@@ -5,9 +5,11 @@ head) on nEMO alone and scores it on nEMO's own test split, classifying each
 utterance into one of six emotions.
 
 [nEMO](https://huggingface.co/datasets/amu-cai/nEMO) is Polish read speech
-from nine actors (five male, four female): 4481 utterances in six emotions,
+from nine speakers (five male, four female; three are qualified voice actors and
+six are not professionals, which the paper says made no great difference in listening or
+in acoustic analysis): 4481 utterances in six emotions,
 `neutral` (809), `sad` (769), `angry` (749), `happy` (749), `fear` (736) and
-`surprise` (669). The actors contribute unequally, from 256 to 540 utterances
+`surprise` (669). The speakers contribute unequally, from 256 to 540 utterances
 each.
 
 The release is two parquet shards on Hugging Face; each row holds the

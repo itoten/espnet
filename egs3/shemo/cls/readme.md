@@ -65,3 +65,9 @@ python run.py --stages infer measure \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
+
+**Duplicates.** The audio of `M51N09.wav` (`neutral`) is a copy of `M50A03.wav` (`angry`):
+the files are byte-identical, and the transcription of both matches the sentence of
+`M50A03`, so the `neutral` label of `M51N09` does not match its sound. Both are used by
+default. `exclude_duplicates: true` in `dataset/config.yaml` drops `M51N09`
+(`duplicate_ids`), one recording fewer; the default is `false`.

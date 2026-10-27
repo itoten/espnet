@@ -422,6 +422,10 @@ class MELDBuilder(DatasetBuilder):
         data_root = resolve_data_root(recipe_root)
 
         excluded = {str(utt_id) for utt_id in _CFG["excluded_utterance_ids"]}
+        if _CFG["exclude_duplicates"]:
+            excluded |= {str(utt_id) for utt_id in _CFG["duplicate_ids"]}
+        if _CFG["exclude_conflicting"]:
+            excluded |= {str(utt_id) for utt_id in _CFG["conflicting_ids"]}
 
         split_entries: dict[str, list[tuple[str, Path, str]]] = {}
         conversions: list[tuple[Path, Path]] = []

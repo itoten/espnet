@@ -68,3 +68,9 @@ python run.py --stages infer measure \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
+
+**Duplicates.** `m/sessc/30a07Ca.wav` (speaker 30, sentence 07, `angry`) and
+`m/sesst/41a11Ta.wav` (speaker 41, sentence 11, `sad`) have identical samples in both
+channels and differ only in the header, but carry different labels. Both are used by
+default. `exclude_duplicates: true` in `dataset/config.yaml` drops `41a11Ta`, which looks
+like the copy (`duplicate_ids`), leaving 433; the default is `false`.

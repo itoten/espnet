@@ -78,3 +78,11 @@ python run.py --stages measure \
 
 `MELD_OUTPUT` must already point at the prepared data; `create_dataset`
 writes it there if it does not.
+
+**Duplicates.** Many recordings have the same sound as another one (identical after decoding,
+or a waveform correlation of 0.998 or more). 19 recordings are same-label copies; `exclude_duplicates: true` in
+`dataset/config.yaml` drops them (`duplicate_ids`, the first of each group by id is kept).
+53 recordings sit in same-sound groups whose members carry different labels;
+`exclude_conflicting: true` drops all of them (`conflicting_ids`). Both default to `false`, so
+nothing is removed unless chosen. The four utterances in `excluded_utterance_ids` are always
+removed.

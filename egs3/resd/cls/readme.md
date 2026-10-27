@@ -12,11 +12,31 @@ asked to convey. 1396 utterances in seven emotions: `fear` (223), `angry`
 (219), `happy` (218), `enthusiasm` (198), `neutral` (191), `disgust` (185) and
 `sad` (162).
 
+## The corpus is a dialogue corpus
+
+This is the most useful property of RESD: the utterances are turns of 50 improvised
+dialogues between two actors, not isolated sentences, so analyses that use the
+conversation context are possible (the other speaker's utterance before or after, how
+an emotion answers another emotion, the pair of emotions of a dialogue).
+
+The structure is in the name, `<dialog>_<emotion 1>_<emotion 2>_<role>_<index>` (e.g.
+`01_happiness_anger_a_020`): the dialogue number (01 to 50), the two emotions given to
+the two actors of the dialogue, the role (the first letter of the emotion of the actor
+who is speaking: `a` anger, `d` disgust, `e` enthusiasm, `f` fear, `h` happiness, `n`
+neutral, `s` sadness; this matches the `emotion` label of all 1396 utterances) and a number
+that counts the exchanges (10, 20, 30, ...; both actors have an utterance with the same
+number). The numbering suggests the order of the turns but this was not checked
+against the audio. The name does not identify the actor.
+
+The recipe classifies each utterance on its own and does not use the context. The
+official train/test split is not by dialogue: all 50 dialogues have utterances in both
+splits, so neighboring turns of a test utterance can be in the training set.
+
 The release is one parquet file per official split on Hugging Face; each row
 holds the recording as WAV bytes, its `emotion` and its `name`,
 `<dialog>_<emotion>_<emotion>_<role>_<index>`. The label comes from the
 `emotion` column, renamed (`anger` to `angry`, `happiness` to `happy`,
-`sadness` to `sad`). The name does not identify the actor. 301 names have a
+`sadness` to `sad`). 301 names have a
 space before the role letter, which is replaced with `_` in the utterance id.
 The recordings are mono, 716 at 16 kHz and 680 at 44.1 kHz, so
 `create_dataset` resamples all of them to 16 kHz with ffmpeg.

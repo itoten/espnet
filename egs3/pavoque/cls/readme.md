@@ -44,6 +44,18 @@ speaker-independent.
 | valid | 545 |
 | test | 1088 |
 
+## Known issue: unfiltered low frequencies
+
+The recordings are raw: they contain much low-frequency rumble below 40 Hz, and the
+corpus's own README recommends a 50 Hz high-pass filter. Measured on a sample of
+recordings per style (111 to 626 each), the share of the power below 40 Hz has a median
+of 0.02 (angry) to 0.14 (sad) and a 90th percentile of 0.07 (angry) to 0.47 (sad), so it
+differs by style. This recipe applies no such filter and treats the audio like every
+other corpus's. Whether and how to filter is left open for now (possibly in the system's
+front end); until then a model trained here may use low-frequency content as a cue for
+the style, and waveform correlations computed without a high-pass filter (e.g. when
+looking for duplicates) are inflated.
+
 ## Quick start
 
 Run the three commands separately. With several GPUs, `train` starts one
