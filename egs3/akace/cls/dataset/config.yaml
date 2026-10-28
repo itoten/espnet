@@ -1,0 +1,102 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `$AKACE` holds the files of the authors' Google Drive folder:
+  #   excel_files/<table>.csv
+  #   audio/movie_audio_segments_wav/<movie>/<movie>_<start ms>_<end ms>.wav
+  source_env_var: AKACE
+  dataset_path: download
+  label_table: excel_files/Akan Speech Emotion Dataset cleaned.csv
+  segment_dir: audio/movie_audio_segments_wav
+
+  # Segment file names. A row with annotated times S and E seconds maps to
+  # `<movie>_<S*1000 - 10>_<E*1000 + 1500>.wav`.
+  start_offset_ms: -10
+  end_offset_ms: 1500
+  # 6162 table rows; a smaller number of matched segments is an interrupted
+  # download.
+  expected_rows: 6162
+
+  # Labels ----------------------------------------------------------------
+  # `Emotion` column of the table to manifest label. The table says `Joy`
+  # where the paper says Happy.
+  emotion_map:
+    Neutral: neutral
+    Anger: angry
+    Sadness: sad
+    Joy: happy
+    Surprise: surprise
+    Disgust: disgust
+    Fear: fear
+    Frustration: frustration
+    Confusion: confusion
+
+  # Table rows with no segment file (zero-length or out-of-range times) are
+  # not used.
+
+  # Duplicates ------------------------------------------------------------
+  # Rows pointing to the same segment file with the same label as an earlier
+  # row (6 rows; the first of each group is kept). With `exclude_duplicates: true`
+  # these are left out; `false` uses every row.
+  exclude_duplicates: false
+  duplicate_ids:
+    - akace-kae_157990_159500-neutral-r2
+    - akace-kyeiwaa_bohye_bone_763990_766500-happy-r2
+    - akace-kyeiwaa_bohye_bone_2154990_2156500-neutral-r2
+    - akace-kyeiwaa_bohye_bone_2663990_2665500-angry-r2
+    - akace-kyeiwaa_bohye_bone_2717990_2719500-neutral-r2
+    - akace-kyeiwaa_bohye_bone_3583990_3585500-angry-r2
+
+  # Rows pointing to the same segment file with different labels are
+  # ambiguous (24 rows in 11 groups); none of them is used.
+  conflicting_ids:
+    - akace-kae_2355990_2358500-sad
+    - akace-kae_2355990_2358500-happy
+    - akace-kyeiwaa_bohye_bone_1938990_1941500-neutral
+    - akace-kyeiwaa_bohye_bone_1938990_1941500-sad
+    - akace-kyeiwaa_bohye_bone_3155990_3158500-angry
+    - akace-kyeiwaa_bohye_bone_3155990_3158500-neutral
+    - akace-kyeiwaa_bohye_bone_3464990_3466500-fear
+    - akace-kyeiwaa_bohye_bone_3464990_3466500-angry
+    - akace-kyeiwaa_bohye_bone_3547990_3549500-angry
+    - akace-kyeiwaa_bohye_bone_3547990_3549500-neutral
+    - akace-kyeiwaa_bohye_bone_2_2612990_2614500-neutral
+    - akace-kyeiwaa_bohye_bone_2_2612990_2614500-surprise
+    - akace-kyeiwaa_aware_3_1672990_1675500-angry
+    - akace-kyeiwaa_aware_3_1672990_1675500-sad
+    - akace-kyeiwaa_aware_3_1702990_1704500-angry
+    - akace-kyeiwaa_aware_3_1702990_1704500-angry-r2
+    - akace-kyeiwaa_aware_3_1702990_1704500-sad
+    - akace-mason_hene_88990_90500-neutral
+    - akace-mason_hene_88990_90500-surprise
+    - akace-mason_hene_88990_90500-neutral-r2
+    - akace-mason_hene_833990_835500-neutral
+    - akace-mason_hene_833990_835500-angry
+    - akace-kokotako_744990_747500-sad
+    - akace-kokotako_744990_747500-neutral
+
+  # Split -----------------------------------------------------------------
+  # The `split` column of the table (train, val, test) is used as published.
+  split_map:
+    train: train
+    val: valid
+    test: test
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every segment to 16 kHz mono.
+  output_env_var: AKACE_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test is filtered too: the annotated times are partly wrong, and the
+  # 196 test segments longer than 30 s (up to 498.5 s) do not fit in GPU memory.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest_filtered/test.tsv
