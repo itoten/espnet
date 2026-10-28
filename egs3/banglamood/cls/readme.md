@@ -5,17 +5,24 @@ head) on BanglaMood alone and scores it on its own test split, classifying each
 recording into one of eight emotions.
 
 [BanglaMood: A Rich Audio Dataset for Eight Emotion Recognition in Bangla
-Speech](https://data.mendeley.com/datasets/9cc8k5v7w4/3) (Patwary, Hossain, Hossain
-and Rahman, North South University; Mendeley Data, V3, doi:10.17632/9cc8k5v7w4.3)
-is Bangla speech cut from YouTube videos (short stories, vlogs and sports
-highlights). According to the dataset description, three native Bangla speakers
-labeled each clip by considering the tone, facial expressions, scenario, screams,
-cries and meaning of the words, so the labels do not rest on the audio alone. No
-journal article for the dataset was found. The labels are `angry`, `neutral`, `fear`,
-`disappointed`, `sad`, `surprise`, `happy` and `excited`. There is no `disgust`.
-`disappointed` and `excited` are not among the seven common labels of the other
-recipes; they are kept as classes of their own (the folders are named
-`Disappointment` and `Excitement`, and `Surprised` becomes `surprise`).
+Speech](https://data.mendeley.com/datasets/9cc8k5v7w4/3) (Patwary, Hossain, Hossain and
+Rahman, North South University; Mendeley Data, V3, doi:10.17632/9cc8k5v7w4.3, published
+2025-07-02) is Bangla speech cut from YouTube videos. The dataset description says:
+
+> The BanglaMOOD dataset comprises 3,220 audio files in WAV format, each capturing vocal
+> expressions of human emotion in Bangla. The dataset features eight emotion categories:
+> Angry, Happy, Sad, Neutral, Surprised, Fear, Disappointment, and Excitement. Each audio
+> sample ranges from 1 to 5 seconds in duration, with all files standardized to 5 seconds
+> for consistency in feature extraction. The audio was collected from a wide variety of
+> real-life contexts, including short stories, vlogs, and sports highlights sourced from
+> YouTube, ensuring a broad range of expressive and natural vocalizations. Both male and
+> female voices are included to provide gender diversity.
+
+The labels are `angry`, `neutral`, `fear`, `disappointed`, `sad`, `surprise`, `happy` and
+`excited`; there is no `disgust`. `disappointed` and `excited` are not among the seven common
+labels of the other recipes; they are kept as classes of their own (the folders are named
+`Disappointment` and `Excitement`, and `Surprised` becomes `surprise`). No journal article
+describes the dataset (the Mendeley record lists none), so the record is the only source.
 
 ## What is used
 
@@ -84,7 +91,27 @@ The downloaded audio takes 963 MB and the converted data 327 MB.
 
 ## Listening test
 
-Three native Bangla annotators, each given a share of the videos, labelled the clips from the tone, facial expressions and scenario as well as the audio. Whether more than one annotator judged each clip is not stated, and no ratings are distributed.
+The labels were given by people, and they could see the video. The record's "method" field
+says:
+
+> We collected our data from YouTube by randomly choosing videos such as short stories or
+> vlogs from publicly available videos. Multiple videos were distributed to 3 native
+> Bangla-speaking annotators who were given detailed instructions to be consistent in
+> labelling all the clips for higher accuracy and quality. [...] They extracted audio voices
+> between 1 to 5 seconds in length and labelled the audio file according to the emotion they
+> deduced upon considering the tone, facial expressions, scenario, screams, cries, and
+> meanings of the words spoken.
+
+So the videos were divided among three annotators; the text does not say that each clip was
+judged by more than one of them, and it gives no agreement coefficient or accuracy. No ratings
+are distributed. Because the annotators also used facial expressions and the scenario, a label
+may not be recoverable from the audio alone.
+
+## Reference
+
+Patwary, M. S. A., Hossain, M., Hossain, M. M. and Rahman, R. M. (2025). *BanglaMood: A Rich
+Audio Dataset for Eight Emotion Recognition in Bangla Speech*. Mendeley Data, V3.
+doi:10.17632/9cc8k5v7w4.3.
 
 ## Quick start
 
