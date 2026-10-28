@@ -16,7 +16,7 @@ other recipes.
 
 The `full_set` folder of the archive: 1,085 recordings, 0.27 hours, from 11
 speakers (`S01`–`S11`). The `core_set` folder is a subset of the same files and is
-not used. Each recording is 0.40 to 2.00 seconds long (median 0.81) and is 44.1 kHz,
+not used (see "Core set" below). Each recording is 0.40 to 2.00 seconds long (median 0.81) and is 44.1 kHz,
 16-bit mono; `create_dataset` converts it to 16 kHz mono.
 
 The speaker, emotion and intensity come from the file name,
@@ -67,9 +67,46 @@ depends on the network.
 The extracted audio takes 85 MB and the converted data 33 MB. `prepare_source`
 deletes the zip after a successful extraction.
 
+## Core set
+
+The archive has two folders: `full_set` (1,085 files, used here) and `core_set` (480 files,
+all of them also in `full_set`). The core set is a fully crossed subsample (6 emotions x 4
+intensities x 10 speakers x 2 items) that the authors selected "based on judged
+authenticity" (Zenodo description); the paper that introduces the corpus (Holz et al.,
+2022) gives the validation, and a companion paper (Holz et al., 2021, Sci Rep 11:9663) says
+the core set was developed "following a technical validation" and "based on authenticity
+ratings". So membership in the core set was decided by listeners' perceived authenticity of
+each recording, not by the intended emotion. The number of raters and the cut-off of that
+selection are not stated in the sources read here (the 2022 paper was not available).
+
+The core set contains speakers `S01` to `S10` with 48 files each; `S11` (54 files) is not in
+it, and the other speakers have 87 to 111 files in `full_set`. The recipe does not mark which
+files belong to the core set. They are the file names in the archive's `core_set` folder, so
+they can be picked out later (for example to train or score on the 480 recordings the authors
+consider authentic).
+
 ## Listening test
 
-A core set of 480 recordings was selected by a perception test of authenticity (Zenodo description); the full set of 1,085 used here also contains recordings that were not selected. The individual judgements are not distributed.
+**The recordings were evaluated by listeners.** The 480 core-set recordings were rated by 90
+participants recruited at the Max Planck Institute for Empirical Aesthetics (all native German
+speakers with normal hearing), 30 per task (Holz et al., 2021, Sci Rep 11:9663):
+
+- Experiment 1: a seven-alternative choice among the six emotions and "none of the specified
+  emotions", plus a rating of the speaker's emotional intensity and of the authenticity of the
+  expression. Every emotion was classified above chance (16.67%) by the 30 listeners. The most
+  frequent confusion was between `achievement` and `surprise`. Accuracy depends on the
+  intensity: for four of the six emotions (anger, pleasure, pain, surprise) it is lower at
+  peak intensity than at low, moderate and strong. The overall accuracy is described as
+  relatively low compared with earlier studies; per-emotion values are given in the
+  paper's figures and supplementary table.
+- Experiment 2: ratings of how clearly each of the six emotions is perceived (one scale per
+  emotion), and of the intensity.
+- Experiment 3: ratings of valence and arousal, and of authenticity.
+
+The full set of 1,085 used here also contains the 605 recordings that were not selected. The
+individual responses are not in the Zenodo archive; the paper says its data are available on
+the Open Science Framework (https://osf.io/jmh5t/). The recipe uses the intended emotion
+of the file name.
 
 ## Quick start
 
