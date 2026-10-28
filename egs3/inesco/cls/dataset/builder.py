@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import shutil
+import struct
 import subprocess
 import time
 import urllib.request
@@ -15,7 +16,7 @@ import zipfile
 from importlib import resources
 from pathlib import Path
 from random import Random
-from typing import Iterator
+from typing import Any, Iterator
 
 from espnet3.components.data.dataset_builder import DatasetBuilder
 from espnet3.utils.config_utils import load_config_with_defaults
@@ -209,21 +210,23 @@ def _list_wavs(source_root: Path) -> list[Path]:
     return sorted((source_root / _RECORDINGS_DIR).glob("*.wav"))
 
 
-def read_entries(source_root: Path) -> list[dict[str, str]]:
+def read_entries(source_root: Path) -> list[dict[str, Any]]:
     """Collect the recordings, taking the label from the emotion letter in the name.
 
-    A file that does not start with ``RIFF`` (``mbaz_h138.wav`` in the release has
-    lost its first 8 bytes and ffmpeg cannot open it) is skipped.
+    A file that starts with ``WAVE`` instead of ``RIFF`` (``mbaz_h138.wav`` in the
+    release has lost its first 8 bytes, ``RIFF`` and the size) is marked
+    ``repair``; ``build()`` puts the 8 bytes back before converting it.
 
     Args:
         source_root: Corpus root holding ``recordings_dir``.
 
     Returns:
-        list[dict[str, str]]: Keys ``utt_id``, ``source``, ``label`` and
-        ``sentence``.
+        list[dict[str, Any]]: Keys ``utt_id``, ``source``, ``label``,
+        ``sentence`` and ``repair``.
 
     Raises:
-        ValueError: If a name is not ``<speaker>_<emotion><sentence>.wav``.
+        ValueError: If a name is not ``<speaker>_<emotion><sentence>.wav`` or a
+            file is neither a RIFF nor a header-less WAVE file.
         FileNotFoundError: If no recording is found.
     """
     entries = []
@@ -232,15 +235,16 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         if match is None:
             raise ValueError(f"Unexpected file name: {wav}")
         with wav.open("rb") as fh:
-            if fh.read(4) != b"RIFF":
-                logger.warning("Skipping %s: not a RIFF WAV file", wav.name)
-                continue
+            magic = fh.read(4)
+        if magic not in (b"RIFF", b"WAVE"):
+            raise ValueError(f"{wav} is not a WAV file")
         entries.append(
             {
                 "utt_id": f"inesco-{wav.stem}",
                 "source": str(wav),
                 "label": _EMOTION_MAP[match.group(2)],
                 "sentence": match.group(3),
+                "repair": magic == b"WAVE",
             }
         )
     if not entries:
@@ -249,7 +253,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     return entries
 
 
-def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
+def assign_splits(entries: list[dict[str, Any]]) -> dict[str, str]:
     """Split the sentences at random within each label.
 
     All speakers read each sentence in the same emotion, so the recordings of one
@@ -389,11 +393,15 @@ class InescoBuilder(DatasetBuilder):
             wav = wav_dir / f"{entry['utt_id']}.wav"
             if not wav.is_file():
                 part = wav.with_suffix(wav.suffix + ".part")
+                header = None
+                if entry["repair"]:
+                    raw = Path(entry["source"]).read_bytes()
+                    header = b"RIFF" + struct.pack("<I", len(raw)) + raw
                 subprocess.run(
                     [
                         ffmpeg,
                         "-i",
-                        entry["source"],
+                        "pipe:0" if header else entry["source"],
                         "-ac",
                         "1",
                         "-ar",
@@ -406,6 +414,7 @@ class InescoBuilder(DatasetBuilder):
                         "error",
                         str(part),
                     ],
+                    input=header,
                     check=True,
                 )
                 part.replace(wav)

@@ -28,8 +28,10 @@ splits below keep every sentence in one split to avoid rewarding that.
 One recording is missing (`fcim_a332.wav`, so 599 files for `fcim`), and the
 description's count of 2,400 does not match. One more, `mbaz_h138.wav`, has lost the
 first 8 bytes of its header (it begins with `WAVE` instead of `RIFF`) and ffmpeg
-cannot open it, so it is skipped. 2,398 recordings (3.02 hours, 1.1 to 11.8 seconds,
-median 4.37) remain. The source files are 44.1 kHz 16-bit PCM; the recordings of
+cannot open it as it is. `create_dataset` puts the 8 bytes back (`RIFF` and the data size)
+in memory before converting it, without changing the downloaded file; the repaired
+recording is 2.6 seconds long and its neighbour `mbaz_h137` is 2.0 seconds. All 2,399
+recordings (3.03 hours, 1.1 to 11.8 seconds, median 4.37) are used. The source files are 44.1 kHz 16-bit PCM; the recordings of
 `fyat` and `mdpa` are mono, and those of `fcim` and `mbaz` are stereo (the channels
 differ by at most 5 in 16-bit units in the 200 stereo files compared). No two files
 have the same content (SHA-256). `create_dataset` converts them to 16 kHz mono 16-bit
@@ -60,11 +62,11 @@ speakers are not held out: all four are in every split.
 
 | split | recordings | after `remove_long_short` | angry | happy | sad |
 |---|---|---|---|---|---|
-| train | 1678 | 1678 | 531 | 591 | 556 |
+| train | 1679 | 1679 | 531 | 592 | 556 |
 | valid | 240 | 240 | 76 | 84 | 80 |
 | test | 480 | (not filtered) | 152 | 168 | 160 |
 
-The classes are nearly balanced (class weights 0.946 to 1.053, written by
+The classes are nearly balanced (class weights 0.945 to 1.05, written by
 `prepare_labels`). Report Macro-F1 rather than accuracy.
 
 ## Time needed
