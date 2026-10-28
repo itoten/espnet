@@ -232,7 +232,9 @@ class EmotiontalkBuilder(DatasetBuilder):
         source_dir: str | Path | None = None,
         **_kwargs,
     ) -> bool:
-        """Check whether the extracted EmotionTalk audio is reachable."""
+        """Check whether nothing is left to download: built data or raw audio."""
+        if self.is_built(recipe_dir):
+            return True
         try:
             resolve_source_root(Path(recipe_dir).resolve(), source_dir)
         except FileNotFoundError:
