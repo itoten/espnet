@@ -53,8 +53,7 @@ performers' neighbouring rights, are forbidden. The site also asks to cite the c
 readings under a freer license. The repository has no license file for the audio. A question
 about the license was posted as an issue on the site's GitHub repository
 (voice-statistics/voice-statistics.github.io, issue 9) and has had no response from the
-authors. The corpus is treated as non-commercial research use until the authors answer; it is
-on the project's list of items to confirm with them by e-mail.
+authors. The corpus is treated as non-commercial research use until the authors answer.
 
 ## Splits
 

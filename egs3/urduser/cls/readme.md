@@ -72,8 +72,7 @@ The release is labelled CC BY 4.0 (Mendeley listing and the article). The statem
 show which clips were under a Creative Commons license and which are fair-use excerpts, nor
 which Creative Commons license (it could be one that forbids commercial use), and fair use for
 research does not by itself allow commercial use. The recipe follows the stated CC BY 4.0, but the
-actual terms for commercial use are **unconfirmed** and are on the project's list of items to
-check.
+actual terms for commercial use are **unconfirmed**.
 
 ## Download
 
