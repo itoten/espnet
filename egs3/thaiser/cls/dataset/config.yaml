@@ -1,38 +1,68 @@
 builder:
   # Source layout ---------------------------------------------------------
-  # The release holds `emotion_label.json` and zip files of
-  # `<studio|zoom>N/<microphone>/<recording>.flac`. The label file lists one
-  # microphone per recording (`con` in the studio, `mic` on Zoom); the other
-  # microphones' files are not extracted.
+  # `prepare_source` writes `emotion_label.json` (one entry per recording, taken
+  # from the label columns of the Hugging Face release) and the FLAC files
+  # `<recording>.flac`. Each recording has one microphone in the label file
+  # (`con` in the studio, `mic` on Zoom); the other studio microphones are not
+  # extracted.
   source_env_var: THAISER
   dataset_path: download
 
   # Download --------------------------------------------------------------
-  # GitHub release v1 of vistec-AI/dataset-releases, CC BY-SA 4.0. No checksums
-  # are published, so each file's size (bytes) is checked.
-  release_url: https://github.com/vistec-AI/dataset-releases/releases/download/v1
+  # Hugging Face `airesearch/thai-ser`, version 2.0 (2025-04-15, "fixed
+  # majority agreement calculation"), CC BY-SA 4.0, pinned to one revision.
+  # Its audio is byte-identical to the GitHub release v1 (checked on the
+  # recordings of the first shard). The parquet files are read with pyarrow;
+  # each file's size (bytes) is checked.
+  hf_repo: airesearch/thai-ser
+  hf_revision: 382232b5d45cbca5da82efe841e66e2b213713ae
   label_file: emotion_label.json
-  label_file_size: 16056164
-  archives:
-    zoom1-10.zip: 549004523
-    zoom11-20.zip: 526691615
-    studio1-10.zip: 1552445760
-    studio11-20.zip: 1481601769
-    studio21-30.zip: 1367188788
-    studio31-40.zip: 1466926996
-    studio41-50.zip: 1424289296
-    studio51-60.zip: 1450157240
-    studio61-70.zip: 1401212874
-    studio71-80.zip: 1378972298
-  remove_archives: true
+  audio_columns: [mic_con, mic_zoom]
+  shards:
+    train-00000-of-00029.parquet: 410054668
+    train-00001-of-00029.parquet: 525801384
+    train-00002-of-00029.parquet: 618584890
+    train-00003-of-00029.parquet: 516790664
+    train-00004-of-00029.parquet: 514809539
+    train-00005-of-00029.parquet: 495622036
+    train-00006-of-00029.parquet: 461989773
+    train-00007-of-00029.parquet: 422613783
+    train-00008-of-00029.parquet: 511942232
+    train-00009-of-00029.parquet: 510501153
+    train-00010-of-00029.parquet: 529392018
+    train-00011-of-00029.parquet: 554567593
+    train-00012-of-00029.parquet: 515416088
+    train-00013-of-00029.parquet: 546732269
+    train-00014-of-00029.parquet: 522176725
+    train-00015-of-00029.parquet: 577250433
+    train-00016-of-00029.parquet: 496689345
+    train-00017-of-00029.parquet: 510411357
+    train-00018-of-00029.parquet: 530896736
+    train-00019-of-00029.parquet: 476812846
+    train-00020-of-00029.parquet: 494545136
+    train-00021-of-00029.parquet: 466694183
+    train-00022-of-00029.parquet: 450449364
+    train-00023-of-00029.parquet: 191970318
+    train-00024-of-00029.parquet: 214688185
+    train-00025-of-00029.parquet: 181202930
+    train-00026-of-00029.parquet: 162604172
+    train-00027-of-00029.parquet: 164473444
+    train-00028-of-00029.parquet: 131930677
+  remove_shards: true
 
   # Labels ----------------------------------------------------------------
   # `majority_emo` is the label most of 3 to 8 annotators chose for the
-  # recording. Recordings with no majority (`None`) or `other` are dropped,
-  # as are those whose `agreement` is below `min_agreement`; the release page
-  # says this threshold keeps 14,182 recordings.
-  min_agreement: 0.71
-  expected_files: 14182
+  # recording (one annotator may tick several emotions). Recordings with no
+  # majority (`None`, 2664) or `other` (5) are never used; the other 25185 are
+  # converted. `agreement` is the share of annotator votes the majority label
+  # got, each annotator's vote being split over the emotions they ticked.
+  # The corpus paper (arXiv 2507.09618, sec. 4.2.1) recommends dropping
+  # recordings with agreement below 0.71 (14181 remain, Krippendorff's alpha
+  # 0.413 -> 0.692). `min_agreement` keeps only recordings at or above it when
+  # writing the manifests; 0.0 uses every recording with a majority. The
+  # splits are drawn before this filter, so raising it only removes utterances.
+  min_agreement: 0.0
+  expected_files: 25185
   emotion_map:
     Neutral: neutral
     Angry: angry
@@ -53,7 +83,7 @@ builder:
 
   # Split -----------------------------------------------------------------
   # No partition is published with the archive. Utterances are split at random
-  # within each label; speakers are not held out, so the splits share all 20
+  # within each label; speakers are not held out, so the splits share all 200
   # speakers.
   train_ratio: 0.7
   valid_ratio: 0.1

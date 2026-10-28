@@ -8,12 +8,11 @@ import os
 import re
 import shutil
 import subprocess
-import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from importlib import resources
 from pathlib import Path
 from random import Random
-from typing import Iterator
+from typing import Any, Iterator
 
 from espnet3.components.data.dataset_builder import DatasetBuilder
 from espnet3.utils.config_utils import load_config_with_defaults
@@ -55,17 +54,20 @@ def iter_source_candidates(
     yield recipe_root / _CFG["dataset_path"]
 
 
-def load_labels(label_path: Path) -> dict[str, tuple[str, str]]:
-    """Read the label file and keep the recordings that are usable.
+def load_labels(label_path: Path) -> dict[str, dict[str, Any]]:
+    """Read the label file and keep the recordings that have a usable majority.
 
     A recording is kept when annotators reached a majority on one of the
-    labels in ``emotion_map`` and ``agreement`` is at least ``min_agreement``.
+    labels in ``emotion_map``. ``agreement`` is not applied here (see
+    ``min_agreement`` in :meth:`ThaiSERBuilder.build`).
 
     Args:
-        label_path: ``emotion_label.json`` of the release.
+        label_path: ``emotion_label.json`` written by ``prepare_source``.
 
     Returns:
-        dict[str, tuple[str, str]]: File name to ``(speaker, label)``.
+        dict[str, dict[str, Any]]: File name to ``speaker``, ``label``,
+        ``assigned`` (the emotion the actor was asked for), ``agreement`` and
+        ``n_annotators``.
 
     Raises:
         ValueError: If a file name is unexpected or the number of kept
@@ -74,17 +76,20 @@ def load_labels(label_path: Path) -> dict[str, tuple[str, str]]:
     with label_path.open(encoding="utf-8") as fh:
         raw = json.load(fh)
     labels = {}
-    for name, votes in raw.items():
-        annotation = votes[0]
+    for name, annotation in raw.items():
         emotion = annotation["majority_emo"]
         if emotion not in _EMOTION_MAP:
-            continue
-        if annotation["agreement"] < float(_CFG["min_agreement"]):
             continue
         fields = FILENAME_RE.match(name)
         if fields is None:
             raise ValueError(f"Unexpected recording name in {label_path}: {name}")
-        labels[name] = (fields["speaker"], _EMOTION_MAP[emotion])
+        labels[name] = {
+            "speaker": fields["speaker"],
+            "label": _EMOTION_MAP[emotion],
+            "assigned": str(annotation["assigned_emo"]),
+            "agreement": float(annotation["agreement"]),
+            "n_annotators": len(annotation["annotated"]),
+        }
     if len(labels) != _CFG["expected_files"]:
         raise ValueError(
             f"{label_path} keeps {len(labels)} recordings, expected "
@@ -124,8 +129,8 @@ def resolve_source_root(
         "Complete Thai SER audio not found. Checked:\n  "
         + "\n  ".join(checked)
         + f"\nSet ${_CFG['source_env_var']} to a directory holding "
-        f"{_CFG['label_file']} and the extracted archives, or let "
-        "`prepare_source` download them from the GitHub release."
+        f"{_CFG['label_file']} and the extracted recordings, or let "
+        "`prepare_source` download them from Hugging Face."
     )
 
 
@@ -145,10 +150,10 @@ def resolve_data_root(recipe_root: Path) -> Path:
 
 
 def _fetch(name: str, size: int, destination: Path) -> Path:
-    """Download a release file and check its size.
+    """Download a file of the Hugging Face release and check its size.
 
     Args:
-        name: File name in the release.
+        name: Path of the file in the repository.
         size: Expected size in bytes.
         destination: Directory to save into.
 
@@ -159,51 +164,65 @@ def _fetch(name: str, size: int, destination: Path) -> Path:
         urllib.error.URLError: If the download fails.
         ValueError: If the downloaded size differs from ``size``.
     """
-    path = destination / name
+    path = destination / Path(name).name
     part = path.with_suffix(path.suffix + ".part")
-    download_url(f"{_CFG['release_url']}/{name}", part, logger=logger)
+    url = (
+        f"https://huggingface.co/datasets/{_CFG['hf_repo']}/resolve/"
+        f"{_CFG['hf_revision']}/{name}"
+    )
+    download_url(url, part, logger=logger)
     if part.stat().st_size != size:
         raise ValueError(f"{name} is {part.stat().st_size} bytes, expected {size}")
     part.rename(path)
     return path
 
 
-def _extract_zip(archive: Path, destination: Path, wanted: set[str]) -> None:
-    """Extract the wanted recordings of a zip archive into ``destination``.
+def _unpack_shard(shard: Path, destination: Path, labels: dict[str, Any]) -> None:
+    """Write the usable recordings of a parquet file and collect its labels.
 
-    ``espnet3.utils.download_utils`` only extracts gzipped tar archives, so
-    this is done here. Each archive holds the recordings of every microphone;
-    only members whose file name is in ``wanted`` are written, and each is
-    checked against the destination first: ``ZipFile.extract`` does not reject
-    absolute paths or ``..`` components on its own.
+    Only the label columns and the ``audio_columns`` are read; each usable
+    recording has its audio under exactly one of them (``mic_con`` in the
+    studio, ``mic_zoom`` on Zoom).
 
     Args:
-        archive: Archive to read.
-        destination: Directory to extract into.
-        wanted: File names to keep.
+        shard: Parquet file of the release.
+        destination: Directory to write the FLAC files into.
+        labels: Collects ``file name -> label columns`` of every row.
 
     Raises:
-        ValueError: If a member would be written outside ``destination``.
-        zipfile.BadZipFile: If the archive is invalid.
+        ValueError: If a usable recording has no audio.
     """
-    logger.info("Extracting %s", archive.name)
-    destination = destination.resolve()
-    with zipfile.ZipFile(archive) as zf:
-        members = [
-            info
-            for info in zf.infolist()
-            if Path(info.filename).name in wanted
-            and "__MACOSX" not in info.filename.split("/")
-        ]
-        for info in members:
-            if not (destination / info.filename).resolve().is_relative_to(destination):
-                raise ValueError(f"{archive.name} escapes its destination: {info}")
-        for info in members:
-            zf.extract(info, path=destination)
+    import pyarrow.parquet as pq
+
+    audio_columns = [str(c) for c in _CFG["audio_columns"]]
+    parquet = pq.ParquetFile(shard)
+    label_columns = [c for c in parquet.schema_arrow.names if not c.startswith("mic_")]
+    for batch in parquet.iter_batches(
+        batch_size=32, columns=label_columns + audio_columns
+    ):
+        for row in batch.to_pylist():
+            audio = next(
+                (row[c]["bytes"] for c in audio_columns if row[c] and row[c]["bytes"]),
+                None,
+            )
+            for column in audio_columns:
+                del row[column]
+            name = row["audio_id"]
+            name = name if name.endswith(".flac") else f"{name}.flac"
+            labels[name] = row
+            if row["majority_emo"] not in _EMOTION_MAP:
+                continue
+            if audio is None:
+                raise ValueError(f"{name} has no audio in {shard.name}")
+            flac = destination / name
+            if not flac.is_file():
+                part = flac.with_suffix(".part")
+                part.write_bytes(audio)
+                part.replace(flac)
 
 
 def _download_source(destination: Path) -> None:
-    """Fetch the label file and the archives, then unpack the usable recordings.
+    """Fetch the parquet files, then unpack the usable recordings and labels.
 
     Args:
         destination: Directory to unpack into.
@@ -211,21 +230,22 @@ def _download_source(destination: Path) -> None:
     Raises:
         urllib.error.URLError: If a download fails.
         ValueError: If a download has an unexpected size.
-        zipfile.BadZipFile: If an archive cannot be extracted.
     """
     destination.mkdir(parents=True, exist_ok=True)
-    label_path = _fetch(
-        str(_CFG["label_file"]), int(_CFG["label_file_size"]), destination
-    )
-    wanted = set(load_labels(label_path))
-    for name, size in _CFG["archives"].items():
-        archive = _fetch(str(name), int(size), destination)
-        _extract_zip(archive, destination, wanted)
-        if _CFG.get("remove_archives", False):
-            archive.unlink(missing_ok=True)
+    labels: dict[str, Any] = {}
+    for name, size in _CFG["shards"].items():
+        shard = _fetch(f"data/{name}", int(size), destination)
+        _unpack_shard(shard, destination, labels)
+        if _CFG.get("remove_shards", False):
+            shard.unlink(missing_ok=True)
+    label_path = destination / str(_CFG["label_file"])
+    part = label_path.with_suffix(label_path.suffix + ".part")
+    with part.open("w", encoding="utf-8") as fh:
+        json.dump(labels, fh, ensure_ascii=False)
+    part.replace(label_path)
 
 
-def _drop_duplicates(entries: list[dict[str, str]]) -> list[dict[str, str]]:
+def _drop_duplicates(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Leave out the utterances listed in ``duplicate_ids`` of the config.
 
     Applies only when ``exclude_duplicates`` is true. Each listed utterance has
@@ -244,15 +264,15 @@ def _drop_duplicates(entries: list[dict[str, str]]) -> list[dict[str, str]]:
     return kept
 
 
-def read_entries(source_root: Path) -> list[dict[str, str]]:
+def read_entries(source_root: Path) -> list[dict[str, Any]]:
     """Collect the usable recordings, taking labels from the label file.
 
     Args:
         source_root: Corpus root holding the label file and the recordings.
 
     Returns:
-        list[dict[str, str]]: Keys ``utt_id``, ``source``, ``speaker`` and
-        ``label``.
+        list[dict[str, Any]]: Keys ``utt_id``, ``source``, ``speaker``,
+        ``label``, ``assigned``, ``agreement`` and ``n_annotators``.
 
     Raises:
         ValueError: If the label file does not keep ``expected_files``
@@ -276,10 +296,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         {
             "utt_id": f"thaiser-{Path(name).stem}",
             "source": str(sources[name]),
-            "speaker": speaker,
-            "label": label,
+            **labels[name],
         }
-        for name, (speaker, label) in sorted(labels.items())
+        for name in sorted(labels)
     ]
     logger.info(
         "Read %d utterance(s) from %d speaker(s)",
@@ -289,7 +308,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     return _drop_duplicates(entries)
 
 
-def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
+def assign_splits(entries: list[dict[str, Any]]) -> dict[str, str]:
     """Split the utterances at random within each label.
 
     Each label's utterances are shuffled with ``split_seed`` and cut by
@@ -397,7 +416,10 @@ class ThaiSERBuilder(DatasetBuilder):
     ) -> None:
         """Resample the recordings and write one TSV manifest per split.
 
-        Recordings are converted by ``num_workers`` ffmpeg processes at a time.
+        Every recording with a majority label is converted, by ``num_workers``
+        ffmpeg processes at a time. The manifests list those whose
+        ``agreement`` is at least ``min_agreement``; ``agreement.tsv`` in the
+        data directory lists all of them with their split and agreement.
 
         Args:
             recipe_dir: Recipe directory, used to resolve relative locations.
@@ -428,7 +450,7 @@ class ThaiSERBuilder(DatasetBuilder):
             split: [] for split in _CFG["manifest_paths"]
         }
 
-        def convert(entry: dict[str, str]) -> Path:
+        def convert(entry: dict[str, Any]) -> Path:
             wav = wav_dir / f"{entry['utt_id']}.wav"
             if not wav.is_file():
                 part = wav.with_suffix(wav.suffix + ".part")
@@ -456,10 +478,12 @@ class ThaiSERBuilder(DatasetBuilder):
 
         with ThreadPoolExecutor(max_workers=int(_CFG["num_workers"])) as pool:
             wavs = list(pool.map(convert, entries))
+        min_agreement = float(_CFG["min_agreement"])
         for entry, wav in zip(entries, wavs):
-            rows[assignment[entry["utt_id"]]].append(
-                (entry["utt_id"], str(wav.resolve()), entry["label"])
-            )
+            if entry["agreement"] >= min_agreement:
+                rows[assignment[entry["utt_id"]]].append(
+                    (entry["utt_id"], str(wav.resolve()), entry["label"])
+                )
 
         for split, relpath in _CFG["manifest_paths"].items():
             manifest = data_root / str(relpath)
@@ -470,3 +494,15 @@ class ThaiSERBuilder(DatasetBuilder):
                     fh.write(f"{utt_id}\t{wav}\t{label}\n")
             part.replace(manifest)
             logger.info("%s: wrote %d entries to %s", split, len(rows[split]), manifest)
+
+        sidecar = data_root / "agreement.tsv"
+        part = sidecar.with_suffix(".tsv.part")
+        with part.open("w", encoding="utf-8") as fh:
+            fh.write("utt_id\tsplit\tlabel\tassigned\tagreement\tn_annotators\n")
+            for entry in sorted(entries, key=lambda e: e["utt_id"]):
+                fh.write(
+                    f"{entry['utt_id']}\t{assignment[entry['utt_id']]}\t"
+                    f"{entry['label']}\t{entry['assigned']}\t"
+                    f"{entry['agreement']:.6f}\t{entry['n_annotators']}\n"
+                )
+        part.replace(sidecar)
