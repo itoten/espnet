@@ -1,0 +1,73 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `$MULTIDIALOG` holds `metadata.jsonl` and `data/<split>/*.tar.gz` of the
+  # Hugging Face dataset; the archives are extracted to `audio/<split>/`.
+  source_env_var: MULTIDIALOG
+  dataset_path: download
+  metadata_file: metadata.jsonl
+  archive_dir: data
+  audio_dir: audio
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset `IVLLab/MultiDialog` (no sign-in needed).
+  hf_repo: IVLLab/MultiDialog
+  # `metadata.jsonl` has 187,854 rows; fewer extracted files than this is an
+  # interrupted download.
+  expected_rows: 187854
+
+  # Labels ----------------------------------------------------------------
+  # `emotion` field of the metadata to manifest label. The corpus uses the
+  # label "Curious to dive deeper" for one of its eight classes.
+  emotion_map:
+    Neutral: neutral
+    Happy: happy
+    Surprised: surprise
+    Sad: sad
+    Disgusted: disgust
+    Fearful: fear
+    Angry: angry
+    Curious to dive deeper: curious
+
+  # Duplicates ------------------------------------------------------------
+  # Utterances with the same sound and label as another one (the first of
+  # each group by id is kept). With `exclude_duplicates: true` these are left
+  # out; `false` uses every utterance.
+  exclude_duplicates: false
+  duplicate_ids: []
+
+  # Utterances with the same sound but different labels are ambiguous (one
+  # pair, 2 utterances); none of them is used.
+  conflicting_ids:
+    - multidialog-t_e7edf3f4-cb71-4b21-85d7-8d5ed5a9c44e_20e
+    - multidialog-t_e7edf3f4-cb71-4b21-85d7-8d5ed5a9c44e_21g
+
+  # Split -----------------------------------------------------------------
+  # The published partition: train, valid_freq/valid_rare (valid) and
+  # test_freq/test_rare (test).
+  split_map:
+    train: train
+    valid_freq: valid
+    valid_rare: valid
+    test_freq: test
+    test_rare: test
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every utterance to 16 kHz mono.
+  output_env_var: MULTIDIALOG_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  convert_workers: 16
+
+dataset:
+  # Test is filtered too: its longest utterance (298 s) does not fit in GPU
+  # memory at inference.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest_filtered/test.tsv
