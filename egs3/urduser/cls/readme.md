@@ -11,10 +11,30 @@ telefilms on YouTube. According to the dataset description, 10 professional acto
 clips were checked by experts and by a model. Akhtar, Jahangir, Ain, Nauman, Uddin
 and Ullah describe it in "UrduSER: A comprehensive dataset for speech emotion
 recognition in Urdu language", Data in Brief 60 (2025) 111627,
-doi:10.1016/j.dib.2025.111627 (same authors as the Mendeley record; the article
-itself was not read). The labels are `angry`, `fear`, `boredom`, `disgust`, `happy`,
+doi:10.1016/j.dib.2025.111627 (same authors as the Mendeley record). The labels are `angry`, `fear`, `boredom`, `disgust`, `happy`,
 `neutral` and `sad`. There is no `surprise`. This is a different corpus from the
 `urdu` recipe (400 clips, four emotions).
+
+## How it was made
+
+By the paper, the ten actors (five men and five women, aged 20 to 65, from different
+Urdu-speaking regions) were chosen for their ability to convey emotions, and scenes with
+emotional dialogue were selected for each actor from Pakistani Urdu drama serials, telefilms
+and TV shows on YouTube. More than 5,000 dialogues were trimmed, of which 3,500 (500 per
+emotion) were selected. The dialogue is nearly always different: the paper stresses that
+each utterance has almost unique content. "Fear" and "anxiety" are merged into `fear`. The
+audio of each dialogue was cut by hand in Audacity 3.6.1 from the YouTube video, at 44.1 kHz.
+
+**The audio was processed after extraction** (paper, section 4.6), all by hand in Audacity
+with the OpenVINO extensions: music separation (only the "Vocals" track is kept; "Drum",
+"Bass" and "Other" are removed), noise suppression with the default settings, and trimming of
+the silence at the start and end (threshold -60 dB). The sound is therefore not the original
+broadcast sound and may differ in character from the other corpora.
+
+The release also has `UrduSER_Description.xlsx` with, for each file, the duration, format,
+sample rate, actor name, gender, emotion, context and the Urdu text of the dialogue. The actors
+are well-known Pakistani TV actors named in the paper's naming table; their names are not
+repeated here.
 
 ## What is used
 
@@ -36,6 +56,24 @@ default to `download/` and `data/` under the recipe.
 
 - `URDUSER` — the directory holding `audio/*.wav`, or where to download it to
 - `URDUSER_OUTPUT` — where the converted audio and manifests are written
+
+## Rights of the source videos
+
+The clips are extracted from third-party videos. The paper's ethics statement says:
+
+> This article utilized emotional speech dialogs from Pakistani drama serials, telefilms, and
+> TV shows that were publicly available on YouTube. To mitigate copyright concerns, we carefully
+> selected clips that were either explicitly licensed under Creative Commons or used short
+> excerpts consistent with fair use principles for research and academic purposes. [...] the
+> dataset only includes the extracted speech audio, not the original video content, minimizing
+> any potential copyright issues.
+
+The release is labelled CC BY 4.0 (Mendeley listing and the article). The statement does not
+show which clips were under a Creative Commons license and which are fair-use excerpts, nor
+which Creative Commons license (it could be one that forbids commercial use), and fair use for
+research does not by itself allow commercial use. The recipe follows the stated CC BY 4.0, but the
+actual terms for commercial use are **unconfirmed** and are on the project's list of items to
+check.
 
 ## Download
 
@@ -78,7 +116,20 @@ The downloaded audio takes 1.9 GB and the converted data 343 MB.
 
 ## Listening test
 
-The authors labelled the clips (one labelled, a second checked, a third spot-checked). A validation by about 100 university students, ten clips each, agreed with the labels in 94% of the answers (paper); the individual results are not distributed.
+**The labels were made and checked by people** (paper, sections 4.5 and 4.9).
+
+- Three native Urdu speakers, who are the authors, labelled the dialogues: one author
+  categorized each dialogue by emotion, a second author independently verified the label, and a
+  third reviewed the process and randomly checked several samples. The labels come from watching
+  the scene (audio and video), since the dialogues were extracted from the videos.
+- For validation, a survey was given to native Urdu-speaking undergraduate students: about 100
+  participants each listened to 10 random audio samples from the dataset and selected the
+  emotion that best represented each. Compared with the original annotations, the accuracy was
+  94% (paper, figure 4). The number of ratings per clip, per-emotion accuracy and an agreement
+  coefficient are not given.
+
+The individual ratings are not distributed. The recipe uses the label of the file name (the
+emotion folder).
 
 ## Quick start
 
@@ -96,3 +147,5 @@ python run.py --stages infer measure \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
+
+**Duplicates.** `3_0_5_03` and `3_0_5_04` (the same actor, `happy`) have almost the same waveform (correlation 0.9997 after an 80 Hz high-pass), although the files differ in bytes. The later one, `urduser-3_0_5_04`, is listed in `duplicate_ids` and is dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).

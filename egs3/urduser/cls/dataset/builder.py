@@ -209,6 +209,24 @@ def _list_wavs(source_root: Path) -> list[Path]:
     return sorted((source_root / _RECORDINGS_DIR).glob("*.wav"))
 
 
+def _drop_duplicates(entries: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Remove the listed copies of another recording if switched on.
+
+    Applies only when ``exclude_duplicates`` is true.
+
+    Raises:
+        ValueError: If a listed id is not among ``entries``.
+    """
+    if not _CFG["exclude_duplicates"]:
+        return entries
+    drop = {str(i) for i in _CFG["duplicate_ids"]}
+    kept = [e for e in entries if e["utt_id"] not in drop]
+    missing = drop - {e["utt_id"] for e in entries}
+    if missing:
+        raise ValueError(f"`duplicate_ids` not found: {sorted(missing)}")
+    return kept
+
+
 def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the recordings, taking the label from the emotion code in the name.
 
@@ -237,7 +255,7 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     if not entries:
         raise FileNotFoundError(f"No UrduSER audio under {source_root}")
     logger.info("Read %d utterance(s)", len(entries))
-    return entries
+    return _drop_duplicates(entries)
 
 
 def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:

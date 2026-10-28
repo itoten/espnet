@@ -30,6 +30,14 @@ builder:
     "6": neutral
     "7": sad
 
+  # Duplicates ------------------------------------------------------------
+  # Two recordings of the same actor and emotion have nearly the same waveform
+  # (correlation 0.9997 after an 80 Hz high-pass; not identical in bytes). With
+  # `exclude_duplicates: true` the later one by id is left out; `false` uses both.
+  exclude_duplicates: false
+  duplicate_ids:
+    - urduser-3_0_5_04
+
   # Split -----------------------------------------------------------------
   # No partition is published. Utterances are split at random within each
   # label, so the splits share the 10 actors.
