@@ -11,6 +11,20 @@ speaker count as 38 (27 male, 11 female), but the file names carry 29 distinct
 speaker ids (18 male, 11 female). The corpus is described in Latif et al.,
 "Cross Lingual Speech Emotion Recognition: Urdu vs. Western Languages".
 
+According to the paper, the clips come from Urdu TV talk shows on YouTube and are
+spontaneous: excerpts of unscripted discussions between guests, so the speakers' emotional
+state was not controlled. The clips were collected from videos chosen by the discussion and
+situation in the shows, and only for four emotions (happy, sad, angry and neutral); the paper
+notes that music and other noise sometimes accompany the speech. The README adds that the
+speakers were selected randomly. Every clip is cut to a fixed length: 200 are 2.0 s, 199 are
+3.0 s and one is 0.99 s. There is no transcript.
+
+The speaker ids are very uneven: the 29 ids have between 2 and 80 clips each (the five most
+frequent have 80, 48, 40, 38 and 28), and 26 of the 29 ids appear with a single emotion
+(two with two, one with three), so the speaker's voice is tied to the emotion. The paper's
+own experiments are speaker-independent (30 of the 38 speakers for training and 8 for
+testing); this recipe does not hold speakers out.
+
 The label comes from the file name, `S<gender><speaker>_F<file>_<emotion><index>.wav`
 (e.g. `SM1_F10_A010.wav`: male speaker 1, that speaker's 10th file, 10th
 `angry` file); the emotion codes are A, H, N and S. Each file also sits in a
@@ -27,7 +41,9 @@ default to `download/` and `data/` under the recipe.
 
 `prepare_source` downloads the repository archive from GitHub (about 86 MB once extracted,
 pinned to the latest commit). The repository states that anyone can use the
-data "only for research purposes" and carries no separate license file.
+data "only for research purposes" and carries no separate license file. The clips are cut
+from YouTube videos of talk shows, and neither the README nor the paper says anything about
+the rights to those videos.
 
 ## Splits
 
@@ -43,7 +59,14 @@ within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
 
 ## Listening test
 
-Four students from two universities labelled the clips from audio and video together, and a clip was kept with a label only if at least two agreed (paper). The individual ratings are not distributed.
+**The labels are perceptual judgments** (paper, section III-A). After collecting the clips, the
+authors mixed the files and gave them to four students of two universities (NUST and CIIT).
+The students were asked to annotate the speaker's emotional state using both the audio and
+the video, and a clip got a final label when at least two annotators assigned it the same
+emotion. The paper does not give the number of clips shown or dropped, an agreement
+coefficient or an accuracy, and the individual ratings are not distributed; the recipe uses
+the final label of the file name. Because the annotators saw the video, the label may rely on
+facial expression and context that the audio alone does not carry.
 
 ## Quick start
 
