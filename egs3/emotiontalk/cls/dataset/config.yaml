@@ -1,0 +1,59 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `Audio.tar` of the Hugging Face dataset extracts to `Audio/json/<group>/
+  # .../<utterance>.json` (labels) and `Audio/wav/<group>/.../<utterance>.wav`.
+  # The label is `emotion_result` of the audio-only annotation: five annotators
+  # who only listened, each with a confidence, combined by the authors.
+  source_env_var: EMOTIONTALK
+  dataset_path: download
+  json_dir: Audio/json
+  wav_dir: Audio/wav
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset `BAAI/Emotiontalk` (CC BY-NC-SA 4.0). The dataset is
+  # gated: the Hugging Face account must first agree on the dataset page to
+  # share its username and email with the authors. 14.8 GB.
+  hf_repo: BAAI/Emotiontalk
+  archive_name: Audio.tar
+  archive_size: 14811722752
+  remove_archive: true
+  # Fewer utterances than this means an interrupted extraction.
+  expected_utterances: 19250
+
+  # Labels ----------------------------------------------------------------
+  emotion_map:
+    neutral: neutral
+    angry: angry
+    happy: happy
+    sad: sad
+    disgusted: disgust
+    fearful: fear
+    surprised: surprise
+
+  # Split -----------------------------------------------------------------
+  # The published partition is by speaker group (`G000NN` of the file path):
+  # G00001 and G00012 are validation, G00003 and G00015 are test, the rest are
+  # training.
+  valid_groups: [G00001, G00012]
+  test_groups: [G00003, G00015]
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 44.1 kHz stereo (a few are 16 kHz or mono); `build()`
+  # converts them to 16 kHz mono.
+  output_env_var: EMOTIONTALK_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  convert_workers: 16
+
+dataset:
+  # Test stays unfiltered: every utterance is between 0.3 and 25 s.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
