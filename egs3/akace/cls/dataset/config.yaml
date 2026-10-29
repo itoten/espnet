@@ -30,8 +30,13 @@ builder:
     Frustration: frustration
     Confusion: confusion
 
-  # Table rows with no segment file (zero-length or out-of-range times) are
-  # not used.
+  # 3 table rows have no segment file in the release; they are not used.
+
+  # Movies left out entirely. In `me_sofo_anyim_me_yere` (33 rows, all test)
+  # the times are written one unit off (`00m:01s:12ms`), so the authors'
+  # segments are cut from the first seconds of the movie, not the utterances.
+  excluded_movies:
+    - me_sofo_anyim_me_yere
 
   # Duplicates ------------------------------------------------------------
   # Rows pointing to the same segment file with the same label as an earlier

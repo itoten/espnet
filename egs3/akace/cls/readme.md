@@ -33,15 +33,21 @@ The recipe uses the authors' segment files, `audio/movie_audio_segments_wav/<mov
 <movie>_<start ms>_<end ms>.wav` (16 kHz mono). A table row with annotated times S and E
 seconds corresponds to the file `<movie>_<S*1000-10>_<E*1000+1500>`: the segments end 1.5
 seconds after the annotated end, so a segment can contain the start of the next
-utterance. This rule was derived from the file names (6,126 of the 6,162 rows match a
+utterance. This rule was derived from the file names (6,159 of the 6,162 rows match a
 file).
 
 Things measured in the table and segments (not discussed in the paper):
 
-- The annotated times are whole seconds. 594 rows have an end not after the start, and a
-  few are far too long; the 6,096 converted segments are 1.51 to 498.5 s long, 332 are
-  longer than 30 s.
-- 36 rows have no segment file and are not used.
+- **One movie is left out.** In `me_sofo_anyim_me_yere` (33 rows, all test) the times
+  are written one unit off (`00m:01s:12ms`, where every other movie has the form
+  `01m:04s:00ms`), so `start_seconds` becomes 1.012 and the authors' segments are all
+  cut from the first 1 to 3.5 s of the movie, not from the annotated utterances. The
+  movie is listed in `excluded_movies` in `dataset/config.yaml`. The recipe therefore uses
+  20 of the 21 movies.
+- In the other movies the annotated times are whole seconds. 582 of their rows have an end
+  not after the start, and a few are far too long; the 6,096 converted segments are 1.51
+  to 498.5 s long, 332 are longer than 30 s.
+- 3 rows have no segment file in the release and are not used.
 - 24 rows (11 groups) point to the same segment with different labels; they are not used
   (`conflicting_ids` in `dataset/config.yaml`). 6 more rows point to the same segment with
   the same label as an earlier row; they are used unless `exclude_duplicates: true`.
@@ -83,7 +89,7 @@ The files are in a public Google Drive folder,
 <https://drive.google.com/drive/folders/1T2pVy_A6kD5owaAmFyPqgCtFTmjtB0b4> (linked from the
 GitHub README); no sign-in is needed. The recipe does not download them. Fetch
 `excel_files/Akan Speech Emotion Dataset cleaned.csv` and the segment files the table points
-to (6,107 distinct files, 1.7 GB on disk) into `$AKACE`. Measured: about 36 minutes for the
+to (6,107 distinct files outside the excluded movie, 1.7 GB on disk) into `$AKACE`. Measured: about 36 minutes for the
 segments with four parallel downloads; `create_dataset`, `remove_long_short` and
 `prepare_labels` together took about 4 minutes.
 
@@ -98,7 +104,7 @@ The `split` column of the table is used as published (`val` is the validation sp
 | test | 692 | 496 |
 
 `remove_long_short` drops the segments longer than 30 s from all three splits: 88 train, 48
-valid and 196 test (up to 498.5 s). Unlike the other recipes, test is filtered too: those
+valid and 196 test (up to 498.5 s). Test is filtered too: those
 segments come from wrong annotated times, and the longest ones make inference run out of GPU
 memory. Test scores therefore cover 496 of the 692 test utterances.
 

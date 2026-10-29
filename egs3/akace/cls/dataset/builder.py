@@ -128,9 +128,10 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Returns:
         list[dict[str, str]]: Keys ``utt_id``, ``source``, ``movie``, ``split``
-        and ``label``. Rows without a segment file are left out and counted in
-        the log. A second row with the same segment and label gets the suffix
-        ``-r2`` (``-r3``, ...) so that ``duplicate_ids`` can name it.
+        and ``label``. Rows of ``excluded_movies`` and rows without a segment
+        file are left out and counted in the log. A second row with the same
+        segment and label gets the suffix ``-r2`` (``-r3``, ...) so that
+        ``duplicate_ids`` can name it.
 
     Raises:
         ValueError: If a label or split is unknown, the table has fewer than
@@ -149,7 +150,12 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     entries = []
     seen: dict[tuple[str, str], int] = {}
     no_segment = 0
+    excluded_movies = {str(m) for m in _CFG["excluded_movies"]}
+    excluded = 0
     for row in rows:
+        if row["Movie Title"] in excluded_movies:
+            excluded += 1
+            continue
         emotion = row["Emotion"].strip()
         if emotion not in _EMOTION_MAP:
             raise ValueError(
@@ -178,6 +184,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "label": label,
             }
         )
+    if excluded:
+        logger.info("Left out %d row(s) of `excluded_movies`", excluded)
     if no_segment:
         logger.warning("%d table row(s) have no segment file; left out", no_segment)
     if not entries:
