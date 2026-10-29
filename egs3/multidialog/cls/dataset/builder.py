@@ -28,6 +28,7 @@ def _load_builder_config() -> dict:
 
 _CFG = _load_builder_config()
 _EMOTION_MAP = {str(k): str(v) for k, v in _CFG["emotion_map"].items()}
+_MERGE_LABELS = {str(k): str(v) for k, v in _CFG["merge_labels"].items()}
 _SPLIT_MAP = {str(k): str(v) for k, v in _CFG["split_map"].items()}
 
 
@@ -223,7 +224,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
                 "source": str(wav),
                 "speaker": stem[-1],
                 "split": _SPLIT_MAP[split_dir],
-                "label": _EMOTION_MAP[row["emotion"]],
+                "label": _MERGE_LABELS.get(
+                    _EMOTION_MAP[row["emotion"]], _EMOTION_MAP[row["emotion"]]
+                ),
             }
         )
     logger.info(

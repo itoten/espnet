@@ -16,8 +16,8 @@ builder:
   expected_rows: 187854
 
   # Labels ----------------------------------------------------------------
-  # `emotion` field of the metadata to manifest label. The corpus uses the
-  # label "Curious to dive deeper" for one of its eight classes.
+  # `emotion` field of the metadata to manifest label. The corpus has eight
+  # classes; "Curious to dive deeper" is one of them.
   emotion_map:
     Neutral: neutral
     Happy: happy
@@ -27,6 +27,12 @@ builder:
     Fearful: fear
     Angry: angry
     Curious to dive deeper: curious
+
+  # Labels merged after the mapping above. The paper (Section 3.2) says the
+  # recordings of "Neutral" and "Curious to dive deeper" were acted the same
+  # way, so `curious` is merged into `neutral`. Use `{}` to keep it separate.
+  merge_labels:
+    curious: neutral
 
   # Duplicates ------------------------------------------------------------
   # Utterances with the same sound and label as another one (the first of

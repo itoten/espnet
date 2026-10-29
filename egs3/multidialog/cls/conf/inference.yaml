@@ -31,9 +31,9 @@ model:
       normalize:
         _target_: espnet3.systems.cls.model.WaveformNormalize
         stats_file: ${stats_dir}/train/feats_stats.npz
-    # MultiDialog's native label set (8 classes). `token_list` ends
+    # MultiDialog's native label set (7 classes). `token_list` ends
     # with `<unk>`, not a class.
-    num_classes: 8
+    num_classes: 7
     head_size: 1024
     head_layers: 1
     dropout: 0.5

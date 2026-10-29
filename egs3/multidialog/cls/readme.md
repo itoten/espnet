@@ -2,7 +2,7 @@
 
 Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
 head) on MultiDialog alone and scores it on MultiDialog's own test splits, classifying
-each utterance into one of eight labels.
+each utterance into one of seven labels.
 
 [MultiDialog](https://multidialog.github.io) (Park et al., "Let's Go Real Talk: Spoken
 Dialogue Model for Face-to-Face Conversation", ACL 2024, [arXiv:2406.07867](https://arxiv.org/abs/2406.07867))
@@ -15,20 +15,23 @@ Face `IVLLab/MultiDialog`) holds one WAV file per utterance, 16 kHz mono.
 ## Labels
 
 The label is the emotion given to the utterance in the Topical-Chat script, which the actor
-was asked to act; it is not a judgement of the recording. Eight labels, mapped to lower
-case: `neutral`, `happy`, `surprise` (Surprised), `sad`, `disgust` (Disgusted), `fear`
-(Fearful), `angry`, and `curious` ("Curious to dive deeper").
-
-**`curious` is not acted differently from `neutral`.** The paper (Section 3.2) says that
-for the recordings the labels "Neutral" and "Curious to dive deeper" were combined into one
-(Neutral) because there is no visually apparent difference between them, so the actors acted
-both the same way. `curious` is 43% of the utterances; it is kept as a separate label here,
-as in the released metadata.
+was asked to act; it is not a judgement of the recording. The metadata has eight labels:
+`Neutral`, `Happy`, `Surprised`, `Sad`, `Disgusted`, `Fearful`, `Angry` and
+`Curious to dive deeper`. The recipe uses seven (lower case: `neutral`, `happy`, `surprise`,
+`sad`, `disgust`, `fear`, `angry`) because **`Curious to dive deeper` is merged into
+`neutral`**: the paper (Section 3.2) says that for the recordings these two labels were
+combined into one (Neutral) because there is no visually apparent difference between them,
+so the actors acted both the same way. The merged-in utterances are 81,045 of the 187,733
+used (43%). `merge_labels` in `dataset/config.yaml` controls this; set it to `{}` to keep
+`curious` as a separate eighth label.
 
 The actor is the last letter of the file name (`a` to `l`). The paper's Table 6 gives each
 actor's accuracy in a listening study (below) and the release notes name a "gold emotion
 dialogue subset": the dialogues of actors a, b, c, e, f, g, i, j and k, those with accuracy
-above 40%. The recipe uses all actors.
+above 40%. The Hugging Face dataset card names the same nine actors (a, b, c, e, f, g, i,
+j and k) as the gold emotion dialogue subset. Among the utterances the recipe uses, the file
+name's last letter puts 143,816 utterances (245.4 hours) in the gold actors and 43,917 (79.6
+hours) in the others (d, h and l). The recipe uses all actors.
 
 ## Listening study
 
@@ -40,7 +43,7 @@ a 69.3, b 63.6, c 59.3, d 33.8, e 41.5, f 43.8, g 50.0, h 37.0, i 60.0, j 44.7, 
 l 21.2 (%). Table 7 is the confusion matrix over the actors above 40%: neutral is
 recognised 0.88 of the time, happy 0.75, angry 0.76, disgusted 0.83, surprised 0.68,
 sad 0.59 and fearful 0.39. The paper says fearful and sad had lower accuracy. The individual
-answers are not in the download. `curious` was not part of the study.
+answers are not in the download. Table 7 has no `curious` row.
 
 ## Data
 
@@ -58,8 +61,7 @@ Measured on the metadata and the extracted audio (all 187,854 audio files listed
 
 | label | train | valid | test |
 |---|---|---|---|
-| curious | 65,334 | 7,693 | 8,018 |
-| neutral | 33,289 | 3,725 | 4,189 |
+| neutral (includes curious) | 98,623 | 11,418 | 12,207 |
 | surprise | 24,473 | 3,192 | 2,627 |
 | happy | 23,769 | 2,882 | 2,796 |
 | sad | 2,058 | 233 | 195 |
