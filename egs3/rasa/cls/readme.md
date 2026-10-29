@@ -62,8 +62,12 @@ male voice. Not every language has every style: `indic` is absent from 10 langua
 The paper reports no perception test of the recordings. Its two listening experiments
 use speech synthesized by models trained on the corpus: a MUSHRA expressiveness test with
 22 raters, and a test in which listeners classify the emotion of the synthesized speech.
-The only human check of the text is the certification of the English emotion sentences
-described above.
+The human checks reported for the corpus itself are the certification of the English
+emotion sentences described above and the authors' quality control (paper Section 2.3):
+2,075 script sentences that did not convey the intended emotion were rejected, and
+recordings with irregular pauses, stuttering or mispronunciations not aligned with the
+intended emotion were re-recorded or removed. No counts or agreement figures are given
+for this. The authors also trimmed silence and normalised the amplitude by hand.
 
 ## Data
 
