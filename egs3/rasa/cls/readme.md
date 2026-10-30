@@ -32,6 +32,12 @@ certified that the English text conveys the intended emotion; translators were a
 keep the emotion over the literal meaning. The label is therefore the intended
 emotion of the text the artist performed; no listener label of the recordings exists.
 
+**Only six of the 17 styles are emotions** (`happy`, `anger`, `fear`, `surprise`, `disgust`,
+`sad`): 124,842 utterances, 280.4 hours, from all 22 languages and all 44 speaker-language
+pairs. The other eleven styles are kinds of text (516,104 utterances, 865.0 hours in the
+converted files). The recipe trains on all 17; for speech emotion recognition the non-emotion
+styles are to be filtered out afterwards, which this recipe does not do.
+
 Style and text source are tied, so a model can partly recognise a style from the words
 (for example `proper_noun` clips are short names). `sangrah` occurs only for the Bengali
 male voice. Not every language has every style: `indic` is absent from 10 languages and
