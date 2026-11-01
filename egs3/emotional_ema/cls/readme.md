@@ -33,14 +33,55 @@ are skipped.
 | angry | 182 |
 | sad | 175 |
 | happy | 160 |
-| fear | 159 | The recordings
-are 22.05 kHz mono, so `create_dataset` converts them to 16 kHz with ffmpeg.
+| fear | 159 |
+
+The recordings are 22.05 kHz mono, so `create_dataset` converts them to 16 kHz with ffmpeg.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
 - `EMOTIONAL_EMA` — the directory holding the extracted `EMA_5EMO_NSF/` wav files and `*_best_emo` tables, or where to download them to
 - `EMOTIONAL_EMA_OUTPUT` — where the converted audio and manifests are written
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 19303746 (`EMA_5EMO_NSF`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 956 | 3 | 1.63 |
+
+How these were counted: every `.wav` in the archive (22.05 kHz mono, 1.4 to 63 s; 3 of the 956 are zero-content dummy files that do not match the file name pattern); hours from the file lengths. Speakers are `jn`, `jr` and `kf` (file names); the archive's README says they are the same people as speakers F1, F2 and M1 of USC-EMO-MRI.
+
+### Files per label
+
+| `best_emo` code in the release | read as | samples |
+|---|---|---|
+| 1 | neutral | 277 |
+| 2 | angry | 182 |
+| 3 | happy | 160 |
+| 4 | sad | 175 |
+| 5 | fear | 159 |
+
+How these were counted: the `<utterance> <code>` lines of the `<group>_best_emo` tables, which hold the final label of the listener evaluation (953 lines, one per non-dummy file). The archive does not explain the codes; the order is read from its per-listener evaluation file.
+
+### Issues in the release
+
+- The Zenodo record describes a different recording (680 utterances, four target emotions, 10 female and 14 male sentences); the archive holds five emotions, 953 utterances, 8 sentences and 2 passages. The record's DOI points to a 2005 paper.
+- The final label differs from the emotion in the file name for 68 of the 953 files (885, or 92.9%, agree). The README says the audio is 16 kHz; it is 22.05 kHz.
+- In the evaluation file the target emotion column says `anger` for 13 `neutral` passages of speaker `jn`; the listeners' votes for them are `neutral`.
+- 33 utterances are longer than 30 s (passages).
+
 
 ## Download
 
