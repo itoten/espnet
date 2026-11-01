@@ -14,6 +14,52 @@ the Department of Dramatic Arts of Chulalongkorn University. It has 27,854 recor
 `frustrated` is not one of the seven labels shared with the other recipes, and there is no
 `disgust`, `fear` or `surprise`.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `airesearch/thai-ser`, version 2.0 (2025-04-15, which fixed the calculation of `agreement`), repository revision `382232b5d45cbca5da82efe841e66e2b213713ae` (29 parquet files; `emotion_label.json`; downloaded 2026-10-28). Version 1.0 on GitHub has the same audio and majority labels. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 27,854 | 200 | 41.6 |
+
+How these were counted: every entry of `emotion_label.json` (44.1 kHz FLAC, mono or stereo); 25,185 of them have a majority label and were converted (0.29 to 108.8 s, median 4.7 s; 37.7 hours); the hours of the whole release are the figure from the release description (41.6). Speakers are the 200 distinct `actor_id` values (112 women and 88 men according to the paper).
+
+### Files per label
+
+| label (`majority_emo` in `emotion_label.json`) | samples | assigned to the actor (`assigned_emo`) |
+|---|---|---|
+| Frustrated | 7,864 | 5,270 |
+| Neutral | 7,359 | 5,090 |
+| Happy | 4,070 | 6,348 |
+| Angry | 3,111 | 6,148 |
+| Sad | 2,781 | 4,998 |
+| None (no majority) | 2,664 | - |
+| other | 5 | - |
+
+How these were counted: the `majority_emo` field (the majority of the crowd annotators, 3 to 11 per recording) and the `assigned_emo` field (the emotion the actor was asked for) over all 27,854 entries. The majority label equals the assigned emotion for 16,491 of the 25,185 recordings with a majority (65%). The release has no disgust, fear or surprise class.
+
+### Issues in the release
+
+- Of the 41.6 hours, 2,669 recordings have no usable majority label (`None` 2,664, `other` 5).
+- The paper strongly recommends discarding recordings with an agreement below 0.71 (the alpha rises from 0.413 to 0.692); the threshold keeps 14,182 recordings in version 1 and 14,181 in version 2. Versions 1 and 2 differ in `agreement` for 39 recordings.
+- Three pairs of recordings of the same actor and scene are byte-identical (`s001_..._actor002_impro1_25` and `_28`, `s048_..._actor136_impro6_9` and `_10`, `s078_..._actor195_impro12_7` and `_8`); the labels agree. A search for near-identical recordings among the 25,185 found no more.
+- The longest recording is 108.8 s; 53 recordings of the train and validation lists are longer than 30 s and 17 of test.
+
+### Listening test ratings in the release
+
+`emotion_label.json` holds, for every recording, the individual annotators' answers (`annotated`: 3 to 11 crowd annotators, audio only, several emotions may be chosen), the `agreement` and the majority emotion. 984 annotators passed a pre-test out of 1,759 applicants (paper). The paper reports alpha 0.413 for all recordings and 0.692 for agreement 0.71 or above, and the share of majority labels equal to the assigned emotion 0.592 and 0.772 respectively.
+
+
 ## How it was recorded
 
 There are 100 recording sessions: 80 in a studio (sessions 1 to 18 in a noise-controlled
