@@ -41,7 +41,7 @@ default to `download/` and `data/` under the recipe.
 > as a practical reference for users. They are not peer-reviewed measurements and should not be
 > cited as research results; cite the corpus documentation instead.
 
-Checked on 2026-11-01 against the Zenodo record 19325044 (archive `USC-EMO-MRI`, 10 speaker directories, downloaded 2026-10-1x). All counts cover every sample in the release, before any filtering by this recipe.
+Checked on 2026-11-01 against the Zenodo record 19325044 (archive `USC-EMO-MRI`, 10 speaker directories, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
 
 ### Access
 
