@@ -32,6 +32,49 @@ recipe):
 - `HINDI_SER_VISHLB` — the directory holding the extracted `my Dataset/` folder
 - `HINDI_SER_VISHLB_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `vishlb/speech-emotion-recognition-hindi` (folder `my Dataset`; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 3,200 | 8 | 2.85 |
+
+How these were counted: every `.wav` under `my Dataset/<speaker>/session<N>/<emotion>/` (mono 16-bit; 16 kHz in 2,800 files and 48 kHz in 400; 1.15 to 6.10 s); hours from the file lengths. Speakers are the 8 speaker folders (ages 22 to 24; speakers 1 to 4 are women and 5 to 8 men, per the spreadsheet in the archive); 5 sessions, 10 sentences.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| anger | 400 |
+| disgust | 400 |
+| fear | 400 |
+| happy | 400 |
+| neutral | 400 |
+| sad | 400 |
+| sarcastic | 400 |
+| surprise | 400 |
+
+How these were counted: the emotion folder each file is in (two file names carry typos, `dusgust` and `happpy`, so the folder is used).
+
+### Issues in the release
+
+- The Kaggle page has no description. The archive holds a Word file with the instructions given to the speakers (it says up to 10 sessions; the data holds 5) and a spreadsheet of the 8 speakers.
+- The spreadsheet holds personal details of the speakers (names, heights, weights). The files record no consent.
+- One pair of files is byte-identical: speaker 2, `neutral`, sentence 03, sessions 2 and 5.
+- Two file names carry typos (`dusgust`, `happpy`).
+
+
 ## Download
 
 The Kaggle zip (0.39 GB) needs a login, so the recipe does not download it. Download
