@@ -33,6 +33,48 @@ default to `download/` and `data/` under the recipe.
 - `LITHUANIAN_EMOTION_DB` — the directory holding the extracted `EMOdb/` wav files, or where to download them to
 - `LITHUANIAN_EMOTION_DB_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `BPTI-LT/Emociju-duomenu-baze` (Emocijų duomenų bazė; `EMOdb/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,453 | 10 | 1.66 |
+
+How these were counted: every `.wav` under `EMOdb/<speaker> Zmogus/<speaker> <Emotion>/` (44.1 kHz mono 16-bit, 2.36 to 8.17 s); hours from the file lengths. Speakers are the 10 speaker numbers in the folder names; the release has no gender or age information.
+
+### Files per label
+
+| label (emotion folder, Lithuanian name without diacritics) | samples |
+|---|---|
+| sad | 342 |
+| happy | 260 |
+| neutral | 245 |
+| angry | 239 |
+| disgust | 150 |
+| surprise | 105 |
+| fear | 103 |
+| Ilgesys (longing) | 9 |
+
+How these were counted: the emotion folder each file is in; the English names are those in the recipe's mapping (the folder name must agree with the file name `<speaker> <Emotion>_<phrase>.wav`). The number per speaker and emotion is very uneven (4 to 98).
+
+### Issues in the release
+
+- The README describes 10 non-professional actors reading 100 phrases in seven emotions (7,000 recordings); the repository holds 1,453, about a fifth. Whether the rest exist is unknown.
+- Nine recordings are in an eighth folder, `Ilgesys` (Lithuanian for "longing"), found only for speaker 5; the README does not list it among the emotions.
+- The repository has no license text; the README does not state terms of use. Whether the phrase number identifies the same text across speakers is not documented.
+
+
 ## Download
 
 `prepare_source` downloads the GitHub source archive of the repository at a pinned
