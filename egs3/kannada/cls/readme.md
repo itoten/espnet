@@ -24,6 +24,46 @@ default to `download/` and `data/` under the recipe.
 - `KANNADA` — the directory of WAV files, or where to download them to
 - `KANNADA_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 6345107 (A Kannada Emotional Speech Dataset; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in. The download often fails with `ContentTooShort`; the files were fetched one by one and checked by MD5.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 468 | 13 | 0.50 |
+
+How these were counted: every `.wav` in the archive (1.50 to 7.20 s; mono at 44.1 kHz in 339 files, 48 kHz in 80, 16 kHz in 25, and stereo at 48 kHz in 17 and at 44.1 kHz in 7); hours from the file lengths. Speakers are the 13 speaker numbers in the file names `<speaker>-<emotion>-<sentence>.wav` (volunteers, 4 men and 9 women aged 12 to 48).
+
+### Files per label
+
+| emotion number in the file name | read as (recipe mapping) | samples |
+|---|---|---|
+| 01 | angry | 78 |
+| 02 | sad | 78 |
+| 03 | surprise | 78 |
+| 04 | happy | 78 |
+| 05 | fear | 78 |
+| 06 | neutral | 78 |
+
+How these were counted: the second field of each file name (13 speakers x 6 emotions x 6 sentences). The release has no disgust class.
+
+### Issues in the release
+
+- The recordings were made by the volunteers themselves, not in a controlled environment; the equipment and format differ between speakers.
+- The 17 stereo files of speaker 05 come from two microphones whose channels are offset by about 18 to 22 samples; averaging them to mono dents the spectrum around 0.9 to 1.5 kHz by 4.9 to 8.5 dB (other bands 0.7 to 4.8 dB).
+- Three pairs of files have the same sound: in two pairs the emotions differ (`09-03-02` surprise and `09-04-02` happy; `13-04-04` happy and `13-06-04` neutral) and in one pair both are neutral (`09-06-04` and `09-06-05`).
+
+
 ## Download
 
 `prepare_source` downloads the 468 WAV files one by one from
