@@ -24,6 +24,47 @@ recipe):
 - `SYNTACT` — the directory holding the extracted `syntact_cat/`, or where to download it to
 - `SYNTACT_OUTPUT` — where the copied audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 6573016 (`syntact_cat`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 6,001 | 6 (synthetic voices) | 11.14 |
+
+How these were counted: every `.wav` under `synthesized_audio/` (all 16 kHz mono, 0.82 to 30.51 s); hours from the file lengths. The speech is synthesized, so the 6 "speakers" are the voices `de1` to `de4`, `de6` and `de7` (file name prefix): de6 1,205, de7 1,176, de4 1,090, de3 867, de2 853, de1 810 files.
+
+### Files per label
+
+| label (as in the release) | samples |
+|---|---|
+| boredom | 1,112 |
+| neutral | 1,093 |
+| happiness | 1,075 |
+| sadness | 939 |
+| fear | 929 |
+| anger | 853 |
+
+How these were counted: the `emotion` column of the official `db.emotion.categories.train.desired.csv` and `db.emotion.categories.test.desired.csv`, which together list all 6,001 files. The label is the emotion given to the synthesizer.
+
+### Issues in the release
+
+- 30 `neutral` files are byte-identical (MD5) to the `sad` file with the preceding number (same voice, all in the official train set). Their loudness is close to that of `sad`, so the sound is `sad`.
+- The paper states 6,000 utterances; the release has 6,001. The Zenodo description says "three emotions plus neutral"; the tables and the paper have six classes.
+- The gender of the voices differs between documents: the paper and `db.yaml` give `de1`, `de3`, `de6` as male and `de2`, `de4`, `de7` as female; the generation scripts on GitHub make `de1`, `de3`, `de7` female. Median F0 over 25 `neutral` files per voice: de1 155.3 Hz, de3 149.5, de7 179.8, de2 105.3, de4 111.9, de6 108.8.
+- Observation by the recipe author (2026-10-20): the synthesized speech was listened to; the author found the quality of the synthesis low (a subjective impression).
+
+
 ## Download
 
 `prepare_source` downloads `syntact_cat.zip` (987 MB, md5-checked) from
