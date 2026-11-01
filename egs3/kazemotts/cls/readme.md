@@ -22,6 +22,44 @@ default to `download/` and `data/` under the recipe.
 - `KAZEMOTTS` — the directory holding the extracted audio, or where to download it to
 - `KAZEMOTTS_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `issai/KazEmoTTS` (repository revision `faae8a52c4df036e086dea50b5810677d296c017`, last modified 2025-02-11; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in or form. The project's own page asks for a Google form that returns FTP credentials; the Hugging Face repository is public and the form was not used.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 54,760 | 3 | 74.9 |
+
+How these were counted: every `.wav` under `<narrator>/<train|eval>/` (22.05 kHz mono 16-bit, 0.65 to 18.16 s); hours from the file lengths. Speakers are the 3 narrator IDs (`1263201035` 19,802 files, `399172782` 10,302, `805570882` 24,656; one woman and two men, professional narrators). The release has an official train / eval split per narrator.
+
+### Files per label
+
+| label (emotion in the file name) | samples |
+|---|---|
+| neutral | 9,385 |
+| surprise | 9,179 |
+| fear | 9,098 |
+| angry | 9,059 |
+| happy | 9,059 |
+| sad | 8,980 |
+
+How these were counted: the emotion field of each file name `<narrator>_<emotion>_<id>.wav`. The release has no disgust class.
+
+### Issues in the release
+
+- No byte-identical, decoded-identical or near-identical recordings were found.
+
+
 ## Download
 
 `prepare_source` downloads `EmoKaz.zip` (10.5 GB) from Hugging Face, checks its
