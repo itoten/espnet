@@ -13,6 +13,43 @@ and the Y today" with different words filled in. `calm` is not one of the seven
 labels shared by the other recipes (`angry`, `disgust`, `fear`, `happy`,
 `neutral`, `sad`, `surprise`) and is kept as its own label.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 3813437 (MESS, Morgan Emotional Speech Set; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,800 | 6 | 1.33 |
+
+How these were counted: every `.wav` in the archive (24.4 kHz mono 16-bit, 1.73 to 3.65 s); hours from the file lengths. Speakers are 6 talkers (3 female, 3 male), encoded in the file names `<emotion><gender><speaker><frame><item>_SCR.wav`.
+
+### Files per label
+
+| emotion letter in the file name | read as | samples |
+|---|---|---|
+| A | angry | 450 |
+| C | calm | 450 |
+| H | happy | 450 |
+| S | sad | 450 |
+
+How these were counted: the first letter of each file name (225 files per emotion and gender). The documentation describes the labels as emotional speaking styles, with `calm` used instead of `neutral`.
+
+### Issues in the release
+
+- The paper states a 36 kHz recording; the released files are 24.4 kHz.
+- The meaning of the suffix `_SCR` in the file names is not documented. The release has no ratings; the author provides rating data on request.
+
+
 ## About the corpus
 
 MESS was made for experiments on the auditory perception of emotion, not for
