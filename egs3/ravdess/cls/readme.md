@@ -23,6 +23,46 @@ default to `download/` and `data/` under the recipe.
 - `RAVDESS` — an existing `Actor_NN/` tree, or where to download it to
 - `RAVDESS_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the RAVDESS Zenodo record 1188976, the audio-only speech file `Audio_Speech_Actors_01-24.zip` (208 MB; downloaded around 2026-10-15). The record also holds the song, video and audio-video parts, which were not obtained. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,440 | 24 | 1.48 |
+
+How these were counted: every `.wav` under the `Actor_NN` folders (48 kHz; 1,435 mono and 5 stereo; 2.94 to 5.27 s); hours from the file lengths. Speakers are the 24 actors (odd numbers male, even numbers female).
+
+### Files per label
+
+| emotion code in the file name | read as (record description) | samples |
+|---|---|---|
+| 01 | neutral | 96 |
+| 02 | calm | 192 |
+| 03 | happy | 192 |
+| 04 | sad | 192 |
+| 05 | angry | 192 |
+| 06 | fearful | 192 |
+| 07 | disgust | 192 |
+| 08 | surprised | 192 |
+
+How these were counted: the third field of the file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral has half as many files because it was recorded at one intensity only.
+
+### Issues in the release
+
+- `03-01-03-01-02-01-07` and `03-01-03-01-02-02-07` (both happy; repetitions 1 and 2 of one actor, statement and intensity) have byte-identical content.
+
+
 ## Download
 
 `prepare_source` downloads `Audio_Speech_Actors_01-24.zip` (208 MB) from
