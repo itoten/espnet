@@ -9,6 +9,85 @@ is Akan (a West African language) dialogue cut from 21 Akan movies. The paper sa
 movies were downloaded from the Internet Archive. Utterances were transcribed and timed by
 hand and given an emotion label by watching the movie. The recipe uses the audio only.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the AkaCE release from the GitHub repository
+`sasudavid/AkaCE` (commit `1a556f591d668691cfe3e3b3113421648c49ddfd`, 2025-05-24) and the
+public Google Drive folder it links to (fetched 2026-10-28/29). All counts cover every sample
+in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the public Google Drive folder, no sign-in. The folder holds several
+versions of the table and of the audio; the recipe uses
+`excel_files/Akan Speech Emotion Dataset cleaned.csv` and
+`audio/movie_audio_segments_wav/`. A bulk download with `gdown` stopped part-way because of
+Google's limits; the files were fetched one by one by their IDs.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 6,138 | unknown | 15.36 |
+
+How these were counted: every `.wav` under `audio/movie_audio_segments_wav/` (21 movie folders;
+all 16 kHz mono); hours from the file lengths (1.51 s to 498.51 s). The table
+`Akan Speech Emotion Dataset cleaned.csv` has 6,162 rows, one per utterance; 3 of its rows
+have no segment file (see below).
+Speakers: the `Speaker` column of the table is only unique within a dialogue (for example
+`Speaker one man`), so speakers cannot be counted across dialogues; the number is unknown
+from the release.
+
+### Files per label
+
+| label (as in the release) | table rows |
+|---|---|
+| Neutral | 2,984 |
+| Anger | 1,109 |
+| Sadness | 811 |
+| Joy | 569 |
+| Surprise | 390 |
+| Disgust | 162 |
+| Fear | 135 |
+| Frustration | 1 |
+| Confusion | 1 |
+
+How these were counted: the `Emotion` column of all 6,162 rows of the table.
+
+### Issues in the release
+
+- The times of the movie `me_sofo_anyim_me_yere` (33 rows, all in `test`) are written one
+  unit off: `00m:01s:12ms` where the other movies have the form `01m:04s:00ms`, so
+  `start_seconds` is about 1 s. The segment files of this movie are all cut from the first
+  1 to 3.5 s of the movie. Checked from the table and file names; the true times are not
+  known.
+- The segments are cut 1.5 s after the annotated end, so a segment can contain the start of
+  the next utterance (rule derived from the file names: 6,159 of the 6,162 rows match a
+  file). 3 rows have no segment file.
+- Annotated times are whole seconds: in the other movies 582 rows have an end not after the
+  start, and 332 segments are longer than 30 s (up to 498.51 s).
+- Rows pointing to the same segment: 11 groups (24 rows) have different emotion labels;
+  6 further rows have the same label as an earlier row.
+- 72 distinct transcriptions occur with more than one emotion label (259 rows).
+- The `split` column has 4,498 / 935 / 729 rows for train / val / test; the paper reports
+  3,888 / 816 / 834 and the GitHub table has a separate `split1` column with other counts.
+- The table has nine emotion labels; the paper names seven (`Frustration` and `Confusion`
+  occur once each).
+- Observation by the recipe author (2026-10-29): two 1.5 s segments cut from rows of
+  length zero (`Joy` and `Surprise`) were listened to; something like an utterance can be
+  heard, but it is hard to tell.
+- Observation by the recipe author (2026-10-29): two 75 s candidate regions of
+  `me_sofo_anyim_me_yere` were cut to find the true times; the author could not
+  understand Akan and could not decide, so the true times remain unknown.
+
+### Listening test ratings in the release
+
+None: the individual annotators' votes are not in the release.
+
 ## Labels
 
 The authors' Google Drive folder holds several tables. The recipe reads
@@ -56,9 +135,10 @@ Things measured in the table and segments (not discussed in the paper):
 - Of the 5,896 distinct transcriptions in the table, 72 occur with more than one emotion
   label (259 rows).
 
-## Data
+## What the recipe uses
 
-6,102 utterances (15.3 hours) are used. Labels:
+After leaving out the excluded movie, the 3 rows without a segment and the 24 rows with
+conflicting labels, 6,102 utterances (15.3 hours) are used. Labels:
 
 | label | utterances |
 |---|---|
