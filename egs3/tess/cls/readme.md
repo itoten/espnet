@@ -33,6 +33,45 @@ default to `download/` and `data/` under the recipe.
 - `TESS` — an existing directory of the WAV files, or where to download it to
 - `TESS_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the TESS (Toronto emotional speech set) record in Borealis Dataverse (doi 10.5683/SP2/E8H2MF; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Download from Borealis Dataverse, no sign-in. The record offers no archive; the 2,800 files were fetched through a zip that Dataverse builds on request (about 270 MB). The raw dataset also contains a `MANIFEST.TXT` as a 2,801st file.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 2,800 | 2 | 1.60 |
+
+How these were counted: every `.wav` in the download (24.4 kHz, one file at 96 kHz; 1.25 to 2.98 s); hours from the file lengths. Speakers are two women: `YAF` (aged 26) and `OAF` (aged 64), each saying 200 target words in the carrier phrase "Say the word ___".
+
+### Files per label
+
+| emotion in the file name | samples |
+|---|---|
+| angry | 400 |
+| disgust | 400 |
+| fear | 400 |
+| happy | 400 |
+| neutral | 400 |
+| ps (pleasant surprise) | 400 |
+| sad | 400 |
+
+How these were counted: the last field of the file name `<speaker>_<word>_<emotion>.wav`.
+
+### Issues in the release
+
+- No byte-identical, decoded-identical or near-identical recordings were found.
+
+
 ## Download
 
 The dataset on Borealis Dataverse has no archive file. `prepare_source` asks
