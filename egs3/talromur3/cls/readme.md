@@ -38,6 +38,48 @@ default to `download/` and `data/` under the recipe.
 - `TALROMUR3` — the directory holding the extracted `recordings/` directory, or where to download it to
 - `TALROMUR3_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Talromur 3 corpus v1.0 (CLARIN-IS handle 20.500.12537/387; `recordings/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from CLARIN-IS, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 21,516 | 10 | 24.22 |
+
+How these were counted: every `.flac` under `recordings/` (48 kHz 24-bit mono, 0.85 to 46.5 s; the archive also holds 10 `index.tsv` files); hours from the file lengths. Speakers are the 10 directories `F01` to `F05` and `M01` to `M05` (five women, five men; professional voice talents).
+
+### Files per label
+
+| label (style directory name in the release) | samples |
+|---|---|
+| neutral | 3,396 |
+| happy | 3,396 |
+| sad | 3,396 |
+| angry | 3,396 |
+| surprised | 3,396 (3,056, and 340 of speaker `M02` in a directory spelled `suprised`) |
+| helpful | 3,396 |
+| addendum / addendum_style2 | 1,140 (570 each) |
+
+How these were counted: the style directory of each recording, as given in each speaker's `index.tsv`. The non-neutral styles were also read at five intensity levels (1 to 5), which are listed in the index. The addendum is a short reading of the alphabet and the numbers 0 to 20.
+
+### Issues in the release
+
+- The corpus README and the CLARIN-IS page say 21,526 clips; the archive holds 21,516 `.flac` files (and 10 `index.tsv`, which would make 21,526 files; not checked further).
+- Speakers `M03` and `M04` skipped two sentences, so their styles have 338 recordings each; the README's own statements about `M03` and `M04` disagree with each other (`M04` has 338 `neutral` sentences too).
+- The license differs between documents: the CLARIN-IS page says CC BY 4.0 and the README in the archive says public domain.
+- 18 recordings are longer than 30 s (14 in the recipe's train set and 4 in test).
+
+
 ## Download
 
 `prepare_source` downloads `recordings.zip` (6.8 GB) from the CLARIN-IS
