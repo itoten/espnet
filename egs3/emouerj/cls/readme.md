@@ -21,6 +21,43 @@ default to `download/` and `data/` under the recipe.
 - `EMOUERJ` — the directory holding the extracted `emoUERJ/` wav files, or where to download them to
 - `EMOUERJ_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 5427549 (emoUERJ, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 377 | 8 | 0.32 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz stereo, 1.2 to 7.1 s); hours from the file lengths. Speakers are the 8 distinct actor codes in the file names (`m01` to `m04`, `w01` to `w04`: four men, four women).
+
+### Files per label
+
+| emotion letter in the file name | read as | samples |
+|---|---|---|
+| a | angry | 94 |
+| h | happy | 91 |
+| n | neutral | 92 |
+| s | sad | 100 |
+
+How these were counted: the letter after the actor code in `<m|w><actor><emotion><take>.wav`.
+
+### Issues in the release
+
+- The record lists the ten sentences that were read, but the release does not say which file contains which sentence.
+- The left and right channels differ in 115 files (correlation 0.86 to 1.0); in 262 files they are identical.
+
+
 ## Download
 
 `prepare_source` downloads `emoUERJ.zip` (105 MB, md5-checked) from
