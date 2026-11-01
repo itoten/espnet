@@ -29,6 +29,46 @@ default to `download/` and `data/` under the recipe.
 - `MESD` — an extracted copy of the release, or where to download it to
 - `MESD_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `cy34mh68j9` version 5 (MESD, Mexican Emotional Speech Database; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,150 | unknown (see below) | 0.22 |
+
+How these were counted: every `.wav` in the release (48 kHz mono 24-bit, 0.20 to 2.54 s; the utterances are single words); hours from the file lengths. 862 files are human recordings and 288 are naturalness-reduced copies of female corpus-B recordings (`<Emotion>_F_B_L<level>_<word>.wav`). The file names give only the voice type (`F` 576 files, `M` 288, `C` 286), not the speaker; the description speaks of 3 female, 2 male and 6 child voices and the paper of 4 adult men, 4 adult women and 8 children (mean age 9.9 years), so the number of speakers is unknown.
+
+### Files per label
+
+| label (emotion in the file name) | human recordings | naturalness-reduced copies |
+|---|---|---|
+| Anger | 143 | 48 |
+| Disgust | 144 | 48 |
+| Fear | 144 | 48 |
+| Happiness | 144 | 48 |
+| Neutral | 143 | 48 |
+| Sadness | 144 | 48 |
+
+How these were counted: the emotion field of each file name `<Emotion>_<voice>_<word corpus>_<word>.wav`. According to the paper the recordings were selected by a cubic SVM classifier, not by human listeners, from 1,152 recorded per voice type.
+
+### Issues in the release
+
+- The paper expects 864 human recordings (144 per emotion); the release has 862 (one child `Anger` and one child `Neutral` recording are missing).
+- `Happiness_C_A_dentro` and `Happiness_C_A_lento_dentro` have the same sound; the word in the names differs, so one of the names is probably wrong (inferred).
+- Each voice type has its own speakers per emotion, so speaker and emotion are tied (stated in the paper).
+
+
 ## Download
 
 `prepare_source` downloads version 5 of the dataset as one zip (101 MB) from
