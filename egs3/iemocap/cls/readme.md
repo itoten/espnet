@@ -32,6 +32,53 @@ which no majority label could be assigned among the annotators (its README); it 
 kept as the class `no_majority`. `disgust` (2) and `other` (3) are far too small to
 learn from but are kept. Both scripted and improvised dialogs are used.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the IEMOCAP release (Session1 to Session5 with `dialog/EmoEvaluation`, `sentences/wav`, and the full-dialog recordings; obtained under the release agreement). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Request to the SAIL lab and a signed release agreement; the data cannot be downloaded without it.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 10,039 | 10 | 12.44 |
+
+How these were counted: every utterance `.wav` under `Session*/sentences/wav/` (16 kHz mono, 0.58 to 34.14 s); hours from the file lengths. The release also holds the full-dialog recordings (151 stereo files, the two speakers on the left and right channels), video and motion-capture data, which are not counted. Speakers: five sessions with two actors each.
+
+### Files per label
+
+| code in `EmoEvaluation` | label (release README) | utterances |
+|---|---|---|
+| xxx | no majority among the annotators | 2,507 |
+| fru | frustrated | 1,849 |
+| neu | neutral | 1,708 |
+| ang | angry | 1,103 |
+| sad | sad | 1,084 |
+| exc | excited | 1,041 |
+| hap | happy | 595 |
+| sur | surprised | 107 |
+| fea | fearful | 40 |
+| oth | other | 3 |
+| dis | disgusted | 2 |
+
+How these were counted: the categorical code of each utterance in `Session*/dialog/EmoEvaluation/*.txt` (the majority of at least three annotators). `hap` and `exc` are separate codes. The same files hold the individual annotators' evaluations.
+
+### Issues in the release
+
+- Two utterances are longer than 30 s (up to 34.14 s).
+
+### Listening test ratings in the release
+
+The `EmoEvaluation` files hold, for every utterance, each annotator's categorical evaluation (at least three annotators) and the dimensional evaluations (at least two annotators) in addition to the majority code.
+
+
 ## Listening test
 
 Each utterance was evaluated categorically by at least three annotators (and
