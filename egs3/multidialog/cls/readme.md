@@ -12,6 +12,69 @@ utterance already carries one of eight emotion labels; the actors read the scrip
 the label shown for each utterance (paper Section 3.2). The audio release used here (Hugging
 Face `IVLLab/MultiDialog`) holds one WAV file per utterance, 16 kHz mono.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-10-28 against the Hugging Face dataset `IVLLab/MultiDialog` (`metadata.jsonl`
+and the 18 audio archives; the repository revision was not recorded). All counts cover every
+sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in. The video recordings are distributed separately
+and were not downloaded.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 187,854 | 12 | 325.45 |
+
+How these were counted: every row of `metadata.jsonl` (all audio files it lists are present
+and readable; 16 kHz mono, 0.021 to 298.4 s); hours from the file lengths. Speakers are the
+distinct last letters (`a` to `l`) of the file names; the metadata has no speaker column.
+The metadata holds 8,723 distinct `conv_id` values.
+
+### Files per label
+
+| label (as in the release) | samples |
+|---|---|
+| Curious to dive deeper | 81,096 |
+| Neutral | 41,234 |
+| Surprised | 30,307 |
+| Happy | 29,464 |
+| Sad | 2,488 |
+| Disgusted | 1,439 |
+| Fearful | 923 |
+| Angry | 903 |
+
+How these were counted: the `emotion` field of every row of `metadata.jsonl`.
+
+### Issues in the release
+
+- The dataset page states 187,859 utterances, 8,733 dialogues and 339.71 hours; the files
+  give 187,854, 8,723 and 325.45. The cause was not found.
+- Two utterances have the same sound (waveform correlation 0.9992) with different labels
+  (`Curious to dive deeper` and `Happy`).
+- No byte-identical files and no other near-duplicates (correlation 0.98 or more) were
+  found; one pair of 0.04 s and 0.06 s clips has correlation 0.94 and was not looked into.
+- Observation by the recipe author (2026-10-29): three `Curious to dive deeper` and three
+  `Neutral` clips of each of actors `a` and `b` were listened to; no difference between the
+  two labels could be heard.
+- Observation by the recipe author (2026-10-29): `Happy`, `Sad` and `Surprised` clips of
+  actors `a` and `l` were listened to (one clip each); the difference in how the emotion was
+  acted was hard to judge.
+
+### Not stated in the documentation
+
+- By the file name's last letter, the nine actors named in the dataset card as the gold
+  emotion subset (`a`, `b`, `c`, `e`, `f`, `g`, `i`, `j`, `k`) account for 143,816 of the
+  187,733 utterances that the recipe uses (245.4 hours); the others (`d`, `h`, `l`) for
+  43,917 (79.6 hours).
+
 ## Labels
 
 The label is the emotion given to the utterance in the Topical-Chat script, which the actor
@@ -45,19 +108,11 @@ recognised 0.88 of the time, happy 0.75, angry 0.76, disgusted 0.83, surprised 0
 sad 0.59 and fearful 0.39. The paper says fearful and sad had lower accuracy. The individual
 answers are not in the download. Table 7 has no `curious` row.
 
-## Data
+## What the recipe uses
 
-Measured on the metadata and the extracted audio (all 187,854 audio files listed in
-`metadata.jsonl` are present, all readable, 16 kHz mono):
-
-- 187,854 utterances, 8,723 dialogues, 325.45 hours, 0.021 to 298.4 s long. The dataset
-  page states 187,859 utterances, 8,733 dialogues and 339.71 hours; the counts here are those
-  of the files.
-- 2 utterances are not used: they have the same sound (waveform correlation 0.9992) but
-  different labels (`conflicting_ids` in `dataset/config.yaml`).
-- Other than that pair, no byte-identical files and no near-duplicates (correlation 0.98 or
-  more) were found in the whole corpus; one pair of 0.04 s and 0.06 s clips has correlation
-  0.94 (not looked into).
+2 utterances are not used: they have the same sound but different labels (`conflicting_ids`
+in `dataset/config.yaml`), which leaves 187,852; the recipe's counts below are after
+`curious` is merged into `neutral`, and after `remove_long_short`.
 
 | label | train | valid | test |
 |---|---|---|---|
@@ -68,8 +123,6 @@ Measured on the metadata and the extracted audio (all 187,854 audio files listed
 | disgust | 1,121 | 148 | 166 |
 | fear | 818 | 54 | 51 |
 | angry | 699 | 121 | 82 |
-
-(Numbers after `remove_long_short`; see Splits.)
 
 ## Environment variables
 
