@@ -24,6 +24,46 @@ default to `download/` and `data/` under the recipe.
 - `CAFE` — an extracted `CaFE_48k.zip`, or where to download it to
 - `CAFE_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 1478765 (CaFE, Canadian French Emotional speech dataset, version 1.1 of 2018-11-06, `CaFE_48k.zip`; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 936 | 12 | 1.15 |
+
+How these were counted: every `.wav` in the archive (48 kHz mono 16-bit, 2.56 to 7.74 s); hours from the file lengths. Speakers are the 12 actor numbers in the file names `<actor>-<emotion>-<intensity>-<sentence>.wav` (odd numbers male, even numbers female; six sentences).
+
+### Files per label
+
+| label (French emotion directory) | code in the file name | samples |
+|---|---|---|
+| Colère | C | 144 |
+| Dégoût | D | 144 |
+| Joie | J | 144 |
+| Peur | P | 144 |
+| Surprise | S | 144 |
+| Tristesse | T | 144 |
+| Neutre | N | 72 |
+
+How these were counted: the emotion directory of each file (the letter in the file name agrees). Every emotion except neutral was recorded at two intensities, low and high; neutral at one intensity only, hence half as many files.
+
+### Issues in the release
+
+- Version 1.1 corrected the swapped actors 11 and 12 and updated `01-D-2-6.wav`. A 192 kHz version (two zip files) holds the same recordings and is not counted here.
+- Every combination of emotion, intensity, actor and sentence is present and no duplicate was found.
+
+
 ## Download
 
 `prepare_source` downloads `CaFE_48k.zip` (187 MB, the 48 kHz / 16-bit
