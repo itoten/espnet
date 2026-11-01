@@ -13,6 +13,47 @@ perceived by listening (the card does not say who listened or how many people; n
 agreement figure is given; some clips mix two emotions), and some clips are code-mixed or entirely in a foreign
 language. The speakers are not identified.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `dikal/maleo-emotion-annotated` (revision `ddbaf824d3632b3fcaf1326b7ca9ed4c2b0e0114`; downloaded around 2026-10-15). This is a copy by another account of `maleo-ai/maleo-emotion`, which requires a login; the 700 recordings were checked to be identical in path and content, and the copy adds transcripts and word timestamps. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face (the copy), direct download, no sign-in. The original repository `maleo-ai/maleo-emotion` requires a login.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 700 | unknown | 0.59 |
+
+How these were counted: every audio file under `audio/<emotion>/` (44.1 kHz stereo as stated; 1.50 to 4.46 s, median 3.0 s); hours from the file lengths. The release gives no speaker information.
+
+### Files per label
+
+| label (folder name in the release) | read as (Indonesian) | samples |
+|---|---|---|
+| Jijik | disgust | 100 |
+| Marah | angry | 100 |
+| Netral | neutral | 100 |
+| Sedih | sad | 100 |
+| Senang | happy | 100 |
+| Takut | fear | 100 |
+| Terkejut | surprise | 100 |
+
+How these were counted: the folder each file is in. The card says the label is the dominant emotion perceived by listening; it does not say who listened or how many people, and gives no agreement figure; some clips mix two emotions.
+
+### Issues in the release
+
+- The card says 16-bit PCM, 44.1 kHz stereo; the files are mixed: the 40 `neutral` clips are compressed audio (20 MP3 and 20 AAC, with a `.WAV` extension) and no other label has any; 20 `happy` clips are mono and 16 are 48 kHz.
+- Four clips marked `[NO_SPEECH]` in the transcripts (disgust 2, fear 1, sad 1) contain no human voice but carry an emotion label; 27 clips marked `[INAUDIBLE]` contain vocalizations such as crying or shouting.
+- The clips are cut from YouTube videos in natural conditions; the card names no source videos and says nothing about their rights, and there is no paper. The speech is colloquial Indonesian, often code-mixed; some clips are entirely in a foreign language.
+
+
 ## What is used
 
 The copy [`dikal/maleo-emotion-annotated`](https://huggingface.co/datasets/dikal/maleo-emotion-annotated),
