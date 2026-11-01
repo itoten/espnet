@@ -29,18 +29,52 @@ files per code with Whisper large-v3 (not checked by hand); neither the Kaggle p
 nor the files say that the sentences were borrowed. When SES-ED and CREMA-D are
 used together, the same texts occur in both corpora.
 
-The speakers are students, not trained actors, and the recording room is a
-classroom, so how clearly each one acts the emotion in the voice (the
-paralinguistic part) probably varies, and may be weak for some. A listening check
-found that it depends on the speaker: some perform the emotion convincingly. This
-holds for amateur recordings in general and is not specific to this corpus;
-the corpus is still usable.
-
 Three environment variables control where the data lives. The last two are optional
 and default to `download/` and `data/` under the recipe.
 
 - `SES_ED` — the directory holding the extracted `SES-ED/` wav files
 - `SES_ED_OUTPUT` — where the converted audio and manifests are written
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `angeluxarmenta/ses-ed` (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,586 | 53 | 2.13 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz mono 16-bit, 3.99 to 5.99 s); hours from the file lengths. Speakers are the 53 speaker numbers in the file names `<speaker>_<sentence>_<emotion>_ENG.wav` (university students; no gender or age information).
+
+### Files per label
+
+| emotion code in the file name | samples |
+|---|---|
+| ANG | 264 |
+| DIS | 265 |
+| FEA | 265 |
+| HAP | 264 |
+| NEU | 264 |
+| SAD | 264 |
+
+How these were counted: the emotion code of each file name.
+
+### Issues in the release
+
+- Four of the five sentence codes (`DFA` "Don't forget a jacket", `IEO` "It's eleven o'clock", `IWW` "I wonder what this is about", `TAI` "The airplane is almost full") carry the same text and the same code as CREMA-D sentences; `TSI` has the same code but a different text ("The sun is very bright" here, "The surface is slick" in CREMA-D). Found by transcribing 8 files per code with Whisper large-v3, not checked by hand; neither the page nor the files say the sentences were borrowed.
+- Four speaker-sentence-emotion combinations are missing (one each for speakers 12, 15, 3 and 6). The description mentions five sentences in one place and six in another; the files hold five.
+- The speakers appear to be those of SES-SD (same speaker numbers).
+- Observation by the recipe author (2026-10-20 at the latest): a listening check found that how clearly the emotion is acted in the voice depends on the speaker; some speakers perform the emotion convincingly and some less so.
+
 
 ## Download
 
