@@ -25,6 +25,45 @@ default to `download/` and `data/` under the recipe.
 - `SHEMO` — the extracted `female.zip` and `male.zip`, or where to download them to
 - `SHEMO_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the ShEMO (Sharif Emotional Speech Database) release of the GitHub project `mansourehk/ShEMO` (`female.zip` and `male.zip` via Git LFS; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Download through Git LFS from GitHub, no sign-in. The Dropbox link at the top of the README is broken.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 3,000 | 87 | 3.43 |
+
+How these were counted: every `.wav` in the two zips (mono; 44.1 kHz in 2,869 files and 22.05 kHz in 131; 0.36 to 33.33 s); hours from the file lengths. Speakers are the 87 speaker numbers in the file names `<gender><speaker><emotion><index>.wav` (31 female, 56 male; numbers restart for each gender).
+
+### Files per label
+
+| emotion code in the file name | read as (README) | samples |
+|---|---|---|
+| A | anger | 1,059 |
+| N | neutral | 1,028 |
+| S | sadness | 449 |
+| W | surprise | 225 |
+| H | happiness | 201 |
+| F | fear | 38 |
+
+How these were counted: the emotion letter of each file name. The release has no disgust class. According to the README, twelve annotators labelled each utterance and the final label is the majority vote; the individual ratings are not distributed.
+
+### Issues in the release
+
+- `M51N09.wav` (neutral) has the same bytes as `M50A03.wav` (angry); in the transcription zip the two files have different sentences, and a Whisper transcript of both files matches the sentence of `M50A03`, so the neutral label of `M51N09.wav` does not fit the sound.
+- The license is only the README's statement that the database is free for academic purposes; the release has no license file.
+
+
 ## Download
 
 `prepare_source` downloads `female.zip` (374 MB) and `male.zip` (497 MB) from
