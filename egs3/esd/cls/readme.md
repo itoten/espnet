@@ -23,6 +23,43 @@ default to `download/` and `data/` under the recipe.
 - `ESD` — the directory holding the extracted audio, or where to download it to
 - `ESD_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the ESD (Emotional Speech Dataset) archive from the project's Google Drive link (`HLTSingapore/Emotional-Speech-Data`; 2.4 GB; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Download from the project's Google Drive link. The project asks users to fill in a license form and send it to the authors; whether the form was sent before this download is not recorded here. The archive has no checksum (completeness was checked by the 35,000 file count).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 35,000 | 20 | 29.1 |
+
+How these were counted: every `.wav` under `<speaker>/<Emotion>/` (16 kHz mono 16-bit, 1.14 to 8.08 s); hours from the file lengths. Speakers are the 20 speaker folders: 0001 to 0010 read Mandarin and 0011 to 0020 read English (five women and five men per language); 350 parallel sentences per speaker and emotion.
+
+### Files per label
+
+| label (emotion folder in the release) | samples |
+|---|---|
+| Neutral | 7,000 |
+| Happy | 7,000 |
+| Angry | 7,000 |
+| Sad | 7,000 |
+| Surprise | 7,000 |
+
+How these were counted: the emotion folder each file is in. The release has no disgust or fear class.
+
+### Issues in the release
+
+- No byte-identical, decoded-identical or near-identical recordings were found.
+
+
 ## Download
 
 `prepare_source` downloads the Google Drive file linked from the authors' GitHub
