@@ -23,6 +23,47 @@ default to `download/` and `data/` under the recipe.
 - `UA_SER` — the directory holding `dataset.csv` and `clips/`, or where to download them to
 - `UA_SER_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `OlhaHavryliuk/UA-SER` (repository revision `c3fc0b0ef8d40f133d7a74e804ab6f376ef53aa9`, last modified 2026-04-30; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 952 | 400 | 0.55 |
+
+How these were counted: every row of `dataset.csv` (equal to the clips in `clips/`; 16 kHz mono, 0.52 to 5.5 s, mean 2.07 s); hours from the clip lengths. Speakers are the 400 distinct `speaker_id` values (an anonymous number; 593 clips by female and 359 by male voices judged from F0).
+
+### Files per label
+
+| label (as in the release) | samples |
+|---|---|
+| angry | 259 |
+| happy | 244 |
+| sad | 227 |
+| neutral | 222 |
+
+How these were counted: the `emotion` column of `dataset.csv`.
+
+### Issues in the release
+
+- The card does not say where the audio comes from; the recording source and the consent of the 400 speakers are not described.
+- `h_212_1` and `h_213_1` are the same recording (the sound is the same; the transcripts differ only in a full stop; both happy, speaker 106).
+- Observation by the recipe author (2026-10-20 at the latest): `h_212_1` and `h_213_1` were listened to and are the same.
+- The file name prefix is described on the card as an identifier of the corpus source; it is in fact the initial of the emotion. Four speaker IDs occur with both genders (judged from F0).
+- Only the majority label is released; the votes and confidences of the three raters are not.
+- Whisper identified Ukrainian in 112 and Russian in 65 of the transcribed clips; the transcripts are Ukrainian.
+
+
 ## Download
 
 `prepare_source` downloads `dataset.csv` and the 952 clips (63 MB) from Hugging Face, pinned
