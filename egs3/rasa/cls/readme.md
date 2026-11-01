@@ -19,7 +19,8 @@ converts it to 16 kHz. The recipe uses all 22 languages and all 17 styles.
 > cited as research results; cite the corpus documentation instead.
 
 Checked on 2026-10-29 against the Hugging Face dataset `ai4bharat/Rasa` (1,317 parquet files,
-387.65 GB, downloaded 2026-10-28; the repository revision was not recorded).
+387.65 GB, downloaded 2026-10-28; repository revision
+`632f55c7ac590219d41cd7adffce5b440e4604f5`, last modified 2026-06-06).
 All counts cover every sample in the release, before any filtering by this recipe.
 
 ### Access
@@ -83,12 +84,12 @@ are counted under both of their styles.
 - Observation by the recipe author (2026-10-29): two of those pairs were listened to
   (`SND_F_WIKI_01563`/`01564` and `SND_F_WIKI_03613`/`03612`). The second pair sounded the
   same; the first sounded slightly shifted, although the two files are byte-identical. The
-  cause was not checked.
-- One file is empty (`ASM_F_INDIC_00001`); 12 clips are shorter than 0.2 s (including the
-  empty one) and 598 are longer than 30 s (up to 332.6 s).
+  cause was not checked; the copies that were played are also byte-identical.
+- One file is empty (`ASM_F_INDIC_00001`). Durations range from 0 s (that file) to
+  332.6 s.
 - Observation by the recipe author (2026-10-29): one clip each of `ANGER` (Konkani),
-  `SAD` (Bodo), `WIKI` (Malayalam) and `NEWS` (Assamese) was listened to. The two emotion
-  clips sounded different in vocal expression from the two neutral ones.
+  `SAD` (Bodo), `WIKI` (Malayalam) and `NEWS` (Assamese) was listened to. The `ANGER` and
+  `SAD` clips sounded different in vocal expression from the `WIKI` and `NEWS` clips.
 
 ### Not stated in the documentation
 
@@ -114,8 +115,7 @@ certified that the English text conveys the intended emotion; translators were a
 keep the emotion over the literal meaning. The label is therefore the intended
 emotion of the text the artist performed; no listener label of the recordings exists.
 
-The recipe trains on all 17 styles; for speech emotion recognition the non-emotion styles
-are to be filtered out afterwards, which this recipe does not do.
+The recipe uses all 17 styles.
 
 Label counts after the recipe's filtering (see Splits):
 
