@@ -21,6 +21,46 @@ emotion that was requested from the model ("Repeat this sentence with the emotio
 <description>: <text>", from the paper's dataset description), not an emotion that listeners heard; the card
 describes no listening check, only the removal of samples with a high word error rate.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `yhaha/EmoVoice-DB` (repository revision `e0e61055fc5c2b52bc20d8b45f8ce3037228a61d`, last modified 2026-03-27; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 22,100 (listed) / 24,923 (wav files) | 5 (synthetic voices) | 40.44 (listed) |
+
+How these were counted: the 22,100 distinct `key` values of `train.jsonl`, `val.jsonl` and `test.jsonl` (each key appears several times in the lists with different emotion descriptions; 24 kHz mono 16-bit, 1.05 to 27.75 s); hours from the audio lengths of the listed recordings. The release holds 24,923 `.wav` files in total, 2,823 more than the lists name. The speech is synthesized by GPT-4o-audio, so there are no speakers; the 5 voices are `ash`, `ballad`, `coral`, `sage` and `verse` (the last part of each key).
+
+### Files per label
+
+| label (the `emotion` field of the lists) | samples (distinct keys) |
+|---|---|
+| angry | 3,486 |
+| happy | 3,269 |
+| neutral | 3,188 |
+| sad | 3,174 |
+| surprised | 3,072 |
+| fearful | 2,961 |
+| disgusted | 2,950 |
+
+How these were counted: the `emotion` field of the lists, one count per distinct `key`. The lists divide the keys into train 21,050, val 350 and test 700. The label is the emotion requested from the model, not one that listeners heard.
+
+### Issues in the release
+
+- 2,823 `.wav` files in the release are not named in any list; the dataset card gives no reason (they may be recordings removed by the word-error-rate filter, which is a guess).
+- The audio was synthesized entirely by GPT-4o-audio, whose training data is not disclosed; the card describes no listening check, only the removal of samples with a high word error rate.
+
+
 ## The audio comes from GPT-4o-audio, a model with undisclosed training data
 
 This is a different matter from the data merely being synthetic, so it is stated
