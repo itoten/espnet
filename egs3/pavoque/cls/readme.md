@@ -25,6 +25,44 @@ default to `download/` and `data/` under the recipe.
 - `PAVOQUE` — the directory with the FLAC and YAML files, or where to download them to
 - `PAVOQUE_OUTPUT` — where the cut audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the PAVOQUE data (Pretty Audio Voice Of QUality Emotion; the project `marytts/pavoque-data`; one FLAC and one YAML per style; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 5,442 | 1 | 8.6 |
+
+How these were counted: every utterance listed in the five style YAML files (one long FLAC per style, cut by the `start` and `end` seconds in the YAML; 44.1 kHz mono 16-bit, 1.2 to 20.7 s); hours from the listed times. One male speaker (a professional actor and baritone opera singer). The release's `pavoque-outtakes` files (recordings not adopted) are not counted.
+
+### Files per label
+
+| label (`style` in the YAML files) | samples |
+|---|---|
+| neutral | 3,126 |
+| angry | 601 |
+| happy | 584 |
+| poker | 575 |
+| sad | 556 |
+
+How these were counted: the `style` field of the YAML entries (equal to the file each entry is in). `poker` is the speaking style of a calm gambler; the styles are named after the SEMAINE virtual characters (Poppy: cheerful, Obadiah: gloomy, Spike: aggressive, Poker: calm gambler). The release has no disgust, fear or surprise class.
+
+### Issues in the release
+
+- The audio is unfiltered: there is much power below 40 Hz (the 90th percentile of the share of power below 40 Hz is 0.07 to 0.47 of the clip, above 60% in some clips); the README advises a 50 Hz high-pass filter.
+- A spreadsheet of the DB project gives 7,334 utterances and 12.2 hours; the difference from the 5,442 listed here is not explained in the documentation.
+
+
 ## Download
 
 `prepare_source` downloads the five FLAC and five YAML files (about 760 MB) from
