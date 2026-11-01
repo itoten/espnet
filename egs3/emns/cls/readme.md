@@ -14,7 +14,48 @@ The corpus has one speaker, so no split can hold speakers out; the partition
 is stratified by emotion instead (20% valid, 20% test), which
 `dataset/config.yaml`'s ratios and seed control.
 
-## Data
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the OpenSLR resource 136 (EMNS; `cleaned_webm/` and `metadata.csv`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from OpenSLR, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,181 (audio files) | 1 | 2.32 |
+
+How these were counted: every `.webm` in `cleaned_webm/` (48 kHz mono Opus, 1.9 to 15.3 s); hours from the file lengths. `metadata.csv` (pipe-separated) has 1,205 rows; the 1,181 rows with `status` = `Complete` have audio and 24 rows (`Needs Updating`) do not. The speaker is one woman in her twenties (the `gender` and `age` columns).
+
+### Files per label
+
+| label (the `emotion` column, rows with audio) | samples |
+|---|---|
+| Disgust | 162 |
+| Happy | 157 |
+| Surprised | 151 |
+| Excited | 150 |
+| Neutral | 149 |
+| Sad | 147 |
+| Sarcastic | 139 |
+| Angry | 126 |
+
+How these were counted: the `emotion` column of the 1,181 `Complete` rows. The 24 rows without audio have Angry 7, Excited 5, Disgust 3, Sarcastic 3, Sad 3, Surprised 2 and Happy 1; their dates run from 2022-07-27 to 2022-08-19.
+
+### Issues in the release
+
+- 24 rows of `metadata.csv` (status `Needs Updating`) point to `wavs/*.webm` files that are not in `cleaned_webm/`; the reason is not stated. The OpenSLR page also offers the unprocessed recordings (`raw_webm.tar.xz`), which were not checked for these rows.
+- The corpus has one speaker, so speaker-dependent analysis is not possible.
+
+
+## What the recipe uses
 
 EMNS is acted British English speech by one female speaker in her twenties,
 reading narrative sentences "for games, television and graphic novels" in eight
