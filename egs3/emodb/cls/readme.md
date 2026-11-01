@@ -25,6 +25,50 @@ default to `download/` and `data/` under the recipe.
 - `EMODB` — an existing corpus tree, or where to download it to
 - `EMODB_OUTPUT` — where the manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against EmoDB 2.0 (Zenodo DOI 10.5281/zenodo.17651657; `emodb_2.0/` with the audformat tables, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 816 | 10 | 0.63 |
+
+How these were counted: every row of `db.emotion.csv` (equal to the `.wav` files in `wav/`; 16 kHz mono 16-bit, 1.21 to 8.98 s); hours from the file lengths. The release also holds a second set of 816 recordings in `laryngo/` (laryngograph signals; `db.laryngo.*` tables), which are not counted here. Speakers are the 10 rows of `db.speaker.csv` (five women, five men; the tables give age, gender and language).
+
+### Files per label
+
+| label (the `emotion` column of `db.emotion.csv`) | samples |
+|---|---|
+| anger | 137 |
+| fear | 122 |
+| sadness | 121 |
+| happiness | 115 |
+| boredom | 112 |
+| disgust | 105 |
+| neutral | 104 |
+
+How these were counted: the `emotion` column of all 816 rows. Each row also has `emotion.confidence` and `emotion.naturalness` (listener scores).
+
+### Issues in the release
+
+- Version 2.0 adds 281 utterances (`db.emotion.categories.ambiguous.csv`) to the 535 of the earlier EmoDB releases: fewer than 80% of the raters agreed on the intended emotion for them (the added ones reach down to 10% agreement).
+- The individual ratings of the 20 raters are not in the release; only the averaged `emotion.confidence` and `emotion.naturalness` remain.
+
+### Listening test ratings in the release
+
+`db.emotion.csv` gives for each recording the confidence (the share of listeners who heard the intended emotion) and the naturalness, averaged over the listening test of the original EmoDB (20 raters); the single raters' answers are not included.
+
+
 ## Splits
 
 The corpus publishes a speaker-independent partition: 6 speakers for training
