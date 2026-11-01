@@ -12,6 +12,46 @@ asked to convey. 1396 utterances in seven emotions: `fear` (223), `angry`
 (219), `happy` (218), `enthusiasm` (198), `neutral` (191), `disgust` (185) and
 `sad` (162).
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `Aniemore/resd` (train and test parquet files; repository revision `8db7068a7717e48d829c2baa32e4908972611138`, last modified 2026-08-01; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,396 | unknown | 2.3 (approx.) |
+
+How these were counted: every row of the train (1,116) and test (280) parquet files (mono; 16 kHz in 716 clips and 44.1 kHz in 680; 0.37 to 20.14 s); the hours are the figure from the dataset description (about 2.3), not re-measured. The recordings are improvised dialogues of 20 actors in pairs (50 dialogues); the release has no actor ID, so the number of speakers is unknown.
+
+### Files per label
+
+| label (the `emotion` column) | samples |
+|---|---|
+| fear | 223 |
+| anger | 219 |
+| happiness | 218 |
+| enthusiasm | 198 |
+| neutral | 191 |
+| disgust | 185 |
+| sadness | 162 |
+
+How these were counted: the `emotion` column of all rows. The label is the emotion that each actor was privately given to play, not the judgement of independent listeners.
+
+### Issues in the release
+
+- The sampling rate is mixed (16 and 44.1 kHz); the card notes this, and within a dialogue the rate is uniform.
+- The official train/test split is not speaker-independent. No duplicate recordings were found.
+
+
 ## The corpus is a dialogue corpus
 
 This is the most useful property of RESD: the utterances are turns of 50 improvised
