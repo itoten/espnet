@@ -25,6 +25,44 @@ default to `download/` and `data/` under the recipe.
 - `AESDD` — the downloaded corpus, or where to download it to
 - `AESDD_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the AESDD download (Acted Emotional Speech Dynamic Database, from the project page of Aristotle University of Thessaloniki; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the project page, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 605 | 6 (see below) | 0.69 |
+
+How these were counted: every `.wav` under the five emotion folders (44.1 kHz mono, float32 in 504 files and 24-bit in 100; 0.98 to 12.74 s); hours from the file lengths (one file, `sadness/s05 (3).wav`, has a header and no samples). Speakers: the file names `<code><utterance> (<speaker>)[<take>].wav` carry a speaker number 1 to 6, and five files carry `(01)`, read as speaker 1 (an inference). The v1.0 description speaks of five actors (three women, two men, aged 25 to 30); the attributes of a sixth are not given.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| anger | 121 |
+| disgust | 122 |
+| fear | 120 |
+| happiness | 119 |
+| sadness | 123 |
+
+How these were counted: the emotion folder each file is in; the first letter of the file name agrees with the folder. The release has no neutral and no surprise class.
+
+### Issues in the release
+
+- `sadness/s05 (3).wav` is a 36-byte file that holds only a WAV header.
+- The v1.0 description says five speakers; the files carry six speaker numbers.
+
+
 ## Download
 
 `prepare_source` downloads the corpus from the public MEGA folder linked on the
