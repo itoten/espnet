@@ -22,6 +22,47 @@ The label is the name of the folder a recording sits in; `dataset/config.yaml` m
 to the manifest label. The repository also holds `final_data/fear/documentation.pdf`,
 a printout of an unrelated notebook (natural language to SQL); it is not used.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `Thanushs25/tamil-audio-emotion-classification` (repository revision `2a01784b7a9d8d7fbd36a7d2480214d9a26e5312`, last modified 2024-08-14; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 195 | unknown | 1.11 |
+
+How these were counted: every `.wav` in the repository (44.1 kHz stereo in 149 files and 48 kHz stereo in 46; 2.69 to 140.5 s, median 16.1 s); hours from the file lengths. The repository gives no speaker information, so the number of speakers is unknown.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| angry | 49 |
+| sad | 49 |
+| happy | 41 |
+| fear | 28 |
+| neutral | 28 |
+
+How these were counted: the emotion folder each file is in.
+
+### Issues in the release
+
+- The card has no description of the source, the recording or the labelling; its size field (1B to 10B) does not match the data.
+- Two pairs of files are byte-identical (`happy/audio_11.wav` = `happy/audio_22.wav`, `neutral/audio_8.wav` = `neutral/audio_9.wav`; listed in the README). Two more pairs are the same sound without being byte-identical: `happy/audio_33` and `happy/audio_0` decode to identical 16 kHz audio (3.87 s), and `angry/audio_31` and `angry/audio_32` correlate 0.9994 (9.31 s).
+- 29 files are longer than 30 s (up to 140.5 s).
+- `final_data/fear/documentation.pdf` is a printout of an unrelated notebook (natural language to SQL).
+- Observation by the recipe author (2026-10-25 at the latest): the recordings sound like film or television audio. Whisper identified Tamil in 181 of 193 transcribed files and the transcripts are colloquial lines.
+
+
 ## Provenance
 
 The dataset card states no licence, no source of the recordings, no recording
