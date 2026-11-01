@@ -23,6 +23,43 @@ seconds long (median 3.6), all 24 kHz mono. There are 104 distinct sentences, 26
 sentences and one neutral sentence, groups `14`-`26` one neutral sentence each), and
 312 recordings per voice emotion: `angry`, `happy`, `neutral` and `sad`.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 19207001 (EMIS, Emotionally Incongruent Synthetic Speech dataset; `wav_src/` and `text_samples_EMIS.csv`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,248 | 0 (synthetic voices; see below) | 1.26 |
+
+How these were counted: every `.wav` under `wav_src/` (24 kHz mono, 1.82 to 8.11 s, median 3.6 s); hours from the file lengths. The speech is synthetic, so there are no speakers; it was made by three zero-shot text-to-speech systems (`F5TTS`, `COSY`, `STYLE` in the file names), each given a reference voice of an English speaker of ESD (speakers 0011 to 0020).
+
+### Files per label
+
+| label (voice emotion in the file name) | samples |
+|---|---|
+| angry | 312 |
+| happy | 312 |
+| neutral | 312 |
+| sad | 312 |
+
+How these were counted: the voice emotion in the file name (third field from the end). The label is the emotion requested from the synthesizer (that of the reference voice), not an emotion perceived by listeners. 104 distinct sentences in 26 sentence groups (the number at the start of the file name); 936 recordings are incongruent (text emotion differs from voice emotion) and 312 are congruent.
+
+### Issues in the release
+
+- File names come in two forms: 6 fields for emotional sentences and 5 fields for neutral sentences.
+- The record does not name the three synthesizers (the paper does) and does not give the checkpoints used; the paper says the sentences were written by GPT-4.5, the record says ChatGPT-4.5.
+
+
 ## The label is not a perceived emotion
 
 **The label is the emotion that was asked of the TTS system (the "voice emotion"),
