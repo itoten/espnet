@@ -50,6 +50,48 @@ default to `download/` and `data/` under the recipe.
 - `MASERC` — the directory holding the extracted `Entire Marathi Dataset Corpus/` directory, or where to download it to
 - `MASERC_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `b9jrrpdxgb` (MaSERC, Marathi; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 808 | unknown | 0.82 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz stereo; 766 files are 16-bit and 42 are 32-bit float; 0 to 12.26 s); hours from the file lengths. The archive has no speaker table; the file names `<series> <number>[ name]-<Emotion>-<take>.wav` name sessions (e.g. `student 37`), not necessarily speakers, so the number of speakers is unknown.
+
+### Files per label
+
+| label (emotion word in the file name, case-folded) | samples |
+|---|---|
+| neutral | 134 |
+| angry | 136 |
+| surprise | 135 |
+| fear | 135 |
+| sad | 134 |
+| happy | 134 |
+
+How these were counted: the emotion word in each file name, lower-cased, with the four misspellings of surprise (`surpsise`, `Surprsie`, `suprise`, and a `Track 3Surprise` prefix) counted as surprise.
+
+### Issues in the release
+
+- The dataset page mentions predefined splits, speaker metadata, a six-sentence monologue scenario, about 804 files, about 68 minutes and a 16 kHz mono release; the archive holds 808 files of 0.82 hours, 44.1 kHz stereo, and no label table, split or speaker table. The numeric suffix of the file names is not a consistent emotion code.
+- 5 files (all of `student 71`) have zero samples.
+- Byte-identical files: 30 groups (63 files). When the names within a group disagree on the emotion (4 files, e.g. `Sad-3` and `fear-3` with the same audio), the label of those files cannot be told.
+- 7 further pairs have identical 16 kHz audio although the files differ in bytes (one is 32-bit float, the other 16-bit PCM): the six emotions of `student 37` and `student 38`, and the angry clips of `student 33` and `student 34`.
+- Observation by the recipe author (2026-10-25 at the latest): a few clips were listened to; paralinguistic emotion (voice tone and similar) was hard to hear.
+
+
 ## Download
 
 `prepare_source` downloads the zip (285 MB, SHA-256-checked) from
