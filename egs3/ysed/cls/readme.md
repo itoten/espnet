@@ -18,6 +18,48 @@ professional (20), semi-professional (30) or amateur (18) at expressing emotions
 emotions are `angry`, `fear` (`fearful` in the release), `happy`, `neutral` and `sad`;
 there is no `disgust` or `surprise`.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 15227219 (YSED, Yemeni Speech Emotion Dataset; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,432 | 67 (participant numbers in the file names) | 1.01 |
+
+How these were counted: every `.wav` under `YSED/<emotion>/` (48 kHz stereo 16-bit, nearly identical channels, 1.0 to 7.5 s); hours from the file lengths (the paper gives 59 min 10 s). The file names carry 67 distinct participant numbers (68 in combination with gender); the record and the paper's abstract say 71 volunteers (37 men and 34 women, aged 15 to 45), and the paper's section on participants says 68 (37 men and 31 women, aged 15 to 40). The number of files per participant ranges from 1 to 39 (53 participants have all five emotions).
+
+### Files per label
+
+| label (emotion folder in the release) | samples |
+|---|---|
+| neutral | 305 |
+| sad | 303 |
+| happy | 294 |
+| angry | 286 |
+| fearful | 244 |
+
+How these were counted: the emotion folder each file is in (the initial letter of the file name agrees). According to the paper the initial 6,035 recordings were reduced to the 1,432 that at least four of six judges accepted as the intended emotion. The release has no disgust or surprise class.
+
+### Issues in the release
+
+- The counts of the paper's Table 1 (angry 268, happy 249, sad 303, fear 244, neutral 305, total 1,369) do not match the files (angry 286, happy 294, sad 303, fear 244, neutral 305, total 1,432).
+- The numbers of participants (71, 68, 67 distinct numbers) and the age range (15 to 45 or 15 to 40) differ between and within the documents.
+
+### Listening test ratings in the release
+
+Not in the release: according to the paper, six native Yemeni judges (a university faculty member, a dentist, an accountant, an interior designer, a school teacher and a company employee) rated every recording blind to the target emotion and kept a recording only if at least four accepted it (Fleiss' kappa 0.9); the single judgements are not distributed.
+
+
 ## How it was recorded
 
 The participants read five sentences per emotion, four repetitions for each of the four
