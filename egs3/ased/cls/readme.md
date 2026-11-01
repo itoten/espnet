@@ -35,6 +35,47 @@ default to `download/` and `data/` under the recipe.
 - `ASED` — the extracted repository archive, or where to download it to
 - `ASED_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `wgwangang/ASED_V1` (commit `3feb6d25ec1a88d770594c88d2c4e6cae5c0d046`; downloaded around 2026-10-25). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 2,474 | 65 | 2.11 |
+
+How these were counted: every `.wav` in the repository (16 kHz mono 16-bit, 2.0 to 3.9 s; only nine distinct durations occur and 42.4% are exactly 3.0 s); hours from the file lengths. Speakers are the 65 speaker numbers in the file names `<emotion><folder>-<sentence>-<repeat>-<gender>-<speaker>.wav` (25 female and 40 male, by the gender code).
+
+### Files per label
+
+| emotion letter in the file name | read as | samples |
+|---|---|---|
+| n | neutral | 522 |
+| f | fear | 510 |
+| a | angry | 486 |
+| h | happy | 486 |
+| s | sad | 470 |
+
+How these were counted: the first letter of each file name, case-folded (one file is capitalised, `S4-04-02-01-29.wav`); each file also sits in a folder numbered after its emotion. The release has no disgust or surprise class. The description says 4,550 recordings were planned and eight judges kept 2,474.
+
+### Issues in the release
+
+- 53 pairs (106 files) have the same sound: 50 are repetitions 01 and 02 of one speaker, sentence and emotion (the second repetition is a copy of the first), 2 are between speakers 23 and 25, and 1 is two sentences of speaker 57. No pair has different labels.
+- The gender code differs within a speaker for five speakers (09, 15, 21, 23, 25: one file coded male, the rest female).
+- For sentences 03 to 07, 37 speakers have all 50 files and 28 speakers have none, although the README says each recording was judged separately.
+- The repository states no license; the judges' individual results are not in the release.
+- Whisper identified Amharic in only 1 of 100 transcribed files, so the language could not be confirmed.
+
+
 ## Download
 
 `prepare_source` downloads the repository archive from GitHub, pinned to the
