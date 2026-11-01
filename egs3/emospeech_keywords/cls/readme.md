@@ -38,6 +38,49 @@ recipe):
 - `EMOSPEECH_KEYWORDS` — the directory holding the extracted `emospeech-dataset-v1/`
 - `EMOSPEECH_KEYWORDS_OUTPUT` — where the copied audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle archive of the Indian EmoSpeech Command dataset (`emospeech-dataset-v1/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 7,735 | 103 (see below) | 6.55 |
+
+How these were counted: every `.wav` in the archive (16 kHz mono, 1.96 to 3.75 s); hours from the file lengths. The 103 is the number of distinct user hashes at the end of the file names `<keyword>-<environment>-<emotion>-<stamp>-<user hash>.wav`; one hash (an unknown user) covers 5,709 files, and the paper reports 250 speakers.
+
+### Files per label
+
+| emotion tag in the file name | samples |
+|---|---|
+| calm | 3,825 |
+| Fearful | 1,625 |
+| angry | 1,133 |
+| happy | 988 |
+| None | 164 |
+
+How these were counted: the emotion field of each file name. The keyword field has 8 values: unknown 1,192, background 1,116, help 1,069, go 963, bacho 948, yes 875, stop 787, no 785.
+
+### Issues in the release
+
+- The 1,116 `background` files carry emotion tags (calm 880, Fearful 53, happy 19, angry 1, None 163) although the paper describes `background` as sounds that are not words (birds, road noise and the like).
+- Observation by the recipe author (2026-10-24): samples of the `background` and `None` files were listened to and contained only background sound, no speech.
+- 164 files have the emotion tag `None` (163 of them `background`, 1 `unknown`); the paper does not explain what it means, and it is not the `calm` class.
+- The environment field has a value (`scream`) that the README does not list; the other values are `safe`, `glass break` and `gunshots`.
+- 89 groups (90 redundant files) are byte-identical (MD5).
+- The release has 103 user hashes while the paper reports 250 speakers.
+- The `unknown` files (1,192) are spoken words other than the six keywords, including Hindi sentences (Whisper, 25 clips); the language of the corpus is not officially stated.
+
+
 ## Download
 
 The Kaggle dataset ([ujjwal9/emospeech](https://www.kaggle.com/datasets/ujjwal9/emospeech))
