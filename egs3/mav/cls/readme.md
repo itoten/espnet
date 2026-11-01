@@ -24,6 +24,48 @@ default to `download/` and `data/` under the recipe.
 - `MAV` — the directory holding `Sounds.csv` and the extracted `Sounds/` directory, or where to download them to
 - `MAV_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 17036776 (Montreal Affective Voices; `Sounds.csv`, `Sounds/` and the original article PDF, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 90 | 10 | 0.027 |
+
+How these were counted: every `.wav` in `Sounds/` (44.1 kHz mono 16-bit, 0.24 to 4.31 s; 97.8 s in total); hours from the file lengths. Speakers are the 10 actor IDs of `Sounds.csv` (5 male, 5 female).
+
+### Files per label
+
+| label (the `Emotion` column of `Sounds.csv`) | samples |
+|---|---|
+| anger | 10 |
+| disgust | 10 |
+| fear | 10 |
+| pain | 10 |
+| sadness | 10 |
+| surprise | 10 |
+| happiness | 10 |
+| pleasure | 10 |
+| neutral | 10 |
+
+How these were counted: the `Emotion` column of the tab-separated `Sounds.csv` (also holding `Actor_ID`, `Sex` and acoustic measures).
+
+### Issues in the release
+
+- The `Duration_ms` column of `Sounds.csv` mixes units: 41 rows are in seconds and 49 in milliseconds.
+- The dataset description says 30 participants rated each burst (mean recognition rate 68%); the ratings of single bursts are not in the release.
+
+
 ## Download
 
 `prepare_source` downloads `Sounds.zip` (7.6 MB) and `Sounds.csv` from
