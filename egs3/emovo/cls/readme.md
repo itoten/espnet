@@ -23,6 +23,46 @@ default to `download/` and `data/` under the recipe.
 - `EMOVO` — the extracted `emovo.zip`, or where to download it to
 - `EMOVO_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the EMOVO corpus (`emovo.zip`; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download of the archive, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 588 | 6 | 0.51 |
+
+How these were counted: every `.wav` in the archive (48 kHz 16-bit; stereo from two microphones except one mono file; 1.29 to 14.0 s); hours from the file lengths. Speakers are `f1` to `f3` and `m1` to `m3` (three women, three men, professional actors).
+
+### Files per label
+
+| emotion code in the file name | read as (Italian) | samples |
+|---|---|---|
+| dis | disgust (disgusto) | 84 |
+| gio | happy (gioia) | 84 |
+| neu | neutral (neutro) | 84 |
+| pau | fear (paura) | 84 |
+| rab | angry (rabbia) | 84 |
+| sor | surprise (sorpresa) | 84 |
+| tri | sad (tristezza) | 84 |
+
+How these were counted: the three-letter Italian code at the start of each file name `<emotion>-<speaker>-<sentence>.wav`; 14 sentences, of which 8 to 10 are nonsense sentences.
+
+### Issues in the release
+
+- The two microphones of the stereo recording pick up the same sound about 0.4 to 0.6 ms apart: the correlation of the left and right channels without a shift is -0.13 (median) and 0.73 to 0.96 with a shift. Averaging the channels to mono dents the spectrum around 1.2 kHz; the effect on training was not measured.
+- The archive contains no license text.
+
+
 ## Download
 
 `prepare_source` downloads `emovo.zip` (249 MB) from Google Drive, the file
