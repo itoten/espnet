@@ -22,6 +22,43 @@ default to `download/` and `data/` under the recipe.
 - `EMOVDB` — an existing `<speaker>_<Emotion>/` tree, or where to download it to
 - `EMOVDB_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the EmoV-DB archives (18 archives, one per speaker and emotion, from OpenSLR / the `numediart/EmoV-DB` project; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download of the 18 archives, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 6,893 | 4 | 9.49 |
+
+How these were counted: every `.wav` in the 18 archives (mono; 16 kHz in 5,106 files and 44.1 kHz in 1,787; 0.59 to 13.16 s); hours from the file lengths. Speakers are `bea` and `jenie` (female) and `josh` and `sam` (male).
+
+### Files per label
+
+| label (archive: speaker and emotion) | samples |
+|---|---|
+| bea_Amused / Angry / Disgusted / Neutral / Sleepy | 296 / 304 / 333 / 357 / 497 |
+| jenie_Amused / Angry / Disgusted / Neutral / Sleepy | 222 / 496 / 189 / 417 / 466 |
+| josh_Amused / Neutral / Sleepy | 298 / 302 / 263 |
+| sam_Amused / Angry / Disgusted / Neutral / Sleepy | 501 / 468 / 497 / 492 / 495 |
+
+How these were counted: the speaker and emotion name of each archive; the file names inside carry neither (the same name appears in several archives), so each archive must be extracted to its own directory. Per emotion over all speakers: Amused 1,317, Angry 1,268, Disgusted 1,019, Neutral 1,568, Sleepy 1,721. `josh` recorded only Amused, Neutral and Sleepy.
+
+### Issues in the release
+
+- The dataset page and OpenSLR list 7,000 utterances; the archives hold 6,893.
+- File names do not identify speaker or emotion.
+
+
 ## Download
 
 `prepare_source` downloads the 18 archives from
