@@ -43,8 +43,7 @@ The label distribution is very skewed, and the test split has only four labels:
 
 The source also confounds emotion: in `train`, the Expresso clips hold all 66
 `disgust`, 262 of the 310 `sad` and 686 of the 1,170 `happy` clips, while 1,190
-of the 1,274 `neutral` clips are VoxCeleb. A model can partly use the recording
-condition (sampling rate, acting style) rather than the emotion.
+of the 1,274 `neutral` clips are VoxCeleb.
 
 `create_dataset` decodes the audio stored in the parquet files and converts it to
 16 kHz mono with ffmpeg.
@@ -62,6 +61,54 @@ default to `download/` and `data/` under the recipe.
 each SHA-256. Measured on one run that downloaded all 11 published parquet files
 (4.2 GB): about 4.7 minutes to download; `create_dataset`, `remove_long_short`
 and `prepare_labels` together took about 3 minutes.
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `deepvk/NonverbalTTS` (11 parquet files; repository revision `947139b9003316e1d369ae2012a3bded83fd7128`, 2025-10-04). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 6,256 | 2,296 | 17.59 |
+
+How these were counted: every row of the 11 parquet files (indexes are all unique); hours from the decoded audio lengths (0.5 to 116.7 s); speakers are the distinct `speaker_id` values (1,380 male, 916 female; 2,292 from VoxCeleb and 4 from Expresso, by the `data_name` column).
+
+### Files per label
+
+| label (the `Emotion` column of the release) | samples |
+|---|---|
+| neutral | 2,406 |
+| happy | 1,605 |
+| other | 1,177 |
+| sad | 387 |
+| disgusted | 78 |
+| surprised | 34 |
+| angry | 25 |
+| fearful | 10 |
+| (no tag) | 534 |
+
+How these were counted: the `Emotion` column of all rows. `other` here is an emotion tag, not the `other` split (see below).
+
+### Issues in the release
+
+- The release has four published splits: `train` 3,641, `dev` 46, `test` 359 and `other` 2,210 clips. The `other` split is not described on the dataset card or in the paper (whose Table 5 lists only train, dev and test; its train count is 3,642). Among the 1,378 clips without a nonverbal vocalization, 1,373 are in the `other` split; among the 534 clips without an emotion tag, 522 are; transcripts from all three annotators exist for 47% of its clips, against 75 to 84% in the other splits.
+- The Hugging Face metadata field says `apache-2.0`; the card text says the annotations are CC BY-NC-SA 4.0 and the audio follows the licenses of VoxCeleb and Expresso.
+- The paper's Table 7 (emotion counts per split) does not match the counts of the `train` and `test` splits; its Table 6 (all clips) matches.
+- Nonverbal vocalizations are marked as symbols inside the transcripts (10 types, 4,878 clips contain at least one). The release's own table of symbols could not be fetched; the symbol-to-type mapping was inferred by matching the counts of the paper's Table 2.
+
+### Not stated in the documentation
+
+- The clips come from two sources, separable by the `data_name` column: VoxCeleb 4,452 clips (13.68 hours, 16 kHz) and Expresso 1,804 clips (3.91 hours, 48 kHz).
+
 
 ## Splits
 
