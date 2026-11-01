@@ -35,6 +35,49 @@ default to `download/` and `data/` under the recipe.
 - `USC_EMO_MRI` — the directory holding the extracted speaker directories (`USC-EMO-MRI/f1` ... `m5`), or where to download them to
 - `USC_EMO_MRI_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 19325044 (archive `USC-EMO-MRI`, 10 speaker directories, downloaded 2026-10-1x). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 2,363 | 10 | 2.42 |
+
+How these were counted: every row of the `labels/utt_time_stamp` files of the 10 speakers (one utterance per row); hours from the start and end times in those rows (the audio is stored inside 356 `.avi` files, 20 kHz mono PCM, together with a vocal-tract video). Speakers are the 10 speaker directories (`m1` to `m5`, `f1` to `f5`).
+
+### Files per label
+
+| emotion ID in `labels/meta` | meaning (README) | samples |
+|---|---|---|
+| 1 | neutral | 656 |
+| 2 | angry | 563 |
+| 3 | happy | 542 |
+| 4 | sad | 544 |
+| 5 | not described | 29 |
+| (no row in `meta`) | - | 29 |
+
+How these were counted: the `emotion ID` column of the `labels/meta` files of the 10 speakers (2,334 rows); 29 of the 2,363 time-stamp rows have no row in `meta`.
+
+### Issues in the release
+
+- Emotion ID 5 (29 utterances) is not described in the README; the paper's evaluation offers an "other" option, but no document says that ID 5 means "other".
+- 29 utterances have a time-stamp row but no `meta` row; the reason is not given in the documentation.
+- 26 of the 356 `.avi` files (3 of them under `palate_sweep/`) appear in no `utt_time_stamp` file; their content was not examined.
+- One speaker's `utt_time_stamp` has its first two columns swapped (utterance ID and AVI basename).
+- The per-utterance ratings of the listeners are not in the archive; the labels are the final labels only.
+- Observation by the recipe author (2026-10-19 at the latest): some utterances were listened to; they sound reverberant, like a reverb effect. The recordings were made inside an MRI scanner; the cause of the sound was not checked.
+
+
 ## Reverberation reduction (provisional)
 
 Even after the authors' noise cancellation, every recording sounds reverberant,
