@@ -80,7 +80,6 @@ How these were counted: the `<utterance> <code>` lines of the `<group>_best_emo`
 - The Zenodo record describes a different recording (680 utterances, four target emotions, 10 female and 14 male sentences); the archive holds five emotions, 953 utterances, 8 sentences and 2 passages. The record's DOI points to a 2005 paper.
 - The final label differs from the emotion in the file name for 68 of the 953 files (885, or 92.9%, agree). The README says the audio is 16 kHz; it is 22.05 kHz.
 - In the evaluation file the target emotion column says `anger` for 13 `neutral` passages of speaker `jn`; the listeners' votes for them are `neutral`.
-- 33 utterances are longer than 30 s (passages).
 
 
 ## Download

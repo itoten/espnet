@@ -80,7 +80,6 @@ How these were counted: the largest of the three scores (`negative`, `neutral`, 
 - `offset_ms` does not match the position of the segment in the audio (checked by scanning the energy of the audio); `start_ms` does. `duration_ms` is the length of the segment, not of the call as the README says. The number of utterances and words per call differs from the paper's table.
 - In 37 calls (596 segments) `speaker_role` and `channel_index` name opposite sides; the voice of the segment is in the wav that `channel_index` names.
 - Observation by the recipe author (2026-10-19 at the latest): segments cut from the two candidate wav files of the 37 calls were listened to; the voice was in the file chosen by `channel_index`. Segments from the empty-transcript set sounded like background sound.
-- 150 segments are shorter than 0.2 s; segments shorter than 0.5 s include one-word utterances such as `bye` and `yes` (listened to).
 
 
 ## Download

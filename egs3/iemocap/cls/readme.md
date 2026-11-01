@@ -72,7 +72,7 @@ How these were counted: the categorical code of each utterance in `Session*/dial
 
 ### Issues in the release
 
-- Two utterances are longer than 30 s (up to 34.14 s).
+None found.
 
 ### Listening test ratings in the release
 

@@ -77,7 +77,6 @@ How these were counted: the style directory of each recording, as given in each 
 - The corpus README and the CLARIN-IS page say 21,526 clips; the archive holds 21,516 `.flac` files (and 10 `index.tsv`, which would make 21,526 files; not checked further).
 - Speakers `M03` and `M04` skipped two sentences, so their styles have 338 recordings each; the README's own statements about `M03` and `M04` disagree with each other (`M04` has 338 `neutral` sentences too).
 - The license differs between documents: the CLARIN-IS page says CC BY 4.0 and the README in the archive says public domain.
-- 18 recordings are longer than 30 s (14 in the recipe's train set and 4 in test).
 
 
 ## Download

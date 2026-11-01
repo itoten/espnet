@@ -53,7 +53,6 @@ How these were counted: the `majority_emo` field (the majority of the crowd anno
 - Of the 41.6 hours, 2,669 recordings have no usable majority label (`None` 2,664, `other` 5).
 - The paper strongly recommends discarding recordings with an agreement below 0.71 (the alpha rises from 0.413 to 0.692); the threshold keeps 14,182 recordings in version 1 and 14,181 in version 2. Versions 1 and 2 differ in `agreement` for 39 recordings.
 - Three pairs of recordings of the same actor and scene are byte-identical (`s001_..._actor002_impro1_25` and `_28`, `s048_..._actor136_impro6_9` and `_10`, `s078_..._actor195_impro12_7` and `_8`); the labels agree. A search for near-identical recordings among the 25,185 found no more.
-- The longest recording is 108.8 s; 53 recordings of the train and validation lists are longer than 30 s and 17 of test.
 
 ### Listening test ratings in the release
 

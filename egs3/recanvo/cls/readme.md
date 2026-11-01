@@ -81,7 +81,7 @@ How these were counted: the `Label` column of `dataset_file_directory.csv`. The 
 ### Issues in the release
 
 - The table has 22 label strings; the paper's Table 2 lists 21. `laugh` (8 files, all from participant `P03`) is not in the paper; the number of `P03` files matches the paper's `laughter` count only when `laugh` is added to `laughter`.
-- Durations differ from the record's description (about 0.5 to 4 s): 1,043 files are shorter than 0.5 s and 169 longer than 4 s; 29 files are shorter than 0.2 s.
+- Durations differ from the record's description (about 0.5 to 4 s): the files are 0.08 to 14.06 s long (median 0.95 s).
 - The audio format is mixed: mono and stereo, 16 bit and 32 bit (the paper states 16 bit, 44.1 kHz).
 - The paper says the start and end times of participant `P01`'s clips are estimates with some error; 38 file names do not follow the usual file name pattern.
 

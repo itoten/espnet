@@ -58,7 +58,6 @@ How these were counted: the emotion folder each file is in.
 
 - The card has no description of the source, the recording or the labelling; its size field (1B to 10B) does not match the data.
 - Two pairs of files are byte-identical (`happy/audio_11.wav` = `happy/audio_22.wav`, `neutral/audio_8.wav` = `neutral/audio_9.wav`; listed in the README). Two more pairs are the same sound without being byte-identical: `happy/audio_33` and `happy/audio_0` decode to identical 16 kHz audio (3.87 s), and `angry/audio_31` and `angry/audio_32` correlate 0.9994 (9.31 s).
-- 29 files are longer than 30 s (up to 140.5 s).
 - `final_data/fear/documentation.pdf` is a printout of an unrelated notebook (natural language to SQL).
 - Observation by the recipe author (2026-10-25 at the latest): the recordings sound like film or television audio. Whisper identified Tamil in 181 of 193 transcribed files and the transcripts are colloquial lines.
 

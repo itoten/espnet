@@ -69,7 +69,7 @@ How these were counted: the `Emotion` column of all 6,162 rows of the table.
   the next utterance (rule derived from the file names: 6,159 of the 6,162 rows match a
   file). 3 rows have no segment file.
 - Annotated times are whole seconds: in the other movies 582 rows have an end not after the
-  start, and 332 segments are longer than 30 s (up to 498.51 s).
+  start, and the longest segment is 498.51 s.
 - Rows pointing to the same segment: 11 groups (24 rows) have different emotion labels;
   6 further rows have the same label as an earlier row.
 - 72 distinct transcriptions occur with more than one emotion label (259 rows).
