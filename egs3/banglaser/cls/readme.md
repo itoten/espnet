@@ -28,6 +28,45 @@ default to `download/` and `data/` under the recipe.
 - `BANGLASER` — the directory holding the extracted audio, or where to download it to
 - `BANGLASER_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `t9h6p943xy` version 5 (BanglaSER; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,467 | 34 | 1.37 |
+
+How these were counted: every `.wav` in the archive (44.1 or 48 kHz, mono or stereo; 2.62 to 3.99 s); hours from the file lengths. Speakers are the 34 `Actor NN` folders (17 male, 17 female; odd numbers male and even numbers female, per the record).
+
+### Files per label
+
+| emotion code in the file name | read as (paper's Table 4) | samples |
+|---|---|---|
+| 01 | happy | 306 |
+| 02 | sad | 306 |
+| 03 | angry | 306 |
+| 04 | surprise | 306 |
+| 05 | neutral | 243 |
+
+How these were counted: the third field of the RAVDESS-style file name `<mode>-<type>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral exists for 27 speakers only (Actors 11, 12, 13, 16, 18, 20 and 29 have none). The release has no disgust or fear class. The intensity field is determined by the emotion (angry and surprise are strong, the others normal).
+
+### Issues in the release
+
+- 8 pairs (16 files) have the same sound with the same label: 7 are other repetitions of one speaker, statement and emotion (for example Actor 15, happy, statement 3, repetitions 1 and 3) and 1 is surprise statement 3 repetition 1 of Actors 16 and 19.
+- The three surprise files of Actor 15 have mode `01` instead of `03`; the folder of Actor 19 holds a file named like one of Actor 3 (`03-01-05-01-01-03-03.wav`) with different audio.
+- The paper gives 1 hour 29 minutes in total and 44.1 kHz; the files total 1.37 hours and mix 44.1 and 48 kHz, mono and stereo.
+
+
 ## Download
 
 `prepare_source` downloads the archive that Mendeley Data builds on request
