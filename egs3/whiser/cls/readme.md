@@ -39,6 +39,55 @@ default to `download/` and `data/` under the recipe.
 - `WHISER` — the directory holding `wav/` and `labels_consensus.csv`, or where to download them to
 - `WHISER_OUTPUT` — where the converted 16 kHz audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the WHiSER corpus: the audio at `lab-msp.com/WHiSER/Annotation_wav_files/` and `Labels/labels_consensus.csv` of the GitHub repository `msplabresearch/WHiSER` (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download of the wav files and the consensus table, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 5,427 | unknown | 6.35 |
+
+How these were counted: every row of `labels_consensus.csv` (equal to the wav files; mono, 44.1 kHz in 5,255 files and 22.05 kHz in 172, stored as 32-bit float; 3.01 to 10.99 s); hours from the file lengths. `SpkrID` and `Gender` are `Unknown` in every row, so the number of speakers is unknown.
+
+### Files per label
+
+| `EmoClass` code in `labels_consensus.csv` | read as (corpus documentation) | samples |
+|---|---|---|
+| N | neutral | 3,492 |
+| X | no agreed label | 916 |
+| H | happy | 345 |
+| A | angry | 293 |
+| S | sad | 284 |
+| O | other (free text) | 47 |
+| U | surprise | 33 |
+| C | contempt | 10 |
+| F | fear | 6 |
+| D | disgust | 1 |
+
+How these were counted: the `EmoClass` column. The table also holds arousal, valence and dominance scores (`EmoAct`, `EmoVal`, `EmoDom`) and a `Split_Set` column.
+
+### Issues in the release
+
+- The audio is not 16 kHz 16-bit as the paper states.
+- 53 clusters (107 files) among the 4,464 files with a letter class other than `O` and `X` are the same sound under names that often differ in one letter only (for example `rmn_e655a` and `rmn_e655b`); in 3 of them the labels differ (neutral/sad, sad/neutral, angry/neutral). The paper says duplicates were removed. Four pairs (8 files) are byte-identical.
+- The repository README names a table linking the segments to the original recordings; the link returns HTTP 404. The repository states no license or citation terms.
+- The recordings are conversations from the declassified Nixon tapes (natural speech with distant microphones, reverberation and background noise); the paper does not distribute splits (the corpus is meant as an independent test set).
+
+### Listening test ratings in the release
+
+The corpus repository holds `Labels/labels_detailed.csv` with each annotator's primary and secondary emotion votes (the paper: at least five annotators from a pool of 33 students per segment); that file was not part of the downloaded release.
+
+
 ## Download
 
 `prepare_source` fetches the label table from the corpus GitHub repository and the
