@@ -24,6 +24,48 @@ labels of the other recipes; they are kept as classes of their own (the folders 
 `Disappointment` and `Excitement`, and `Surprised` becomes `surprise`). No journal article
 describes the dataset (the Mendeley record lists none), so the record is the only source.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `9cc8k5v7w4` version 3 (BanglaMood, published 2025-07-02; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 3,220 | unknown | 2.90 |
+
+How these were counted: every `.wav` in `<Emotion>/<Gender>/` (48 kHz mono 16-bit, 0.52 to 7.57 s, mean 3.24 s; 2,190 under `Male` and 1,030 under `Female`); hours from the file lengths. The release does not say who spoke which clip, so the number of speakers is unknown.
+
+### Files per label
+
+| label (emotion folder in the release) | samples |
+|---|---|
+| Angry | 611 |
+| Neutral | 610 |
+| Fear | 449 |
+| Disappointment | 343 |
+| Sad | 337 |
+| Surprised | 303 |
+| Happy | 300 |
+| Excitement | 267 |
+
+How these were counted: the emotion folder each file is in; the counts equal those in the description. The release has no disgust class. The description says three native Bangla annotators labelled the clips from tone, expression, situation, screams, cries and meaning, and that the videos were divided among them; whether more than one annotator judged a clip is not stated.
+
+### Issues in the release
+
+- The description says all clips were standardized to 5 seconds; the files are 0.52 to 7.57 s long.
+- Two files have identical content (SHA-256) but different labels: `Disappointment/Male/0737.wav` and `Neutral/Male/0704.wav`.
+- The clips are cut from public YouTube videos (short stories, vlogs and sports highlights); no source videos or their rights are listed, and no journal article describes the dataset.
+
+
 ## What is used
 
 The release has 3,220 WAV files in `<Emotion>/<Gender>/<NNNN>.wav` (for example
