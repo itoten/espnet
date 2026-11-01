@@ -26,6 +26,45 @@ default to `download/` and `data/` under the recipe.
   where to download them to
 - `NEMO_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `amu-cai/nEMO` (two parquet shards; repository revision `140015d56f6adaad7e453dc471ba7c2856c02c8e`, last modified 2024-05-28; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 4,481 | 9 | 3.0 (approx.) |
+
+How these were counted: every row of the two parquet shards (24 kHz mono 16-bit, 0.87 to 5.66 s); the hours are the figure from the corpus description (about 3), not re-measured. Speakers are the 9 distinct `speaker_id` values (`EB0` 539, `IC0` 540, `KD0` 540, `KS0` 540, `MK0` 450, `MP0` 256, `SM0` 538, `TP0` 539, `WR0` 539 rows; five male and four female, aged 23 to 28; three are qualified voice actors and six are not professionals, per the paper).
+
+### Files per label
+
+| label (the `emotion` column) | samples |
+|---|---|
+| neutral | 809 |
+| sadness | 769 |
+| anger | 749 |
+| happiness | 749 |
+| fear | 736 |
+| surprised | 669 |
+
+How these were counted: the `emotion` column of all rows.
+
+### Issues in the release
+
+- The speakers contribute unequally: `MP0` has 256 rows with an uneven emotion distribution and `MK0` has no `surprised` recording.
+- According to the paper, recordings whose emotion was doubted by human evaluation were removed and only those that conveyed the target emotion were kept; the number of evaluators and the method are not given.
+
+
 ## Download
 
 `prepare_source` downloads the two parquet shards (531 MB in total) from
