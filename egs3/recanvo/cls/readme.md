@@ -29,6 +29,63 @@ default to `download/` and `data/` under the recipe.
 - `RECANVO` — the directory holding the extracted wav files and `dataset_file_directory.csv`, or where to download them to
 - `RECANVO_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 5786860 (`dataset_file_directory.csv` and the wav files, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 7,077 | 8 | 2.46 |
+
+How these were counted: every row of `dataset_file_directory.csv` (equal to the wav files; 0.08 to 14.06 s, median 0.95 s); speakers are the 8 distinct `Participant` values.
+
+### Files per label
+
+| label (as in the release) | samples |
+|---|---|
+| selftalk | 1,885 |
+| frustrated | 1,536 |
+| delighted | 1,272 |
+| dysregulated | 704 |
+| social | 634 |
+| request | 419 |
+| affectionate | 129 |
+| yes | 123 |
+| laughter | 93 |
+| dysregulation-sick | 74 |
+| happy | 61 |
+| help | 24 |
+| more | 22 |
+| protest | 21 |
+| bathroom | 20 |
+| dysregulation-bathroom | 18 |
+| no | 12 |
+| glee | 8 |
+| laugh | 8 |
+| tablet | 7 |
+| hunger | 4 |
+| greeting | 3 |
+
+How these were counted: the `Label` column of `dataset_file_directory.csv`. The labels are not shared by all participants (six are common to all).
+
+### Issues in the release
+
+- The table has 22 label strings; the paper's Table 2 lists 21. `laugh` (8 files, all from participant `P03`) is not in the paper; the number of `P03` files matches the paper's `laughter` count only when `laugh` is added to `laughter`.
+- Durations differ from the record's description (about 0.5 to 4 s): 1,043 files are shorter than 0.5 s and 169 longer than 4 s; 29 files are shorter than 0.2 s.
+- The audio format is mixed: mono and stereo, 16 bit and 32 bit (the paper states 16 bit, 44.1 kHz).
+- The paper says the start and end times of participant `P01`'s clips are estimates with some error; 38 file names do not follow the usual file name pattern.
+
+
 ## Download
 
 `prepare_source` downloads `ReCANVo.zip` from
