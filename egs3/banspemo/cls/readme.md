@@ -24,6 +24,44 @@ default to `download/` and `data/` under the recipe.
 - `BANSPEMO` — the directory holding the extracted audio, or where to download it to
 - `BANSPEMO_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `rdwn4bs5ky` version 1 (BanSpEmo; version 2 holds only an added MFCC table, `dataMFCC.xlsx`, and no audio; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 792 | 22 | 1.39 |
+
+How these were counted: every `.wav` in the archive (stereo; 44.1 kHz in 432 files and 48 kHz in 360; 2.4 to 11.9 s); hours from the file lengths. Speakers are the 22 speaker numbers in the file names `ss<set>_s<sentence>_sp<speaker>_<gender>_<emotion>.wav` (11 male, 11 female; 18 read sentence set 1 and 4 read set 2).
+
+### Files per label
+
+| emotion code in the file name | read as (paper's Table 5) | samples |
+|---|---|---|
+| 01 | anger | 132 |
+| 02 | disgust | 132 |
+| 03 | fear | 132 |
+| 04 | happy | 132 |
+| 05 | sad | 132 |
+| 06 | surprise | 132 |
+
+How these were counted: the last field of each file name. The release has no neutral class.
+
+### Issues in the release
+
+- Version 2 of the Mendeley record has no audio, only the added MFCC table; the audio is in version 1.
+
+
 ## Download
 
 `prepare_source` downloads the archive that Mendeley Data builds on request
