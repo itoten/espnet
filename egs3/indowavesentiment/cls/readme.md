@@ -12,6 +12,48 @@ Indrabayu. The labels are `neutral`, `happy`, `surprise`, `disgust` and
 `disappointed`. There is no `angry`, `fear` or `sad`, and `disappointed` has no
 counterpart in the other recipes.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `j9ytfdzy27` version 1 (IndoWaveSentiment, published 2024-06-24; `audio/` and the naming-guidelines PDF; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in (the listing gives each file's size and SHA-256, which were checked).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 300 | 10 | 0.26 |
+
+How these were counted: every `.wav` in `audio/` (mono 16-bit; 44.1 kHz in 210 files and 48 kHz in 90; 3.0 to 3.8 s, of which 236 are exactly 3.0 s); hours from the file lengths. Speakers are actors 01 to 10 of the file names `<actor>-<emotion>-<intensity>-<repetition>.wav` (odd numbers men, even numbers women, per the guidelines PDF).
+
+### Files per label
+
+| emotion code in the file name | read as (naming guidelines) | samples |
+|---|---|---|
+| 01 | neutral | 60 |
+| 02 | happy | 60 |
+| 03 | surprise | 60 |
+| 04 | disgust | 60 |
+| 05 | disappointed | 60 |
+
+How these were counted: the second field of each file name (10 actors x 5 emotions x 2 intensities (01 normal, 02 strong) x 3 repetitions). The release has no angry, fear or sad class.
+
+### Issues in the release
+
+- The description says the audio was recorded at 16 kHz with 32-bit depth; the files are 44.1 or 48 kHz, mono, 16-bit PCM.
+- No two files have the same content (SHA-256).
+
+### Not stated in the documentation
+
+- A Whisper transcription of 12 randomly chosen recordings gave the same sentence for all of them, "Kualitas HP ini cukup bagus." (Indonesian: "The quality of this phone is quite good"); automatic transcription only, not checked by a person. The description says the same sentence is repeated but does not give it.
+
+
 ## What is used
 
 All 300 recordings: 10 actors × 5 emotions × 2 intensities × 3 repetitions. The
