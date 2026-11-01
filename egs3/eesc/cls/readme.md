@@ -16,6 +16,43 @@ intended.** It is the value in the last tier (`emotion`) of each `<id>.TextGrid`
 `happy`, `sad` and `neutral`. The recordings are 44.1 kHz 16-bit mono, so
 `create_dataset` converts them to 16 kHz with ffmpeg.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the figshare record 25249744 (Estonian Emotional Speech Corpus; `.wav` and `.TextGrid` files, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from figshare, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,164 | 1 | 1.08 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz mono 16-bit, 0.45 to 14.0 s, each with a `.TextGrid`); hours from the file lengths. All sentences are read by one female speaker.
+
+### Files per label
+
+| label (the `emotion` tier of the TextGrid) | samples |
+|---|---|
+| neutral | 338 |
+| anger | 306 |
+| joy | 271 |
+| sadness | 249 |
+
+How these were counted: the value in the last tier (`emotion`) of each `<id>.TextGrid`.
+
+### Issues in the release
+
+- The figshare description says 1,234 sentences; the archive holds 1,164 `.wav` files.
+- The paper's numbers of identified (908) and unidentified (326) sentences do not match the per-label counts of the files; how sentences without a majority label were labelled is not stated in the documents read.
+
+
 ## How the emotions arose and how the labels were made
 
 This section summarises what the corpus authors report, so that the labels are not
