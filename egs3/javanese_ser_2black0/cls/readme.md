@@ -15,6 +15,46 @@ sound (`06-03-04_04`/`_05`, surprise; `06-02-05_03`/`_04`, fear; same length, sa
 differences of at most 0.00037). Both copies are used. The README does not describe the recording conditions, and the
 actors' gender is not recorded in the release.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `2black0/Sound-Emotion-Recognition-Javanese-Speech-Dataset` (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,680 | 10 | 1.49 |
+
+How these were counted: every `.wav` under the actor folders (16 kHz 16-bit; 1,679 mono and 1 stereo; 1.60 to 9.06 s); hours from the file lengths. Speakers are the 10 actor numbers at the start of the file names `<actor>-<sentence>-<emotion>_<repetition>.wav` (4 sentences, 6 emotions, 7 repetitions each). The README speaks of Javanese male and female actors; the release records no gender.
+
+### Files per label
+
+| emotion code in the file name | read as (repository README) | samples |
+|---|---|---|
+| 01 | neutral | 280 |
+| 02 | sad | 280 |
+| 03 | happy | 280 |
+| 04 | surprise | 280 |
+| 05 | fear | 280 |
+| 06 | angry | 280 |
+
+How these were counted: the emotion field (third field) of each file name. The codes are mapped as in the repository README.
+
+### Issues in the release
+
+- The repository README writes the last separator of the file names as `-`; the files use `_`.
+- No byte-identical files were found, but two pairs of actor 06 are nearly the same sound: `06-03-04_04` and `06-03-04_05` (surprise), `06-02-05_03` and `06-02-05_04` (fear); same length, sample differences of at most 0.00037.
+- The repository also holds trained models and MFCC features; the README does not describe the recording conditions.
+
+
 ## Labels
 
 The file name is `<actor>-<sentence>-<emotion>_<repetition>.wav`; the repository
