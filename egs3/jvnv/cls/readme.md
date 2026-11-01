@@ -26,6 +26,44 @@ default to `download/` and `data/` under the recipe.
 - `JVNV` — the directory holding the extracted audio, or where to download it to
 - `JVNV_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the JVNV corpus (`jvnv_v1` from the corpus page; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the corpus page, no sign-in. The download has no checksum; completeness was checked by the 1,615 file count.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,615 | 4 | 3.94 |
+
+How these were counted: every `.wav` under `jvnv_v1/<speaker>/<emotion>/<session>/` (48 kHz mono 24-bit, 3.19 to 19.78 s); hours from the file lengths. Speakers are `F1`, `F2`, `M1` and `M2`.
+
+### Files per label
+
+| label (emotion in the file name) | samples |
+|---|---|
+| anger | 249 |
+| disgust | 258 |
+| fear | 265 |
+| happy | 280 |
+| sad | 257 |
+| surprise | 306 |
+
+How these were counted: the emotion field of each file name `<speaker>_<emotion>_<session>_<item>.wav`; the session is `regular` (1,375 files; the nonverbal phrase was designated) or `free` (240; the speaker chose it). The release has no neutral class.
+
+### Issues in the release
+
+- No byte-identical or near-identical recordings were found. The release holds a transcription table (`transcription.csv`) and labels of the nonverbal sections (`nv_label/`).
+
+
 ## Download
 
 `prepare_source` downloads `jvnv_ver1.zip` (1.8 GB) from the authors' site and
