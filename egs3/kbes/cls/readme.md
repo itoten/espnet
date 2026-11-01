@@ -13,6 +13,45 @@ Bangla speech emotion recognition with intensity level", Data in Brief 51 (2023)
 anonymized). The labels are `neutral`, `happy`, `sad`, `angry` and `disgust`. There
 is no `fear` or `surprise`.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `vsn37ps3rx` version 4 (KBES, KUET Bangla Emotional Speech; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 900 | unknown (35 actors per the paper; not identifiable from the files) | 0.75 |
+
+How these were counted: every `.wav` in `audio/` (48 kHz stereo 16-bit, 3.02 to 3.16 s); hours from the file lengths. The file names `<emotion>-<intensity>-<gender>-<number>.wav` do not identify the speaker; the paper states 35 actors (20 female, 15 male, aged 15 to 70).
+
+### Files per label
+
+| emotion code in the file name | read as (paper's Table 4) | samples |
+|---|---|---|
+| 1 | neutral | 100 |
+| 2 | happy | 200 |
+| 3 | sad | 200 |
+| 4 | angry | 200 |
+| 5 | disgust | 200 |
+
+How these were counted: the first field of each file name. Intensity (1 low or 2 high) and gender (0 female or 1 male) are the other fields; each of the 18 combinations of emotion, intensity and gender has 50 clips (neutral has one intensity only, hence half as many). The release has no fear or surprise class.
+
+### Issues in the release
+
+- 20 pairs of clips have identical content (SHA-256), all within the same label: 17 in happy-high, 1 in angry-low and 2 in angry-high.
+- In 32 clips the left and right channels are uncorrelated and contain different sounds.
+- The clips are cut from third-party telefilms, dramas, TV series and web series on YouTube and Facebook; the release does not list the videos or their licenses.
+
+
 ## What is used
 
 The release has 900 clips of about 3 seconds each (all 48 kHz stereo 16-bit PCM,
