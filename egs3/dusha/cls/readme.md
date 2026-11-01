@@ -19,6 +19,49 @@ crowd subset is used. The labels are `angry`, `sad`,
 match the other recipes). There is no
 `disgust`, `fear` or `surprise`.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Dusha crowd subset (`crowd.tar` with `crowd_train/`, `crowd_test/` and `paper_setups.tgz` from the `salute-developers/golos` project; downloaded around 2026-10-15). The podcast subset is not distributed as audio (links only) and was not obtained. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the project's file server, no sign-in. Only the recordings named by the two official lists were extracted from the roughly 30 GB `crowd.tar`.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 160,366 (extracted) | 1,870 train and 190 test `source_id` values | 202.5 |
+
+How these were counted: every `.wav` under `crowd_train/wavs` and `crowd_test/wavs` that the official lists name (16 kHz mono 16-bit, 0.86 to 29.88 s, median 4.34 s); hours from the file lengths. The rest of `crowd.tar` (the paper counts 201,850 crowd recordings) was not extracted. The speakers are the `source_id` values of the raw tables (a unique ID of the speaker or podcast; none in train/test overlap; 1,517 control-task recordings have none); the paper counts 2,068 speakers.
+
+### Files per label
+
+| label (the `emotion` field of the official lists) | samples |
+|---|---|
+| neutral | 106,065 |
+| sad | 23,190 |
+| angry | 15,719 |
+| positive | 15,392 |
+
+How these were counted: the `emotion` field of `paper_setups/crowd_large.jsonl` (146,715 recordings, train) and `paper_setups/test/crowd_test.jsonl` (13,651, test), obtained with the Dawid-Skene aggregation of the crowd annotations. The paper's table lists 164,387 crowd utterances including an `other` class and the lists 160,366; whether the lists follow the paper's rule exactly (agreement threshold 0.9) was not checked. The release has no disgust, fear or surprise class.
+
+### Issues in the release
+
+- 9 recordings in 4 groups (and 10 more in 5 groups) are the same sound: in 4 groups (9 files) the labels differ (sad and neutral); in 5 groups the labels agree.
+- The aggregated label and the actor's suggested emotion (`speaker_emo` in the raw tables) agree for 71.5% of the recordings: 51% of those suggested sad, 34% of angry and 35% of positive are aggregated as neutral.
+- 1,517 control-task recordings with known correct answers and many annotations each are in the training list; they have no sentence and no speaker ID.
+- The license is a custom text, not a Creative Commons license.
+
+### Listening test ratings in the release
+
+`crowd_train/raw_crowd_train.tsv` and `crowd_test/raw_crowd_test.tsv` hold every single annotation (898,136 rows for train and 78,205 for test; the annotator's emotion among neutral, sad, positive, angry and other, an annotator ID, and for the control tasks the golden answer). Annotators listened to the audio only, without the text (paper).
+
+
 ## What is used
 
 The labels are the release's own aggregated labels, read from the two files in its
