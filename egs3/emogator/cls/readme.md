@@ -25,6 +25,71 @@ The label is the category number in the file name `<contributor>-<category>-<ins
 are written `angry` and `sad` to match the other recipes. `create_dataset` converts
 the recordings to 16 kHz mono wav with ffmpeg.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `fredbuhl/EmoGator` (mp3 files; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 32,130 | 357 | 16.77 |
+
+How these were counted: every `.mp3` in the repository (0.42 to 2.04 s; 48 kHz in 32,040 files and 44.1 kHz in 90; 30,424 mono and 1,706 stereo); hours from the file lengths. Speakers are the 357 contributor numbers in the file names `<contributor>-<category>-<instance>.mp3`. The release has no gender, age or language information.
+
+### Files per label
+
+| label (category number in the file name; names from the repository README) | samples |
+|---|---|
+| 01 adoration | 1,071 |
+| 02 amusement | 1,071 |
+| 03 anger | 1,071 |
+| 04 awe | 1,071 |
+| 05 confusion | 1,071 |
+| 06 contempt | 1,071 |
+| 07 contentment | 1,071 |
+| 08 desire | 1,071 |
+| 09 disappointment | 1,071 |
+| 10 disgust | 1,071 |
+| 11 distress | 1,071 |
+| 12 ecstasy | 1,071 |
+| 13 elation | 1,071 |
+| 14 embarrassment | 1,071 |
+| 15 fear | 1,071 |
+| 16 guilt | 1,071 |
+| 17 interest | 1,071 |
+| 18 neutral | 1,071 |
+| 19 pain | 1,071 |
+| 20 pride | 1,071 |
+| 21 realization | 1,071 |
+| 22 relief | 1,071 |
+| 23 romantic love | 1,071 |
+| 24 sadness | 1,071 |
+| 25 serenity | 1,071 |
+| 26 shame | 1,071 |
+| 27 surprise (negative) | 1,071 |
+| 28 surprise (positive) | 1,071 |
+| 29 sympathy | 1,071 |
+| 30 triumph | 1,071 |
+
+How these were counted: the category number in the file name; every category has exactly 1,071 files (357 contributors x 3 instances).
+
+### Issues in the release
+
+- The paper reports 16.97 hours; the files total 16.77 hours.
+- 20 pairs of files from the same contributor and category are byte-identical.
+- The category is the prompt given to the contributor; the release has no listener rating. The authors write that some categories can sound alike (for example crying of sadness and laughter).
+- Quality control was done by one of the paper's authors only (silence, noise and reading out the category name were checked and re-recordings requested); the number of contributors excluded because the emotion did not come across is not given.
+
+
 ## How the labels were made
 
 (From the paper, Buhl, [arXiv 2301.00508](https://arxiv.org/abs/2301.00508); read on 2026-10-24.)
