@@ -166,7 +166,8 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 
     Raises:
         ValueError: If a row carries an emotion code that is neither kept nor
-            listed for dropping, or an `exclude_files` or `duplicate_files` name is absent.
+            listed for dropping, or an `exclude_files` or `duplicate_files` name
+            is absent.
         FileNotFoundError: If a recording named in the table is absent.
     """
     audio_dir = source_root / str(_CFG["audio_subdir"])
