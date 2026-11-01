@@ -23,6 +23,49 @@ byte-identical to a `1.2` clip, and 81 of those 115 carry a different emotion
 label in `1.2`. The README does not say how the labels were reassigned. This
 recipe takes the `1.2` labels as published.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `ahmadnafibudianto/e-seravd-speech-emotion-recognition-av-dataset`, release `E-SERAVD 1.2`, audio-only part (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token. The archive holds three releases (`E-SERAVD`, `E-SERAVD 1.1`, `E-SERAVD 1.2`); the counts below are those of `E-SERAVD 1.2`.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 3,000 | unknown | 2.0 |
+
+How these were counted: every `.wav` under `E-SERAVD 1.2/.../02_Audio-Only/` (44.1 kHz stereo 32-bit float, 0.83 to 7.5 s, from 11 films); hours from the file lengths. Speakers: the clips are film dialogue and the release lists no speaker, so the number is unknown.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| 01_Angry | 500 |
+| 02_Sad | 500 |
+| 03_Neutral | 500 |
+| 04_Happy | 500 |
+| 05_Disgust | 500 |
+| 06_Fear | 500 |
+
+How these were counted: the emotion folder each file is in (the number in the file name agrees).
+
+### Issues in the release
+
+- Labels differ between releases: of 200 randomly chosen `E-SERAVD 1.1` clips, 115 are byte-identical to a `1.2` clip, and 81 of those 115 carry a different emotion label in `1.2` (for example none of the 19 `sad` clips of `1.1` that were checked is `sad` in `1.2`). The README does not say how the labels were reassigned.
+- The README's vote counts that the Fleiss' kappa is computed from contain 42 votes for disgust and 908 for fear, while 500 clips each carry those labels in `1.2`, which needs at least 1,000 votes each. The procedure that added these classes is not described.
+- 12 pairs (24 files) of clips from the same film have nearly the same sound under different emotions. Overlaps of different lengths were not examined.
+- The Kaggle page states 16 kHz audio; the files are 44.1 kHz stereo 32-bit float. Fleiss' kappa is given as 0.6713 (README), 0.61 (paper abstract) and 0.6338.
+- Observation by the recipe author (2026-10-22 at the latest): the 12 same-sound pairs were listened to and sound the same.
+- The release does not state the rights to the film dialogue.
+
+
 ## Excluded clips
 
 Twelve pairs of `DRNT` clips (24 clips, all in the training split) hold the same
