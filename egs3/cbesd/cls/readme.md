@@ -47,6 +47,48 @@ Things to know when reading the scores:
   missing separators), so the emotion in the name is only compared with the
   folder by its first two letters.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset C-BESD (Children's Bilingual Emotion Speech Dataset; `BESD/<TELUGU|ENGLISH>/<EMOTION>/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 4,204 | 70 (per the description; see below) | 3.03 |
+
+How these were counted: every `.wav` in the `BESD` folders (48 kHz stereo, 0.94 to 5.04 s; 2,100 Telugu and 2,104 English); hours from the file lengths. The 70 children are the number in the Kaggle description; the file names carry a child number, sex and age, but the same (sex, age, number) triple occurs in only some emotion folders, so the children cannot be counted reliably from the files.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| ANGER | 699 |
+| DISGUST | 700 |
+| FEAR | 705 |
+| HAPPY | 700 |
+| NEUTRAL | 700 |
+| SAD | 700 |
+
+How these were counted: the emotion folder each file is in, summed over the `TELUGU` and `ENGLISH` folders.
+
+### Issues in the release
+
+- The description says 4,320 utterances and, elsewhere, 4,200; the formula it gives (35 children x 2 sexes x 5 sentences x 6 emotions x 2 languages) works out to 4,200; the release has 4,204. The description gives 2.5 hours; the files total 3.03 hours.
+- 10 files sit in a folder that contradicts the emotion in their name (five `Angry` files in `FEAR` and five `fear` files in `ANGER`); each is a byte-identical copy of the correctly filed one. One `... - Copy.wav` file exists, and two files have identical audio under two labels (`neutral` and `sad`).
+- 25 groups (52 files) hold byte-identical audio under one label: 2 groups share the child and emotion and differ only in the utterance number, 23 carry different child numbers (in 5 of them also a different age). Which child number or age is correct cannot be told.
+- Observation by the recipe author (2026-10-23): the 25 identical groups were listened to and are the same sound.
+- Ages in the file names run from 6 to 13 although the description says 6 to 12.
+
+
 ## Provenance
 
 Kaggle dataset `pranuthi19/bilingual-emotion-speech-datasetbesd` (version 1,
