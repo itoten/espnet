@@ -25,6 +25,46 @@ Things to know when reading the scores:
   were not searched for. All 5,215 clips are used as they are.
 - How the labels were given (listeners or the video context) is not stated.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the BRYTSERC archive (Bangla Realistic YouTube Speech Emotion Recognition Corpus; `audio/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download of the archive, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 5,215 | unknown | 4.35 |
+
+How these were counted: every `.wav` named `<Emotion>_<n>_<Gender>.wav` (all 3.0 s, 44.1 kHz mono 16-bit); hours from the file lengths. The only speaker information is the gender in the file name (3,446 male and 1,769 female clips); no speaker ID or video ID is published, so the number of speakers is unknown.
+
+### Files per label
+
+| label (emotion in the file name) | samples |
+|---|---|
+| Angry | 745 |
+| Disgust | 745 |
+| Fear | 745 |
+| Happy | 745 |
+| Neutral | 745 |
+| Sad | 745 |
+| Surprise | 745 |
+
+How these were counted: the emotion field of each file name.
+
+### Issues in the release
+
+- 49 pairs (98 clips) are near-identical copies: the waveforms correlate above 0.98 (mostly 0.9998 or higher) within 10 ms of each other while the bytes differ, as if the same 3 seconds were saved under two numbers. In 3 pairs the labels differ (`Happy_005_Male` / `Neutral_225_Male`, `Fear_646_Male` / `Neutral_024_Male`, `Fear_645_Male` / `Neutral_293_Male`). Only clips of equal length that line up were searched; windows cut at an offset from the same video and overlapping in part were not.
+- The description says the clips come from public YouTube videos; how they were cut and who gave the labels is not stated, and the release has no video ID, speaker ID or transcript.
+
+
 ## Provenance
 
 figshare article 30218872 (version 3, published 2026-03-17), DOI
