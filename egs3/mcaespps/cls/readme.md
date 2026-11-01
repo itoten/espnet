@@ -23,6 +23,50 @@ default to `download/` and `data/` under the recipe.
 - `MCAESPPS` — the directory holding the extracted emotion folders, or where to download them to
 - `MCAESPPS_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the OSF project `9jyzc` (MCAE-SPPS, version 2025.11.30; the emotion folders of audio; downloaded around 2026-10-25). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from OSF, no sign-in. The recordings that were not validated are not distributed.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 6,675 | 6 | 2.30 |
+
+How these were counted: every `.wav` in the seven emotion folders (48 kHz mono 16-bit, 0.38 to 3.98 s); hours from the file lengths. Speakers are the 6 actors (speakers 1 to 3 male and 4 to 6 female, per the file names `<speaker><emotion><sentence>.wav`). The grid of 6 actors x 7 emotions x 200 sentences would have 8,400 recordings; 6,675 are distributed.
+
+### Files per label
+
+| label (emotion folder in the release) | samples |
+|---|---|
+| neutral | 1,196 |
+| sadness | 1,187 |
+| anger | 1,129 |
+| surprise | 969 |
+| happiness | 785 |
+| disgust | 738 |
+| fear | 671 |
+
+How these were counted: the emotion folder each file is in (the digit in the file name agrees). The emotion of the table (`Corpus information.xlsx`) after validation equals the folder for every file.
+
+### Issues in the release
+
+- Of the 8,400 recordings of the full grid, only the 6,675 selected by the validation are distributed.
+- No duplicate recordings were found.
+
+### Listening test ratings in the release
+
+`Corpus information.xlsx` on the OSF project gives, for every recording, the result of a perception test: 720 raters in 18 groups, 40 raters per recording, chose the emotion and rated its intensity from 1 to 9. The share of the 40 who chose the intended emotion has mean 0.763 and minimum 0.475; 137 recordings are below 0.5. (This table was not part of the downloaded audio folders.)
+
+
 ## Download
 
 `prepare_source` downloads the seven per-emotion zip files (640 MB) from
