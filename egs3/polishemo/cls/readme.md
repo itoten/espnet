@@ -24,6 +24,41 @@ default to `download/` and `data/` under the recipe.
 - `POLISHEMO` — the extracted archive, or where to download it to
 - `POLISHEMO_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the MOST Wiedzy record `10.34808/h46c-hb44` (Emotions in Polish speech recordings, created in 2019 and published in 2020; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from MOST Wiedzy, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 450 | 5 | 0.11 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz mono 16-bit, 0.48 to 1.63 s); hours from the file lengths. Speakers are `m1` to `m5` in the file names `<speaker>.<emotion>_<word>_<take>.wav` (five men aged 21 to 23). Each recording is a single word (`nie`, `oddaj`, `podaj`, `stop`, `tak`, `trzymaj`).
+
+### Files per label
+
+| emotion code in the file name | read as (record description) | samples |
+|---|---|---|
+| a | anger | 150 |
+| s | fear | 150 |
+| n | neutral | 150 |
+
+How these were counted: the letter before the underscore in each file name (five speakers x six words x five takes per emotion). The release has no disgust, happy, sad or surprise class.
+
+### Issues in the release
+
+- Four pairs of files have byte-identical content: the same speaker, emotion and word in different takes (`m1.n_oddaj_2` and `_3`, `m1.n_tak_4` and `_5`, `m2.a_nie_3` and `_4`, `m4.a_oddaj_4` and `_5`).
+
+
 ## Download
 
 `prepare_source` downloads the archive (28 MB) from MOST Wiedzy Open Research
