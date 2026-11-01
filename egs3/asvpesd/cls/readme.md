@@ -32,6 +32,53 @@ default to `download/` and `data/` under the recipe.
 - `ASVPESD` — the directory holding the extracted audio, or where to download it to
 - `ASVPESD_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 4782712 (ASVP-ESD update, `ASVP_UPDATE/Audio` and `ASVP_UPDATE/Bonus`; downloaded around 2026-10-15). The record describes 9,092 files in all; only the speech files (channel code 01) were obtained and counted here. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 3,555 (speech files) | unknown (76 source folders) | 6.08 |
+
+How these were counted: every `.wav` under `ASVP_UPDATE/` (all speech channel 01, 16 kHz mono, 0.38 to 30.56 s; 3,530 in `Audio/` and 25 in `Bonus/`); hours from the file lengths. The non-speech vocalizations and the infant sounds described on the record page were not counted. The folders `actor_N` (76) are source folders, not verified single speakers, so the number of speakers is unknown; the record says odd folders are female and even folders male.
+
+### Files per label
+
+| emotion code in the file name (third field) | samples |
+|---|---|
+| 02 | 997 |
+| 05 | 935 |
+| 03 | 459 |
+| 04 | 432 |
+| 08 | 244 |
+| 12 | 194 |
+| 06 | 98 |
+| 07 | 76 |
+| 09 | 62 |
+| 11 | 26 |
+| 10 | 17 |
+| 01 | 15 |
+
+How these were counted: the third field of each file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<actor>-<age>-<source>-<language>[-...].wav`. The record gives 02 neutral, 03 happy, 04 sad, 05 angry, 06 fearful, 07 disgust and 08 surprised; the remaining codes (01, 09, 10, 11, 12) are the five emotions boredom, excited, pleasure, pain and disappointment, and their order was not checked. The number of fields varies between files (8 to 12).
+
+### Issues in the release
+
+- The infant-sound folder `Bonus/` (25 files here, all labelled with the same emotion code) is in the speech set; 16 of them carry the age field of a newborn. The Whisper transcripts of these files are mostly repetitions and meaningless words, which suggests infant vocalizations (inferred, not listened to).
+- Pairs with the same decoded audio or nearly: 22 groups (44 files) among the files with the seven shared emotions; in 8 groups (16 files) the emotion labels differ (for example 6 groups in the `a35` folder).
+- The language field has values the record does not describe (3,241 files with the seven shared emotions: Chinese 1,585, English 989, code 03 in 467, French 87 and others); the intensity, age and source fields also contain undescribed values.
+- The folders include dialogues and multi-person audio although the record describes them as actors; the individual raters' judgements (five raters for the first 52 folders and three others later) are not in the release.
+
+
 ## Download
 
 `prepare_source` downloads `ASVP_ESD.zip` (1.26 GB) from Zenodo, checks it
