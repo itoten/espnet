@@ -12,6 +12,49 @@ negative ones (`angry`, `fear`, `pain`) at four intensities (low, moderate, stro
 peak). Only `angry`, `fear` and `surprise` are among the seven labels shared with the
 other recipes.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 4066235 (VIVAE, Variably Intense Vocalizations of Affect and Emotion Corpus; the archive holds `full_set` and `core_set`; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,085 | 11 | 0.27 |
+
+How these were counted: every `.wav` in `full_set` (44.1 kHz mono 16-bit, 0.40 to 2.00 s, median 0.81 s); hours from the file lengths. Speakers are `S01` to `S11` (`S11` has 54 files, the others 87 to 111; every speaker has all six states). The recordings are non-speech vocalizations (screams, cries, laughs). `core_set` (480 files) holds files that are all also in `full_set` and was not counted separately.
+
+### Files per label
+
+| label (emotion word in the file name) | samples |
+|---|---|
+| pleasure | 202 |
+| surprise | 187 |
+| pain | 185 |
+| fear | 176 |
+| anger | 174 |
+| achievement | 161 |
+
+How these were counted: the emotion word of each file name `<speaker>_<emotion>_<intensity>_<number>.wav`; four intensities (low 262, moderate 269, strong 282, peak 272). `pleasure` denotes sexual pleasure in the description.
+
+### Issues in the release
+
+- `full_set` contains 605 recordings that are not in `core_set`. The core set (6 emotions x 4 intensities x 10 speakers x 2 items = 480 files; speakers `S01` to `S10` with 48 files each, none from `S11`) was selected by the authors "based on judged authenticity"; the number of raters and the cut-off of this selection are not stated in the sources read.
+- No duplicate recordings were found.
+
+### Listening test ratings in the release
+
+The 480 core-set recordings were rated by 90 participants (30 per task, native German speakers, Sci Rep 2021): a seven-alternative choice with intensity and authenticity ratings, per-emotion clarity ratings, and valence and arousal ratings with authenticity. The individual responses are on OSF (osf.io/jmh5t), not in the Zenodo archive.
+
+
 ## What is used
 
 The `full_set` folder of the archive: 1,085 recordings, 0.27 hours, from 11
