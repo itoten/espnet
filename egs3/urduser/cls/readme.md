@@ -15,6 +15,52 @@ doi:10.1016/j.dib.2025.111627 (same authors as the Mendeley record). The labels 
 `neutral` and `sad`. There is no `surprise`. This is a different corpus from the
 `urdu` recipe (400 clips, four emotions).
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `jcpfjnk5c2` version 4 (UrduSER; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 3,500 | 10 | 3.04 |
+
+How these were counted: every `.wav` in `audio/` (44.1 kHz stereo 16-bit, 0.53 to 18.70 s, median 2.81 s); hours from the file lengths. Speakers are the 10 actor numbers in the file names `<actor>_<gender>_<emotion>_<number>.wav` (five men and five women; real names are in the xlsx of the release).
+
+### Files per label
+
+| emotion code in the file name | read as | samples |
+|---|---|---|
+| 1 | angry | 500 |
+| 2 | fear | 500 |
+| 3 | boredom | 500 |
+| 4 | disgust | 500 |
+| 5 | happy | 500 |
+| 6 | neutral | 500 |
+| 7 | sad | 500 |
+
+How these were counted: the third field of each file name; checked against the Urdu emotion words in `UrduSER_Description.xlsx` and against the emotion folders of the release's zip: both agree for all 3,500 files. The release has no surprise class.
+
+### Issues in the release
+
+- Two clips of the same actor (`3_0_5_03` and `3_0_5_04`, happy) have nearly the same sound (waveform correlation 0.9997).
+- The paper states 2 to 6 s per clip and the xlsx a 32-bit float format at 41,100 Hz; the files are 0.53 to 18.70 s long, 16-bit PCM at 44.1 kHz.
+- The audio was processed by the authors: music separation, noise suppression and trimming of silence at the start and end at -60 dB (Audacity 3.6.1 with the OpenVINO extension; paper section 4.6).
+- The clips are extracted from Pakistani drama serials, telefilms and TV shows on YouTube. The paper says it selected clips that were either explicitly licensed under Creative Commons or short excerpts consistent with fair use; the release does not show which clips fall in which group.
+
+### Listening test ratings in the release
+
+Not in the release: according to the paper, three native Urdu-speaking authors labelled the dialogues from the scene (one labelled, a second verified, a third checked samples), and a survey of about 100 native Urdu-speaking undergraduate students, each listening to 10 random samples, matched the original labels in 94% of the answers; the single answers are not distributed.
+
+
 ## How it was made
 
 By the paper, the ten actors (five men and five women, aged 20 to 65, from different
