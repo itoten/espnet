@@ -37,6 +37,44 @@ default to `download/` and `data/` under the recipe.
 - `URDU` — the extracted repository archive, or where to download it to
 - `URDU_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `siddiquelatif/URDU-Dataset` (commit `4b546d4e0fa36d1c86c53a281631b2ab7ce2fdec`; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 400 | 29 (README: 38) | 0.28 |
+
+How these were counted: every `.wav` in the repository (44.1 kHz mono 16-bit; 200 clips are 2.0 s, 199 are 3.0 s and one is 0.99 s, so the clips were cut to a fixed length); hours from the file lengths. Speakers are the 29 distinct speaker IDs in the file names `S<gender><speaker>_F<file>_<emotion><index>.wav` (18 male, 11 female); the README and the paper say 38 speakers (27 male, 11 female), and the reason for the difference is not known.
+
+### Files per label
+
+| label (emotion folder; code in the file name) | samples |
+|---|---|
+| Angry (A) | 100 |
+| Happy (H) | 100 |
+| Neutral (N) | 100 |
+| Sad (S) | 100 |
+
+How these were counted: the emotion folder each file is in (the letter A, H, N or S in the file name agrees). According to the paper, four students of two universities labelled the clips from audio and video and the clips on which at least two agreed were kept; the individual ratings are not in the release.
+
+### Issues in the release
+
+- The speaker IDs are very uneven: the 29 IDs have 2 to 80 clips each (the five most frequent have 80, 48, 40, 38 and 28), and 26 of the 29 IDs appear with a single emotion (two with two, one with three).
+- The README says 38 speakers; the file names carry 29.
+- The clips come from Urdu TV talk shows on YouTube (unscripted discussions); the paper notes that music and other noise sometimes accompany the speech. There is no transcript, and no license for the shows is given.
+
+
 ## Download
 
 `prepare_source` downloads the repository archive from GitHub (about 86 MB once extracted,
