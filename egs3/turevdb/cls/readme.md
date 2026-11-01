@@ -31,6 +31,47 @@ default to `download/` and `data/` under the recipe.
 - `TUREVDB` — the extracted `Sound Source/` directory, or where to download it to
 - `TUREVDB_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `Xeonen/TurEV-DB` (the `Sound Source/` directory; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,735 | 6 (inferred from the file names) | 0.46 |
+
+How these were counted: every `.wav` under `Sound Source/<Emotion>/` (44.1 kHz mono 16-bit, 0.35 to 2.47 s; the utterances are single words); hours from the file lengths. The first field of the file names takes six values (`1157` 150 files, `1234`, `1358`, `1984` and `6783` 328 each, `7895` 273), which are read as the speakers; this is an inference (the paper speaks of six speakers: three women and three men without acting experience).
+
+### Files per label
+
+| label (emotion folder in the release) | emotion code in the file name | samples |
+|---|---|---|
+| Angry | kz | 487 |
+| Sad | sk | 483 |
+| Calm | mt | 408 |
+| Happy | hl | 357 |
+
+How these were counted: the emotion folder each file is in (the code in the file name agrees; the folder-to-code reading kz, sk, mt, hl follows the recipe). The release has no disgust, fear, neutral or surprise class. The numbers per speaker and emotion are uneven: `1157` has no `Calm` or `Happy` and `7895` only 29 `Happy`.
+
+### Issues in the release
+
+- The README says CC BY-NC-ND 4.0 and the LICENSE file contains the GNU GPL v3, which is not limited to non-commercial use; the authors' intent was not asked.
+- The repository also holds spectrograms, model outputs and the train and test spectrograms (1,386 and 349); the audio is in `Sound Source/` only. No duplicate recordings were found.
+
+### Listening test ratings in the release
+
+According to the paper (not in the repository), three graduate students rated the validation tokens (20% of the recordings) in four-way choices with 0.64 to 0.65 accuracy; no single responses are in the release.
+
+
 ## Download
 
 `prepare_source` downloads the repository archive from GitHub, pinned to the
