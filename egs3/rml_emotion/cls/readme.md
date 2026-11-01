@@ -39,6 +39,48 @@ default to `download/` and `data/` under the recipe.
 - `RML_EMOTION` — the directory holding the extracted `s1/` ... `s8/` folders
 - `RML_EMOTION_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `ryersonmultimedialab/ryerson-emotion-database` (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 720 | 8 (see below) | 0.99 |
+
+How these were counted: every `.avi` file under `s1/` to `s8/` (video with a stereo audio track, 44.1 kHz in 669 files and 48 kHz in 51; 2.13 to 8.37 s); hours from the audio lengths. The release does not say that a folder `s1` to `s8` is one person; 8 is the number of folders (the Kaggle page and the original page also speak of 8 subjects).
+
+### Files per label
+
+| emotion code in the file name | samples |
+|---|---|
+| an | 120 |
+| di | 120 |
+| fe | 120 |
+| ha | 120 |
+| sa | 120 |
+| su | 120 |
+
+How these were counted: the two-letter emotion code at the start of each file name. The release has no neutral class and no label table; the codes are read as angry, disgust, fear, happy, sad and surprise.
+
+### Issues in the release
+
+- The Kaggle description says the audio is 22,050 Hz and single-channel; the files are 44.1 kHz or 48 kHz stereo. The left and right channels differ in all 720 files (they contain nearly the same sound). The original page says 3 to 6 s per clip; the files are 2.13 to 8.37 s.
+- The Kaggle description says "about 500 samples" were selected by a listening test; the 720 files carry no marker of which ones.
+- 11 files form 5 groups of byte-identical content (same subject, folder and emotion, differing only in the take number).
+- Observation by the recipe author (2026-10-20 at the latest): the 5 duplicate groups were listened to; each group is the same utterance.
+- The language folders of `s3` to `s8` use 7 codes (`eng`, `chi`, `per`, `urd`, `pjb`, `sdh`, `hnh`) while the description names 6 languages; what `sdh` and `hnh` mean is not documented. `s1` and `s2` have no language folder.
+
+
 ## Download
 
 The recipe does not download the data. Download the zip from the Kaggle page
