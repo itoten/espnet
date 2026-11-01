@@ -40,6 +40,48 @@ default to `download/` and `data/` under the recipe.
 - `LEGOV2` — the directory holding the extracted `LEGOv2/` directory, or where to download it to
 - `LEGOV2_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the LEGOv2 corpus (Let's Go bus-information calls, parameterised and annotated by the Dialogue Systems Group of Ulm University; `audio/` and `corpus/csv/interactions.csv`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the corpus page, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 7,909 | unknown (callers are anonymous) | 26.41 |
+
+How these were counted: every `.wav` under `audio/` (8 kHz mono except one 44.1 kHz file; 0 to 1,331.8 s, including whole-call recordings); hours from the file lengths. The release has 548 calls and 13,836 system-user exchanges, and no speaker ID; the same person may have called more than once.
+
+### Files per label
+
+| label (the `EmotionalState` column of `interactions.csv`) | utterances with a label and a recording |
+|---|---|
+| neutral | 3,305 |
+| slightly angry | 693 |
+| angry | 137 |
+| very angry | 104 |
+| friendly | 4 |
+| garbage | 589 |
+
+How these were counted: the `EmotionalState` column of `interactions.csv` for the 4,832 user utterances that have both a label and a recording (from 291 of the 302 annotated calls); the other recordings (about 3,600, including whole calls) have no label. The 4,243 labelled utterances other than `garbage` last 1.97 hours in total (0.58 to 21.7 s).
+
+### Issues in the release
+
+- `garbage` (589 utterances) is not a value of the annotation scheme (`friendly`, `neutral`, `slightly angry`, `angry`, `very angry`) and its meaning is not documented. They are short (median 1.0 s against 1.1 s for `neutral`); the system's recognition results are mostly short words (`NO`, `YES`, `HELLO`, the key press `DTMF_ZERO`) or empty (52); they are spread over 184 calls.
+- Observation by the recipe author (2026-10-25): several of the `garbage` utterances were listened to; they are silence or clips to which no emotion can be assigned.
+- The emotional state was annotated by one annotator in 302 calls.
+- Two groups of byte-identical recordings (533 files) exist among the recordings; none of them is among the labelled utterances that the recipe uses.
+- Calls are 8 kHz telephone speech.
+
+
 ## Download
 
 `prepare_source` downloads `LEGOv2.zip` (1.19 GB, no login) from
