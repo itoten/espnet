@@ -34,6 +34,46 @@ Things to know when reading the scores:
   them have no wav file, and 86 wav chunks (plus 8 full-call recordings, not
   used) have no label in the table. Only chunks with both are used.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset ANAD (Arabic Natural Audio Dataset; `ANAD.csv`, `ANAD_Normalized.csv` and the three `1sec_segmented_part*` folders, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,420 | unknown | 0.36 |
+
+How these were counted: every `.wav` under the three `1sec_segmented_part*` folders (44.1 kHz stereo, 0.05 to 1.0 s; one file could not be read); hours from the file lengths. The release has no speaker ID: the clips come from eight recordings (`V1` to `V8`) of live calls on Arabic talk shows, so the number of speakers is unknown.
+
+### Files per label
+
+| label (the `Emotion` column of `ANAD.csv`) | rows of `ANAD.csv` |
+|---|---|
+| angry | 741 |
+| happy | 505 |
+| surprised | 137 |
+
+How these were counted: the `Emotion` column of `ANAD.csv` (1,383 rows). The label is constant within a call: calls `V1`, `V3`, `V8` are happy, `V2` and `V6` surprised, `V4`, `V5` and `V7` angry. Of the 1,420 wav files, 86 have no row in the table and 49 rows have no wav file; 1,334 have both.
+
+### Issues in the release
+
+- The labels were given by 18 listeners per video (call), not per clip; whether each clip matches its label has not been checked.
+- `ANAD.csv` (1,383 rows) and the wav files (1,420) do not match: 49 rows have no wav, 86 wavs have no row, and 1 wav is unreadable. 8 full-call recordings are also in the release.
+- Of the 1,334 clips with both a wav and a label, 768 fall into two groups of near-identical audio (386 and 382 clips; waveform correlation above 0.9) that appear under different calls and different labels; Whisper's transcripts of them are meaningless strings.
+- Observation by the recipe author (2026-10-23 at the latest): six clips from these groups were listened to and are the same sound.
+- Observation by the recipe author (2026-10-23 at the latest): 15 of the remaining 566 clips were listened to; in each the same female voice (sounding like "ava smi...") can be heard, with slightly different background sound. The cause is not known.
+- The release has no speaker ID: the clips of one call cannot be assigned to speakers.
+
+
 ## Provenance
 
 Kaggle dataset `suso172/arabic-natural-audio-dataset` (version 11, 2017-12-01),
