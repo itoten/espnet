@@ -31,6 +31,42 @@ default to `download/` and `data/` under the recipe.
 - `VOICESTATS` — the extracted archives, or where to download them to
 - `VOICESTATS_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Voice Statistics corpus (声優統計コーパス, by the doujin circle 日本声優統計学会; the three speaker archives from the project site; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the project site, no sign-in. The terms of use are only that the corpus is free for mainly personal research and analysis; there is no license text.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 900 | 3 | 2.28 |
+
+How these were counted: every `.wav` in the three speaker archives (48 kHz mono 16-bit, 3.1 to 21.4 s); hours from the file lengths. Speakers are `fujitou`, `tsuchiya` and `uemura` (professional female voice actresses), each reading the same 100 phoneme-balanced sentences in three styles.
+
+### Files per label
+
+| label (style in the file name) | samples |
+|---|---|
+| normal | 300 |
+| happy | 300 |
+| angry | 300 |
+
+How these were counted: the style field of each file name `<speaker>_<emotion>_<sentence>.wav` (the file also sits in a folder `<speaker>_<emotion>`). The site describes the styles as three emotion patterns; `normal` (通常) is the normal reading.
+
+### Issues in the release
+
+- The site gives no listening test or other check of whether the recordings express the styles.
+- The site says that the circle is not an official academic society but a circle that carries out doujin activities (translated from Japanese).
+
+
 ## Download
 
 `prepare_source` downloads nine tar.gz archives (one per speaker and style,
