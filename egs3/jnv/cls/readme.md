@@ -41,6 +41,49 @@ default to `download/` and `data/` under the recipe.
 - `JNV` — the directory holding the extracted `JNV/` directory, or where to download it to
 - `JNV_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the JNV corpus (Japanese Nonverbal Vocalization corpus; folders `F1`, `F2`, `M1`, `M2`, `phrases.txt`, `readme.md` and three rating files, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the corpus page, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 420 | 4 | 0.395 |
+
+How these were counted: every `.wav` under the four speaker folders (48 kHz stereo 24-bit in 419 files, 22.05 kHz mono in 1; 0.42 to 9.62 s); hours from the file lengths. Speakers: `F1`, `F2`, `M1`, `M2` (two women, two men; `M2` is a professional, the others amateurs, per the release's readme).
+
+### Files per label
+
+| label (emotion in the file name) | samples |
+|---|---|
+| angry | 68 |
+| disgust | 54 |
+| fear | 50 |
+| happy | 76 |
+| sad | 40 |
+| surprise | 132 |
+
+How these were counted: the emotion field of each file name `<speaker>_<emotion>_<id>_<session>.wav`. The session letter is `R` (phrase designated) or `F` (phrase chosen by the speaker). Every speaker has 33 surprise, 19 happy, 17 angry and 10 sad clips; disgust 13 to 15 and fear 12 to 13.
+
+### Issues in the release
+
+- The release's readme states 105 clips per speaker (87 `R`, 15 `F`) and a total length of 406.9 s; the files give 104 to 106 clips per speaker (`R` 86 to 87, `F` 17 to 20) and 1,422.0 s. `file_forced_choice_accuracy.csv` has 418 rows (2 clips have no row).
+- The vocalizations are written down as phrases (for example `あは` for a laugh, `ぐすん` for sobbing); `phrases.txt` lists 87 phrases for the `R` session: 16 for happy, 30 for surprise, 14 for angry, 10 for fear, 10 for disgust and 7 for sad. Only 9 of the phrase strings occur under two emotions. For the 73 `F` clips the phrases are not recorded.
+
+### Listening test ratings in the release
+
+The release contains `file_rating_scale.csv`, `file_authenticity.csv` and `file_forced_choice_accuracy.csv`, the listeners' per-clip ratings (crowdsourced). In `file_forced_choice_accuracy.csv` the mean forced-choice accuracy is 0.734; 42 clips have accuracy 0 (no listener chose the intended emotion); the emotion with the highest rating equals the intended emotion for 284 of the 420 clips.
+
+
 ## Download
 
 `prepare_source` downloads `jnv_corpus_ver3.zip` (326 MB, byte size checked; the
