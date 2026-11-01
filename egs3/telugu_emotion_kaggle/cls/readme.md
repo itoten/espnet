@@ -25,6 +25,48 @@ and default to `download/` and `data/` under the recipe.
 - `TELUGU_EMOTION_KAGGLE` — the directory holding the extracted `telugu/` folder
 - `TELUGU_EMOTION_KAGGLE_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `jettysowmith/telugu-emotion-speech` (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 458 | 20 | 0.53 |
+
+How these were counted: every `.wav` under `telugu/<emotion>/` (44.1 kHz stereo, 16-bit; nine files are 48 kHz; 0.26 to 27.2 s); hours from the file lengths. Speakers are the 20 distinct `SPK[MF]nn` fields in the file names (10 `SPKF`, 10 `SPKM`); the release does not document the file name fields.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| angry | 96 |
+| happy | 94 |
+| nuetral | 103 |
+| sad | 80 |
+| suprised | 85 |
+
+How these were counted: the name of the folder each file is in. The folder names `nuetral` and `suprised` are spelled so in the release.
+
+### Issues in the release
+
+- The Kaggle page has no description, subtitle, tags or citation, so the recording conditions, the labelling procedure and the source are not documented.
+- 2 files in the `sad` folder are empty (0 bytes).
+- 3 files in the `nuetral` folder (speaker `SPKM03`) carry the code `SA` in their names; the other 455 files' codes match their folder.
+- Observation by the recipe author (2026-10-18 at the latest): the 3 `nuetral` files with the `SA` code were listened to and sounded neutral. Three further `nuetral` files (`S95_BIL_CO14_G3`) were listened to and sounded angry; their F0 is close to that of the `angry` files. Only part of the files was listened to.
+- Observation by the recipe author (2026-10-18 at the latest): the recordings sound like recorded speech, not like film audio.
+- Whisper identified Telugu in 382 of 456 transcribed files; the rest include English lines.
+
+
 ## Download
 
 The data is obtained manually; the recipe raises an error with the URL when it is
