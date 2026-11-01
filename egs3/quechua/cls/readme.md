@@ -18,6 +18,54 @@ valid, a6 test) after the metadata repairs `dataset/config.yaml` documents
 (two mis-spelled emotions, two mis-typed speaker ids, 42 mis-attributed
 `happy` recordings).
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the figshare record 20292516 (Quechua Collao emotional speech corpus; `Audios/`, `Data/Data/Data.xlsx`, `Labels/` and `Script/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from figshare, no sign-in (the archive is checked against its published MD5).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 12,420 | 6 | 15.24 |
+
+How these were counted: every `.wav` in `Audios/` (mostly 44.1 kHz mono: 12,409; 7 files at 16 kHz mono and 4 at 48 kHz stereo; 0.75 to 21.83 s); hours from the file lengths. Speakers are the 6 actor codes `a1` to `a6` of `Data.xlsx` (the release has no actor attributes).
+
+### Files per label
+
+| label (the `Emotion` column of `Data.xlsx`, as written) | samples |
+|---|---|
+| happy | 1,380 |
+| sleepy | 1,380 |
+| sadness | 1,380 |
+| calm | 1,380 |
+| fear | 1,380 |
+| excited | 1,380 |
+| neutral | 1,380 |
+| anger | 920 |
+| angry | 460 |
+| boredom | 920 |
+| bored | 460 |
+
+How these were counted: the `Emotion` column of all 12,420 rows of `Data.xlsx`. `anger` and `angry` are two spellings of one emotion (1,380 together), as are `boredom` and `bored` (1,380 together), so each of the nine emotions has 1,380 recordings (6 actors x 230 script items).
+
+### Issues in the release
+
+- `Data.xlsx` contains errors: two spellings of an emotion (above), two mistyped actor IDs (`2_`, `6-`), and 42 `happy` recordings of actor `a4` that belong to actor `a5` (the grid of 6 actors x 9 emotions x 230 items is complete only after the repairs).
+- Besides the discrete emotion, `Labels/` holds valence, arousal and dominance ratings by four raters.
+
+### Listening test ratings in the release
+
+`Labels/` holds valence, arousal and dominance ratings by four raters for the recordings (not counted here).
+
+
 ## Data, ratings and licence
 
 The 12,420 recordings (about 15 hours; 0.75 to 21.8 seconds; mostly 44.1 kHz mono) are
