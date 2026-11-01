@@ -13,6 +13,43 @@ studio, each sentence in one emotion. The description reports 3 hours 1 minute 4
 seconds in total. No journal article for the dataset was found. The labels are
 `happy`, `angry` and `sad`; there is no `neutral`, `fear`, `disgust` or `surprise`.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `hzrznx3xs5` version 1 (INESCO, Indonesian Expressive Speech Corpus for Emotion Speech Synthesis; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 2,399 | 4 | 3.03 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz 16-bit, 1.1 to 11.8 s; the recordings of `fyat` and `mdpa` are mono and those of `fcim` and `mbaz` are stereo with channels differing by at most 5 in 16-bit units in the 200 compared); hours from the file lengths (the description gives 3 h 1 min 49 s). Speakers are `fyat` 600 files, `mdpa` 600, `mbaz` 600 and `fcim` 599 (two women, two men).
+
+### Files per label
+
+| emotion letter in the file name | sentence numbers (naming guideline) | samples |
+|---|---|---|
+| h (happiness) | 001 to 211 | 844 |
+| s (sadness) | 402 to 600 | 796 |
+| a (anger) | 212 to 401 | 759 |
+
+How these were counted: the letter after the speaker in each file name `<speaker>_<emotion><sentence>.wav`; the release's `Guideline of File Naming INESCO Dataset.pdf` assigns sentence numbers to the emotions as shown, and all 2,399 file names agree. Each sentence is therefore read in a single emotion and the three emotions use different sentences. The release has no neutral, fear, disgust or surprise class.
+
+### Issues in the release
+
+- The description says 2,400 recordings (600 sentences x 4 speakers); `fcim_a332.wav` is missing.
+- `mbaz_h138.wav` has lost the first 8 bytes of its header (it begins with `WAVE` instead of `RIFF`) and ffmpeg cannot open it as it is; with the 8 bytes restored in memory it is 2.6 s long (its neighbour `mbaz_h137` is 2.0 s).
+- No two files have the same content (SHA-256).
+
+
 ## What is used
 
 The release has 2,399 WAV files named `<speaker>_<emotion><sentence>.wav` (for
