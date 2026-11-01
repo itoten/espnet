@@ -10,8 +10,90 @@ commands, proper nouns, and so on).
 text-to-speech corpus for the 22 scheduled languages of India. Each language has one
 female and one male professional voice artist (44 speaker-language pairs), who read
 text of many kinds in a studio. The audio is 48 kHz mono 16-bit; `create_dataset`
-converts it to 16 kHz. The recipe uses all 22 languages: 640,806 utterances, 1,145 hours
-(0.0 to 332.6 s per clip, median 5.5 s).
+converts it to 16 kHz. The recipe uses all 22 languages and all 17 styles.
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-10-29 against the Hugging Face dataset `ai4bharat/Rasa` (1,317 parquet files,
+387.65 GB, downloaded 2026-10-28; the repository revision was not recorded).
+All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, gated: after agreeing on the dataset page to share the username and email with
+the authors, all files downloaded with a token. No other form or review.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 640,946 | 44 | 1,145.40 |
+
+How these were counted: every row of the 1,317 parquet files (one row = one utterance); hours
+from the decoded audio length. Speakers: distinct pairs of the `language` and `gender` columns
+(one female and one male voice per language). The release has no speaker ID, so whether an
+artist recorded more than one language cannot be told; 44 is the number of voices per
+language and gender.
+
+### Files per label
+
+| label (as in the release) | samples |
+|---|---|
+| WIKI | 144,250 |
+| CONV | 124,578 |
+| PROPER NOUN | 104,068 |
+| BOOK | 55,788 |
+| NEWS | 41,782 |
+| HAPPY | 21,975 |
+| ANGER | 21,467 |
+| FEAR | 20,712 |
+| SURPRISE | 20,484 |
+| DISGUST | 20,134 |
+| SAD | 20,070 |
+| ALEXA | 13,292 |
+| INDIC | 12,852 |
+| BB | 6,769 |
+| DIGI | 5,452 |
+| UMANG | 5,436 |
+| SANGRAH | 1,837 |
+
+How these were counted: the `style` column of every row. The 70 duplicated filenames below
+are counted under both of their styles.
+
+### Issues in the release
+
+- Only 6 of the 17 styles are emotions (`HAPPY`, `ANGER`, `FEAR`, `SURPRISE`, `DISGUST`,
+  `SAD`: 124,842 samples, 280.4 hours). The other 11 are kinds of text or voice-command
+  domains and make up 516,104 of the 640,946 samples (80.5%) and 865.0 of the 1,145.4 hours.
+- 640,946 rows against 640,950 utterances in the dataset card's statistics table: the
+  Gujarati female and male voices have 2 fewer each.
+- 70 filenames of the Tamil male voice (`TAM_M_NAMES_*`) occur twice, with byte-identical
+  audio (MD5) but a different text and style (`DIGI` and `PROPER NOUN`).
+- Observation by the recipe author (2026-10-29): of those 70, one clip
+  (`TAM_M_NAMES_00106`) was listened to. It says "Digital India Mission", the text of its
+  `PROPER NOUN` entry, not "nine hundred" of its `DIGI` entry. The other 69 were not
+  listened to.
+- 2,529 pairs of byte-identical recordings (MD5), all within one speaker and style.
+  1,644 pairs have consecutive filenames; 464 pairs have one file in the published train
+  and the other in test.
+- Observation by the recipe author (2026-10-29): two of those pairs were listened to
+  (`SND_F_WIKI_01563`/`01564` and `SND_F_WIKI_03613`/`03612`). The second pair sounded the
+  same; the first sounded slightly shifted, although the two files are byte-identical. The
+  cause was not checked.
+- One file is empty (`ASM_F_INDIC_00001`); 12 clips are shorter than 0.2 s (including the
+  empty one) and 598 are longer than 30 s (up to 332.6 s).
+- Observation by the recipe author (2026-10-29): one clip each of `ANGER` (Konkani),
+  `SAD` (Bodo), `WIKI` (Malayalam) and `NEWS` (Assamese) was listened to. The two emotion
+  clips sounded different in vocal expression from the two neutral ones.
+
+### Not stated in the documentation
+
+- `SANGRAH` occurs only for the Bengali male voice, and `INDIC` is absent from 10 of the
+  22 languages (`style`, `language` and `gender` columns).
 
 ## Labels
 
@@ -32,16 +114,10 @@ certified that the English text conveys the intended emotion; translators were a
 keep the emotion over the literal meaning. The label is therefore the intended
 emotion of the text the artist performed; no listener label of the recordings exists.
 
-**Only six of the 17 styles are emotions** (`happy`, `anger`, `fear`, `surprise`, `disgust`,
-`sad`): 124,842 utterances, 280.4 hours, from all 22 languages and all 44 speaker-language
-pairs. The other eleven styles are kinds of text (516,104 utterances, 865.0 hours in the
-converted files). The recipe trains on all 17; for speech emotion recognition the non-emotion
-styles are to be filtered out afterwards, which this recipe does not do.
+The recipe trains on all 17 styles; for speech emotion recognition the non-emotion styles
+are to be filtered out afterwards, which this recipe does not do.
 
-Style and text source are tied, so a model can partly recognise a style from the words
-(for example `proper_noun` clips are short names). `sangrah` occurs only for the Bengali
-male voice. Not every language has every style: `indic` is absent from 10 languages and
-`sangrah` from 21.
+Label counts after the recipe's filtering (see Splits):
 
 | label | train | valid | test |
 |---|---|---|---|
@@ -75,22 +151,11 @@ recordings with irregular pauses, stuttering or mispronunciations not aligned wi
 intended emotion were re-recorded or removed. No counts or agreement figures are given
 for this. The authors also trimmed silence and normalised the amplitude by hand.
 
-## Data
+## Recording
 
 The paper (for the three languages it describes) states that the recordings were made
 in a studio by professional voice artists who agreed in writing to research and
-commercial release. Some irregularities of the files:
-
-- 70 filenames of the Tamil male voice (`TAM_M_NAMES_*`) occur twice in the dataset, with
-  the same audio but a different text and style (`digi` and `proper_noun`). Both entries
-  of each are left out.
-- 2,529 pairs of recordings are byte-identical (all within one speaker and style;
-  1,644 pairs have consecutive filenames, 464 pairs span the published train and test).
-  They are kept by default; see `exclude_duplicates` in `dataset/config.yaml`.
-- The dataset page lists 12,151 / 15,799 utterances for the Gujarati female / male voice;
-  the files hold 2 fewer each.
-- 12 clips are shorter than 0.2 s (one is empty) and 598 are longer than 30 s; all are
-  removed by `remove_long_short`.
+commercial release.
 
 ## Environment variables
 
@@ -122,7 +187,11 @@ of language, speaker gender and style. All speakers appear in train, valid and t
 
 `remove_long_short` drops utterances shorter than 0.2 s or longer than 30 s from all
 three splits: 58 test clips are longer than 30 s (up to 332.6 s) and do not fit in GPU
-memory at inference. The result is 518,544 / 57,620 / 64,031 utterances.
+memory at inference. Both entries of each of the 70 duplicated filenames are always left out,
+since it cannot be told which text is right. The 2,529 byte-identical pairs are kept by
+default; `exclude_duplicates: true` in `dataset/config.yaml` leaves out one copy of each
+(the one in train when the pair spans train and test). The result is 518,544 / 57,620 /
+64,031 utterances.
 
 ## License
 
