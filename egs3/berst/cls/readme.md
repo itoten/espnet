@@ -19,6 +19,50 @@ listeners. `dataset/config.yaml` maps `anger`, `joy` and `sadness` to `angry`,
 `happy` and `sad`; `disgust`, `fear`, `neutral` and `surprise` are kept. All seven
 classes are roughly balanced in train (436 to 561 clips).
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `Rosie-Lab/BERSt` (repository revision `fed35c477427cff44206464b7f85e68d1fc99062`, last modified 2025-09-06; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 4,523 | 98 | 3.73 |
+
+How these were counted: every row of the `metadata.csv` of the `train`, `validation` and `test` folders (mono, 48 kHz in 3,704 clips and 44.1 kHz in 819, 1.03 to 22.5 s); hours from the clip lengths. Speakers are the distinct `user_id` values.
+
+### Files per label
+
+| label (the `affect` column of the release) | samples |
+|---|---|
+| fear | 684 |
+| disgust | 677 |
+| joy | 657 |
+| neutral | 657 |
+| anger | 651 |
+| surprise | 613 |
+| sadness | 584 |
+
+How these were counted: the `affect` column of the three `metadata.csv` files. The dataset card states that the labels were not validated by listeners.
+
+### Issues in the release
+
+- 31 groups (82 clips) of byte-identical content: 24 groups are different recordings with the same sound, 2 are different chunks of one recording, and 5 carry metadata of a different speaker, emotion or phrase (one of these spans validation and test); in the 5 the metadata of one of the copies is wrong.
+- Some clips hold the three levels of voice (speak, raise, shout) of one recording uncut: the phrase is repeated two or three times (11 clips found).
+- Some clips start with a voice reading the emotion name aloud ("Anger."; 3 clips of one speaker).
+- Only the 86 clips longer than 6 s were transcribed with Whisper to find the last two problems; about 4,437 clips of 6 s or less were not checked.
+- Observation by the recipe author (2026-10-23): the 31 duplicate groups were listened to; in the 5 groups with conflicting metadata the correct emotion could not be decided.
+- The card states 4,526 clips; the release has 4,523. The paper's Table 7 (emotion counts per split) does not match the counts of the files.
+
+
 ## Clips left out
 
 63 clips are listed in `exclude_files` in `dataset/config.yaml` and skipped. The
