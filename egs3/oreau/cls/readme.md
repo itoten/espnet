@@ -28,6 +28,46 @@ default to `download/` and `data/` under the recipe.
   download it to
 - `OREAU_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 4405783, version 2 (Oréau French emotional speech; `OréauFR_02`, a RAR archive; version 1 has 502 utterances; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in. The archive is a RAR file and needs `bsdtar` to extract.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 434 | 32 | 0.34 |
+
+How these were counted: every `.wav` in `OréauFR_02` (44.1 kHz stereo 16-bit from two microphones, 1.05 to 6.78 s); hours from the file lengths. Speakers are the 32 speaker numbers in the file names `<speaker><sentence><emotion><suffix>.wav` (non-professional; the table in the documentation gives 8 women and 24 men aged 22 to 27, though the table also lists ages 28 and 42).
+
+### Files per label
+
+| emotion letter in the file name | read as (French) | samples |
+|---|---|---|
+| N | neutral (neutre) | 70 |
+| C | angry (colère) | 67 |
+| D | disgust (dégoût) | 67 |
+| J | happy (joie) | 62 |
+| S | surprise | 62 |
+| T | sad (tristesse) | 55 |
+| P | fear (peur) | 51 |
+
+How these were counted: the emotion letter in each file name. According to the documentation, version 2 keeps the utterances that at least 50% of the listeners in the perception test recognised correctly and found natural; the individual results are not distributed. Each emotion has its own sentences (79 in all).
+
+### Issues in the release
+
+- The two recordings `m/sessc/30a07Ca.wav` (speaker 30, sentence 07, angry) and `m/sesst/41a11Ta.wav` (speaker 41, sentence 11, sad) have identical audio samples in both channels; only the headers differ.
+- The documentation says the files were recorded at 44.1 kHz and reduced to 16 kHz; the files are 44.1 kHz stereo. The two channels (two microphones) are not identical in any file and are poorly correlated in some.
+
+
 ## Download
 
 `prepare_source` downloads `OréauFR_02.rar` (109 MB) from
