@@ -18,7 +18,7 @@ clips. No duplicate clips were found.
 Each clip comes with the sentence read aloud (`text` column; the recipe does not use
 it). The 1,296 sentences were written for one emotion each: none is read in more
 than one emotion, and in the samples we read the wording often shows the emotion.
-A model could therefore partly judge by the wording, not only by the voice. By ear
+By ear
 the emotions also differ in how they are spoken (listened to on 2026-10-23: four
 clips per emotion, different speakers).
 
@@ -26,6 +26,52 @@ The label is the `emotion` column of the parquet files; `dataset/config.yaml` ma
 to the manifest label. `playfulness` is kept as its own class, since it has no
 counterpart in the other recipes. The clips are converted to 16 kHz mono with ffmpeg
 by `create_dataset`.
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `ATH-MaaS/CSEMOTIONS` (8 parquet files; repository revision `19498e62e6745cf9ec9b69a44b826caa467eac31`, last modified 2026-08-17; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 4,160 | 10 | 10.20 |
+
+How these were counted: every row of the 8 parquet files (48 kHz mono 16-bit, 1.75 to 34.2 s); hours from the decoded audio lengths. Speakers are the 10 distinct speaker names (`female001` to `female005`, `male001` to `male005`; 323 to 473 clips each).
+
+### Files per label
+
+| label (the `emotion` column of the release) | samples |
+|---|---|
+| angry | 769 |
+| fearful | 623 |
+| playfulness | 621 |
+| happy | 603 |
+| sad | 546 |
+| surprise | 508 |
+| neutral | 490 |
+
+How these were counted: the `emotion` column of the parquet files (the source spells `fearful`).
+
+### Issues in the release
+
+- The dataset card says 24-bit audio; the files are 16-bit.
+- The repository's NOTICE file states that data from ESD (a corpus for research use only) was incorporated, without saying which clips. No overlap was found: clips of the same length as ESD's 35,000 were compared by waveform, and ESD's 350 Chinese sentences were compared with Whisper transcripts of these clips (closest sentence 19% similar).
+- No duplicate clips were found.
+- Observation by the recipe author (2026-10-23): four clips per emotion from different speakers were listened to; the emotions sound different in how they are spoken.
+
+### Not stated in the documentation
+
+- The 1,296 sentences (`text` column) are each read in one emotion only: none occurs in more than one emotion (checked by exact match).
+
 
 ## Provenance
 
