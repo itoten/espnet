@@ -43,6 +43,46 @@ default to `download/` and `data/` under the recipe.
 - `HARPER_VALLEY_BANK` — the directory holding the extracted repository (`data/audio`, `data/transcript`), or where to download it to
 - `HARPER_VALLEY_BANK_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Gridspace and Stanford Harper Valley Bank repository on GitHub (`cricketclub/gridspace-stanford-harper-valley`, files as downloaded on 2026-10-18). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 25,730 | 59 | 12.02 |
+
+How these were counted: every segment in the 1,446 transcript files `data/transcript/*.json`; hours from the segments' `duration_ms` (0.03 to 18.66 s); the samples are the utterance segments of the 1,446 calls. The audio is two 8 kHz mono wav files per call, one per side, 47.3 hours in all. Speakers are the 59 distinct speakers named in the metadata (agent role 58, caller role 55, 54 in both roles); the release has no gender, age or language information.
+
+### Files per label
+
+| label (arg-max of a segment's `emotion` scores) | samples |
+|---|---|
+| neutral | 17,149 |
+| positive | 8,148 |
+| negative | 433 |
+
+How these were counted: the largest of the three scores (`negative`, `neutral`, `positive`) in each segment's `emotion` field, over all 25,730 segments. The corpus README describes the scores as the output of Gridspace's emotion model; the release has no human emotion judgement.
+
+### Issues in the release
+
+- 6,274 segments have a human transcript that is empty or only tags such as `[noise]` or `[music]`; their audio is background sound, yet every segment carries emotion scores.
+- The segment boundaries come from automatic speech recognition (each segment ends at the end of its last recognised word).
+- `offset_ms` does not match the position of the segment in the audio (checked by scanning the energy of the audio); `start_ms` does. `duration_ms` is the length of the segment, not of the call as the README says. The number of utterances and words per call differs from the paper's table.
+- In 37 calls (596 segments) `speaker_role` and `channel_index` name opposite sides; the voice of the segment is in the wav that `channel_index` names.
+- Observation by the recipe author (2026-10-19 at the latest): segments cut from the two candidate wav files of the 37 calls were listened to; the voice was in the file chosen by `channel_index`. Segments from the empty-transcript set sounded like background sound.
+- 150 segments are shorter than 0.2 s; segments shorter than 0.5 s include one-word utterances such as `bye` and `yes` (listened to).
+
+
 ## Download
 
 `prepare_source` downloads the repository tarball (676 MB compressed, 2.6 GB
