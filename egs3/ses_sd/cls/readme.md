@@ -30,17 +30,51 @@ airplane is almost full"), so these are their Spanish translations; `TSI` differ
 from CREMA-D's TSI ("The surface is slick"). Neither the Kaggle page nor the files
 say that the sentences were borrowed.
 
-The speakers are the same students as in SES-ED, recorded in the same classroom,
-so the same caveat applies: how clearly each one acts the emotion in the voice
-(the paralinguistic part) probably varies by speaker, and may be weak for some.
-This was heard in SES-ED; it was not checked separately for SES-SD. It holds for
-amateur recordings in general and is not specific to this corpus.
-
 Three environment variables control where the data lives. The last two are optional
 and default to `download/` and `data/` under the recipe.
 
 - `SES_SD` — the directory holding the extracted `SES-SD/` wav files
 - `SES_SD_OUTPUT` — where the converted audio and manifests are written
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `angeluxarmenta/ses-sd` (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,588 | 53 | 2.14 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz mono 16-bit, 3.99 to 5.99 s); hours from the file lengths. Speakers are the 53 speaker numbers in the file names `<speaker>_<sentence>_<emotion>_SPA.wav` (university students; no gender or age information).
+
+### Files per label
+
+| emotion code in the file name | samples |
+|---|---|
+| ANG | 265 |
+| DIS | 265 |
+| FEA | 265 |
+| HAP | 264 |
+| NEU | 264 |
+| SAD | 265 |
+
+How these were counted: the emotion code of each file name.
+
+### Issues in the release
+
+- The five sentences are the Spanish versions of SES-ED's sentences (Whisper large-v3 transcripts of 8 files per code, not checked by hand): `DFA` "No olvides la chamarra", `IEO` "Son las 11 en punto", `IWW` "Me pregunto de qué se trata esto", `TAI` "El avión está casi lleno", `TSI` "El sol está muy brillante". Four of the SES-ED sentences share text and code with CREMA-D sentences. Neither the page nor the files say the sentences were borrowed.
+- Two speaker-sentence-emotion combinations are missing (one each for speakers 25 and 39).
+- The speakers appear to be those of SES-ED (same speaker numbers); no recording is shared with SES-ED (checked).
+
 
 ## Download
 
