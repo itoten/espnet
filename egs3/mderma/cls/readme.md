@@ -11,6 +11,44 @@ speakers, according to the dataset description. There is no `disgust`, `fear` or
 `surprise`. The dataset also holds transcripts and spectrogram images, which this
 recipe does not use.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `yzsw3ff6rn` version 1 (MDER-MA; downloaded around 2026-10-15). The release holds 1,345 wav files; the local copy kept after removing unusable and repeated files has 1,267, and the counts below are those of the 1,267 (the 78 removed files are described under the issues). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,267 (of 1,345 in the release) | unknown (66 gender-age-ID combinations) | 2.11 |
+
+How these were counted: the `.wav` files of the local copy (48 kHz stereo 16-bit; 1 to 51 s, all whole seconds, median 6 s); hours from the file lengths. The file names carry a gender, an age and a numeric user ID that the paper says allows following one speaker (66 distinct combinations, ages 13 to 68, 232 recordings under 18), but the names are irregular, so the number of speakers is unknown.
+
+### Files per label
+
+| label (first word of the file name, case-folded) | samples (of the 1,267) |
+|---|---|
+| sad | 384 |
+| neutral | 312 |
+| happy | 303 |
+| angry | 268 |
+
+How these were counted: the first word of each file name (`Angry_male_44_1_9-xjWLfu.wav`, `sad_chunk_3.wav`, `sad0.wav`). The release has no disgust, fear or surprise class. According to the paper five native speakers listened to every segment and kept those on which at least three agreed (Fleiss' kappa 0.89).
+
+### Issues in the release
+
+- Of the 1,345 files of the release, 45 are 44-byte headers without audio and 33 repeat the content (SHA-256) of another file with the same label; these 78 are not in the 1,267. 17 file names are used for two different recordings (they are kept apart by adding the start of the SHA-256).
+- The paper states 1,322 samples, 16 kHz mono and about 3 to 20 s; the files are 1,345 in number, 48 kHz stereo and 1 to 51 s. The cause was not investigated.
+- File names are irregular: 29 `sad` files (`sad_chunk_N`, `sadN`) have no gender, age or ID; 21 files have the typo `fmale`; some files have a random suffix. In 176 recordings the correlation between the left and right channel is 0.9 or lower.
+
+
 ## What is used
 
 The 1,345 WAV files of the Mendeley Data release are not all usable, so the recipe
