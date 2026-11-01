@@ -22,6 +22,49 @@ All outputs (manifests, token list, class weights, 16 kHz WAV files) go to
 `$MSPPODCAST_OUTPUT`; the Train and Development partitions are used for
 training and validation, Test1/Test2 only as extra test sets.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the MSP-Podcast corpus as obtained from the MSP lab under the signed agreement (`Audios/`, `Labels/Labels/labels_consensus.csv`, `Partitions.txt`, Release 2.0 of 2025-10-24 according to its `readme.txt`). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Request to the MSP lab and a signed agreement (internal non-commercial research only; no redistribution). The data cannot be downloaded without the agreement.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 267,905 | 3,714 (distinct `SpkrID` values) | 409.51 |
+
+How these were counted: every `.wav` in `Audios/` (16 kHz mono in 263,225 files and 44.1 kHz mono in 4,680; 1.91 to 11.94 s); hours from the file lengths. `labels_consensus.csv` has 264,705 rows, so 3,200 audio files have no row in it. Speakers are the distinct `SpkrID` values of that table.
+
+### Files per label
+
+| `EmoClass` code in `labels_consensus.csv` | read as (corpus documentation) | rows |
+|---|---|---|
+| N | neutral | 78,718 |
+| H | happy | 58,284 |
+| X | no agreed label | 48,177 |
+| A | angry | 35,860 |
+| S | sad | 24,230 |
+| U | surprise | 5,845 |
+| C | contempt | 5,585 |
+| O | other (free text) | 3,719 |
+| D | disgust | 2,744 |
+| F | fear | 1,543 |
+
+How these were counted: the `EmoClass` column of `labels_consensus.csv` (the consensus of the crowd workers' votes). The table also holds arousal, valence and dominance scores and a `Split_Set` column: Train 169,190, Development 34,399, Test1 46,294, Test2 14,822 rows.
+
+### Issues in the release
+
+- 2,760 groups (8,180 files) of the audio are byte-identical (MD5); their content was not examined.
+- 3,200 audio files have no row in `labels_consensus.csv`.
+
+
 ## Data, annotators and licence
 
 MSP-Podcast (Lotfian and Busso, 2019) is natural English speech cut from podcasts, with
