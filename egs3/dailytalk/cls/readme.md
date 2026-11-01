@@ -48,6 +48,51 @@ default to `download/` and `data/` under the recipe.
 - `DAILYTALK` — the directory holding the extracted `metadata.json` and `data/` (also found one level down, in `dailytalk/`), or where to download them to
 - `DAILYTALK_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the DailyTalk release (`metadata.json` and the audio of the GitHub project `keonlee9420/DailyTalk`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the project's shared storage, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 23,773 | 2 | 21.67 |
+
+How these were counted: every utterance in `metadata.json` (2,541 dialogues; 44.1 kHz, 23,720 mono and 53 stereo, 0.5 to 17.8 s); hours from the audio lengths. Speakers are the 2 distinct `speaker` values (both appear in every dialogue).
+
+### Files per label
+
+| label (the `emotion` field of `metadata.json`) | samples |
+|---|---|
+| no emotion | 18,966 |
+| happiness | 3,856 |
+| surprise | 407 |
+| sadness | 301 |
+| anger | 159 |
+| disgust | 66 |
+| fear | 18 |
+
+How these were counted: the `emotion` field of every utterance of `metadata.json`. The field is inherited from the text annotation of the DailyDialog corpus; the voice actors performed accordingly.
+
+### Issues in the release
+
+- `d1121-u009` (test) and `d1253-u009` (validation in the recipe's split) are byte-identical recordings with transcripts that differ only in punctuation; dialogues 1121 and 1253 are almost the same dialogue.
+- Four dialogues have the same full text as another dialogue; their audio was recorded separately.
+- Observation by the recipe author (2026-10-24 at the latest): the identical pair `d1121-u009` and `d1253-u009` was listened to and is the same sound.
+
+### Not stated in the documentation
+
+- The labels are not the result of listening to the audio: they come from the text-dialogue annotation. The release also keeps the turn order, topic and dialogue act of every utterance (`metadata.json`).
+
+
 ## Download
 
 `prepare_source` downloads `dailytalk.zip` (5.3 GB, md5-checked) from the public
