@@ -44,14 +44,38 @@ How these were counted: every `.wav` in the 18 archives (mono; 16 kHz in 5,106 f
 
 ### Files per label
 
-| label (archive: speaker and emotion) | samples |
+| label (as in the release) | samples |
 |---|---|
-| bea_Amused / Angry / Disgusted / Neutral / Sleepy | 296 / 304 / 333 / 357 / 497 |
-| jenie_Amused / Angry / Disgusted / Neutral / Sleepy | 222 / 496 / 189 / 417 / 466 |
-| josh_Amused / Neutral / Sleepy | 298 / 302 / 263 |
-| sam_Amused / Angry / Disgusted / Neutral / Sleepy | 501 / 468 / 497 / 492 / 495 |
+| Amused | 1,317 |
+| Angry | 1,268 |
+| Disgusted | 1,019 |
+| Neutral | 1,568 |
+| Sleepy | 1,721 |
 
-How these were counted: the speaker and emotion name of each archive; the file names inside carry neither (the same name appears in several archives), so each archive must be extracted to its own directory. Per emotion over all speakers: Amused 1,317, Angry 1,268, Disgusted 1,019, Neutral 1,568, Sleepy 1,721. `josh` recorded only Amused, Neutral and Sleepy.
+By speaker and label (one row per archive):
+
+| speaker | label | samples |
+|---|---|---|
+| bea | Amused | 296 |
+| bea | Angry | 304 |
+| bea | Disgusted | 333 |
+| bea | Neutral | 357 |
+| bea | Sleepy | 497 |
+| jenie | Amused | 222 |
+| jenie | Angry | 496 |
+| jenie | Disgusted | 189 |
+| jenie | Neutral | 417 |
+| jenie | Sleepy | 466 |
+| josh | Amused | 298 |
+| josh | Neutral | 302 |
+| josh | Sleepy | 263 |
+| sam | Amused | 501 |
+| sam | Angry | 468 |
+| sam | Disgusted | 497 |
+| sam | Neutral | 492 |
+| sam | Sleepy | 495 |
+
+How these were counted: the speaker and emotion name of each archive; the file names inside carry neither (the same name appears in several archives), so each archive must be extracted to its own directory. `josh` recorded only Amused, Neutral and Sleepy.
 
 ### Issues in the release
 
