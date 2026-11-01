@@ -38,6 +38,50 @@ Things to know when reading the scores:
 - The recording format differs by speaker, and whole speakers are held out, so
   the splits also differ in recording device.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset IESC (Indian Emotional Speech Corpora; `Speaker-<n>/<Emotion>/`, downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 600 | 8 | 0.56 |
+
+How these were counted: every `.wav` under `Speaker-<n>/<Emotion>/` (all 16-bit; 1.77 to 5.50 s); hours from the file lengths. Speakers are the 8 speaker folders (speakers 1 to 4 have 50 files each and 5 to 8 have 100 files). Formats as distributed: 44.1 kHz mono 200 files, 48 kHz stereo 200, 32 kHz mono 50, 16 kHz mono 50, 44.1 kHz stereo 50, 48 kHz mono 50.
+
+### Files per label
+
+| label (folder name in the release) | samples |
+|---|---|
+| Anger | 120 |
+| Fear | 120 |
+| Happy | 120 |
+| Neutral | 120 |
+| Sad | 120 |
+
+How these were counted: the emotion folder each file is in; the file name `<E>-<take>-<n>-<sentence>.wav` carries the emotion letter, the take, the speaker and the sentence (1 or 2).
+
+### Issues in the release
+
+- Two pairs of files are byte-identical copies of the same speaker, emotion and sentence, differing only in the take number: `Speaker-3/Sad/S-1-3-1.wav` = `S-3-3-1.wav` and `Speaker-8/Anger/A-10-8-2.wav` = `A-7-8-2.wav`.
+- Observation by the recipe author (2026-10-25): both identical pairs were listened to and are the same sound.
+- One file name looks mistyped: `Speaker-8/Sad/S-8-8-18.wav`; the other takes end in `-1` or `-2`, and a Whisper transcript reads sentence 1, so it is probably `S-8-8-1.wav`.
+- The Kaggle license field says Unknown; the release asks for a citation.
+
+### Not stated in the documentation
+
+- Only two sentences ('Kids are talking by the door' and 'Dogs are sitting by the door') occur in all 600 files, in every emotion and every speaker (checked from the file names and a Whisper transcription).
+
+
 ## Provenance
 
 Kaggle dataset `ybsingh/indian-emotional-speech-corpora-iesc` (version 1,
