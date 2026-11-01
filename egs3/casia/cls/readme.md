@@ -30,6 +30,45 @@ The label is the emotion in the file name `<sentence>-<emotion>-<speaker>.wav`;
 `dataset/config.yaml` maps it to the manifest label. The sentence texts are shared
 across speakers and emotions.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the 1,200-clip copy of CASIA obtained from the Hugging Face mirror used by this recipe (downloaded around 2026-10-15); this is not the official ChineseLDC release. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from the Hugging Face mirror, no sign-in. The official corpus is sold by the Chinese Linguistic Data Consortium; the permission to redistribute the copy was not found.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,200 | 4 | 0.64 |
+
+How these were counted: every `.wav` in the copy (16 kHz mono, 0.96 to 4.93 s); hours from the file lengths. Speakers are the 4 distinct names in the file names `<sentence>-<emotion>-<speaker>.wav` (`liuchanhg`, `ZhaoZuoxiang`, `zhaoquanyin`, `wangzhe`; two women and two men according to the documentation).
+
+### Files per label
+
+| label (emotion in the file name) | samples |
+|---|---|
+| angry | 200 |
+| fear | 200 |
+| happy | 200 |
+| neutral | 200 |
+| sad | 200 |
+| surprise | 200 |
+
+How these were counted: the emotion field of each file name (50 sentences per speaker and emotion; the texts are shared across speakers and emotions).
+
+### Issues in the release
+
+- The copy has 1,200 clips; the sizes given for the official corpus differ by version (9,600; 12,000; 10,000), and which part of which version this copy is, is not known.
+- The copy traces back to a re-upload by an individual user, not to the corpus owners. The paper most often cited for the corpus describes a different corpus (one female speaker, recorded for speech synthesis, no emotions).
+
+
 ## Provenance and citation notes
 
 This section records what was found on 2026-10-23 when tracing where the corpus
