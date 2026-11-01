@@ -28,6 +28,49 @@ default to `download/` and `data/` under the recipe.
 - `SAVEE` — a directory holding the WAV files, or the downloaded zip
 - `SAVEE_OUTPUT` — where the resampled audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the SAVEE (Surrey Audio-Visual Expressed Emotion) audio download from cvssp.org (downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Download from the project page after a free registration (the registration is a prerequisite stated on the page).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 480 | 4 | 0.51 |
+
+How these were counted: every `.wav` in the download (44.1 kHz mono 16-bit, 1.63 to 7.14 s); hours from the file lengths. Speakers are `DC`, `JE`, `JK` and `KL` in the file names `<speaker>_<emotion code><index>.wav` (four men).
+
+### Files per label
+
+| emotion code in the file name | read as | samples |
+|---|---|---|
+| n | neutral | 120 |
+| a | anger | 60 |
+| d | disgust | 60 |
+| f | fear | 60 |
+| h | happiness | 60 |
+| sa | sadness | 60 |
+| su | surprise | 60 |
+
+How these were counted: the letters after the speaker in each file name. Neutral has twice as many files because the common and emotion-specific sentences were also recorded neutral (30 neutral sentences per speaker, 120 utterances per speaker).
+
+### Issues in the release
+
+- No byte-identical, decoded-identical or near-identical recordings were found.
+
+### Listening test ratings in the release
+
+The corpus's evaluation page reports a perception test (Evaluation page, not part of the audio download): each actor's data were evaluated by 10 subjects who chose one of the seven emotions under audio, visual and audio-visual conditions; the individual responses are not in the download.
+
+
 ## Download
 
 **Downloading requires registering.** The corpus is "available free of charge for research
