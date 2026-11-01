@@ -22,8 +22,8 @@ which this recipe does not use.
 **Perceived-emotion labels exist but are not used.** `annotations.csv` also holds, for
 every utterance, the judgements of three listeners: a categorical emotion and
 arousal, valence and dominance (1 to 5 in steps of 0.5). (The repository README says
-two annotators, the datasheet and the file have three.) They are valuable because
-several people judged each clip, but this recipe trains on the enacted emotion only.
+two annotators, the datasheet and the file have three.) This recipe trains on the enacted
+emotion only.
 Measured on the file: the listeners chose the enacted emotion for 639 (a1), 706 (a2)
 and 507 (a3) of the 800 utterances; all three agree on 465; two or more agree on
 749, and for 113 of those the agreed emotion differs from the enacted one; for 51 the
@@ -34,6 +34,47 @@ default to `download/` and `data/` under the recipe.
 
 - `EMOTALE` — the directory holding `wav/` and `annotations.csv`, or where to download them to
 - `EMOTALE_OUTPUT` — where the converted audio and manifests are written
+
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the GitHub repository `snehadas/EmoTale` (`wav/`, `annotations.csv`, `speaker_info.csv` and the datasheet; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from GitHub, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 800 | 18 | 0.62 |
+
+How these were counted: every `.wav` in `wav/` (48 kHz stereo, 1.07 to 7.44 s; 450 Danish and 350 English files); hours from the file lengths. Speakers are the 18 distinct speaker codes in the file names `<DK|EN>_<speaker>_<code>_<sentence>.wav` (12 women, 6 men, aged 9 to 39; 14 of them also recorded the English sentences).
+
+### Files per label
+
+| label (code in the file name) | read as | samples |
+|---|---|---|
+| A | angry | 160 |
+| B | boredom | 160 |
+| H | happy | 160 |
+| N | neutral | 160 |
+| S | sad | 160 |
+
+How these were counted: the emotion code in the file name; it equals the `gt_emotion` column of `annotations.csv` for every file (the enacted emotion).
+
+### Issues in the release
+
+- The repository README says two annotators; the datasheet and `annotations.csv` have three.
+
+### Listening test ratings in the release
+
+`annotations.csv` holds, for every one of the 800 utterances, the judgements of three listeners (a1, a2, a3): a categorical emotion and arousal, valence and dominance (1 to 5 in steps of 0.5). Counted on the file: the listeners chose the enacted emotion for 639 (a1), 706 (a2) and 507 (a3) of the 800 utterances; all three listeners agree on 465; two or more agree on 749, and for 113 of those the agreed emotion differs from the enacted one; for 51 the three disagree.
+
 
 ## Download
 
