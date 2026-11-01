@@ -41,6 +41,50 @@ user agent, so the recipe sends its own. Measured on one run: about 7 minutes to
 download; `create_dataset`, `remove_long_short` and `prepare_labels` together
 took about 96 seconds.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `h3f8pjbw73` version 4 (`UFTBESD.zip` and `UFTBESD_Metadata.csv`, downloaded 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in (the server rejects the default Python user agent).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 1,400 | 100 | 1.04 |
+
+How these were counted: every `.wav` in the archive (equal to the 1,400 rows of `UFTBESD_Metadata.csv`; 44.1 kHz mono 16-bit, 0.744 to 6.037 s); hours from the metadata's `duration_sec`. Speakers are the distinct `speaker_id` values (50 female, 50 male, 14 clips each).
+
+### Files per label
+
+| label (as in the release) | samples |
+|---|---|
+| Angry | 200 |
+| Disgust | 200 |
+| Fear | 200 |
+| Happy | 200 |
+| Neutral | 200 |
+| Sad | 200 |
+| Surprise | 200 |
+
+How these were counted: the `emotion_label` column of `UFTBESD_Metadata.csv`.
+
+### Issues in the release
+
+- 27 groups (68 files) of byte-identical audio (MD5; the CRCs in the zip agree). In 21 groups the same recording is filed under different speakers: `P_43`, `P_44` and `P_90` for both sentences (14 groups) and `P_61` and `P_62` for sentence 2 (7 groups); the metadata gives these speakers different ages, genders and phone models. In 6 groups one speaker has the same audio under two emotions: `Disgust` and `Surprise` for `P_02`, `P_05`, `P_07`, `P_10` and `P_26`, `Neutral` and `Surprise` for `P_13`.
+- Observation by the recipe author (2026-10-17 at the latest): the identical recordings were listened to. For the 6 groups with two emotions, the emotion that the audio conveys was decided by ear (`Disgust` for `P_02`, `P_05`, `P_07`, `P_10` and `P_26`, `Surprise` for `P_13`); the other label of each pair is the mismatched one.
+
+### Not stated in the documentation
+
+- Every one of the 100 speakers reads both sentences in all seven emotions, and the two sentences (`Why aren't you saying anything?` and `I never thought about this.`) are the same for every emotion (`sentence_id` and `emotion_label` columns).
+
+
 ## Splits
 
 The release publishes no partition. Speakers are split 70/10/20 at random
