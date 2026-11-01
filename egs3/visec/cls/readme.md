@@ -14,6 +14,45 @@ accent (`south`/`north`/`mid`) and a `speaker_id` per row. The clips are 16 kHz 
 The label is the `emotion` column. The materials say nothing about how the
 recordings were made or labelled.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Hugging Face dataset `Dennis290/ViSEC` (repository revision `70f4b62f432d85c0b52dee3855a5f8dd244f093a`, last modified 2026-09-08; `data/train-00000-of-00001.parquet`, downloaded around 2026-10-15). This is a re-publication by another account; the original `hustep-lab/ViSEC` answered HTTP 401. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in. The original repository `hustep-lab/ViSEC` could not be accessed (HTTP 401).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 5,280 | 147 | 3.18 |
+
+How these were counted: every row of the parquet file (16 kHz mono; 5,178 clips 16-bit and 102 clips 24-bit PCM; 1.0 to 24.7 s); hours from the clip lengths. Speakers are the 147 distinct `speaker_id` values (0 to 146; ID 0 alone has 2,217 rows, 42%). The release also has gender (`female` / `male`) and accent (`south` / `north` / `mid`) columns.
+
+### Files per label
+
+| label (the `emotion` column) | samples |
+|---|---|
+| neutral | 1,507 |
+| angry | 1,466 |
+| happy | 1,228 |
+| sad | 1,079 |
+
+How these were counted: the `emotion` column.
+
+### Issues in the release
+
+- 277 groups of byte-identical clips; in 3 groups the emotion differs between the copies, and in 8 groups the speaker ID differs.
+- Within one speaker ID the metadata is inconsistent: 2 IDs mix genders and 6 IDs mix accents (1 to 3 rows with another value).
+- The materials say nothing about how the recordings were made or labelled; Whisper identified Vietnamese in 189 of 200 transcribed clips.
+- The paper's abstract (read; the full text was not) says the data come from public media.
+
+
 ## Provenance
 
 The original repository (`hustep-lab/ViSEC` on Hugging Face) answers 401. The recipe
