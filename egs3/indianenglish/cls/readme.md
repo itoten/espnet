@@ -11,6 +11,44 @@ There is no `disgust`, `fear` or `surprise`. The contributors listed on Mendeley
 Data are harsh harsh, Yash Singh, Nikhil Singh and Ayush Bhardwaj (BMS College of
 Engineering). No paper is linked to the dataset.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `mtk28hgc6x` version 1 (`Original_dataset.zip` and `Augmented.zip`, published 2025-06-09; downloaded around 2026-10-15). The counts below are those of `Original_dataset.zip`. All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 747 | unknown | 0.59 |
+
+How these were counted: every `.wav` in `Original_dataset.zip` (the files are Ogg Opus streams with a `.wav` extension: 48 kHz mono, 1.14 to 7.44 s, median 2.74 s); hours from the file lengths. The release does not say who spoke which file, so the number of speakers is unknown. `Augmented.zip` holds 2,241 further recordings, none of which is an original recording (compared by CRC32 and size); they were not counted.
+
+### Files per label
+
+| label (emotion folder in the release) | samples |
+|---|---|
+| Happy | 226 |
+| Sad | 176 |
+| Neutral | 175 |
+| Angry | 170 |
+
+How these were counted: the emotion folder each file is in. The release has no disgust, fear or surprise class.
+
+### Issues in the release
+
+- The description says the original set has 1,000 samples and the augmented set 3,000; the zips hold 747 and 2,241. The `.wav` files are Ogg Opus.
+- 33 groups (83 files) are byte-identical; in 2 groups the labels differ (`Angry/046` and `Neutral/002`, `Angry/071` and `Sad/085`).
+- The zip's `README.md` says each emotion is spoken from a fixed list of 10 sentences (the neutral list shows 9) by multiple actors; the description says native Indian English speakers. Whether the speech is acted is not stated.
+
+
 ## What is used
 
 Only `Original_dataset.zip` is used. The dataset's other zip, `Augmented.zip`, is
