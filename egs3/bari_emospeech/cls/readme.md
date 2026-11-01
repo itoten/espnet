@@ -25,6 +25,46 @@ They are skipped (the log reports the count). The
 dataset description gives 2,312 utterances and 605 for jealousy, which is the number of `.m4a` files
 including 9 of these; those 9 are skipped too because they are not numbered.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Mendeley Data record `hpfv67fgb8` version 1 (BARI-EmoSpeech, downloaded around 2026-10-15; the local copy was deleted after the review, so the counts are those recorded then). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Mendeley Data, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 2,312 | unknown | 2.12 |
+
+How these were counted: the `.m4a` files under `BarishalAudio/<class>/` (AAC at 44.1 or 48 kHz, mostly mono; hours from the file lengths of all files, including the 25 non-numbered ones listed below). The archive has no speaker information; the record's description says 5 speakers, but by listening and a speaker-verification model the clips sound like one voice, so the number is unknown.
+
+### Files per label
+
+| label (directory name in the release) | samples |
+|---|---|
+| Affection | 500 |
+| Happiness | 407 |
+| Jealousy | 605 |
+| Normal | 500 |
+| Sadness | 300 |
+
+How these were counted: the class directory of each `.m4a` file. The 2,312 files are those named in the record's description; 25 files in `Jealousy/` are not numbered like the rest (see below), so the numbered recordings are 2,303 (Jealousy 596).
+
+### Issues in the release
+
+- The record says the files are 16 kHz wav with train/validation splits and a CSV; the archive has AAC `.m4a` files and no split or CSV. The total duration is given as 1.67 hours in the record and measured as 2.12 hours over all files.
+- 25 files in `Jealousy/` are not utterances: long voice notes (up to 651 s), a ringtone, a keyboard-typing sound and a music loop.
+- A speaker-verification model (ESPnet-SPK, SKA-TDNN) puts 96% of the 2,303 numbered recordings in one cluster; the 15 outliers were not listened to.
+- Observation by the recipe author (2026-10-23): the recordings of each emotion and each (claimed) speaker were listened to; they all sound like the same voice (female, childlike), and the paralinguistic expression sounded the same in all emotions. Whisper (100 clips, fixed to Bangla) transcripts show that the meaning of the sentences corresponds to the label.
+
+
 ## About the labels
 
 The labels may not carry paralinguistic information. By ear, the classes do not
