@@ -25,6 +25,48 @@ default to `download/` and `data/` under the recipe.
 - `HIKIA` — the extracted `hi_kia/wav/` directory, or where to download it to
 - `HIKIA_OUTPUT` — where the converted audio and manifests are written
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 7091465 (Hi, KIA; `hi_kia/wav` and `annotation/`; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 488 | 8 | 0.087 |
+
+How these were counted: every `.wav` in `hi_kia/wav` (48 kHz stereo 16-bit, 0.24 to 1.75 s); hours from the file lengths. Speakers are the 8 speaker codes at the start of the file names `<speaker>_S<scene>_<trial>_<emotion>.wav` (four female, four male). The release holds the 488 recordings that remained after 88 of 576 were removed by the authors (all eight raters chose another emotion).
+
+### Files per label
+
+| emotion letter in the file name | read as | samples |
+|---|---|---|
+| a | angry | 107 |
+| h | happy | 129 |
+| n | neutral | 119 |
+| s | sad | 133 |
+
+How these were counted: the last letter of each file name; it agrees with the `emo` column of the release's `annotation.csv` for all 488 files.
+
+### Issues in the release
+
+- The recordings are very short (0.24 to 1.75 s): the wake-up phrase "Hi, KIA".
+- In `annotation/human.csv` the letter codes differ from those of the file names (a = angry, e = happy, d = sad, n = neutral, u = unknown).
+- The files `F5_S03_1_a` and `F5_S03_4_a` (both angry) have the same sound.
+
+### Listening test ratings in the release
+
+`annotation/human.csv` holds the votes of eight graduate students for every recording, each choosing one of the four emotions or unknown (rated in random order). The release was thinned to the 488 recordings for which at least one rater chose the intended emotion. Counted on the file: 63.2% of the votes equal the intended emotion (sad 81.6%, happy 62.7%, neutral 54.6%, angry 50.4%); the majority equals the intended emotion for 330 recordings, another emotion has the majority for 121 and the vote is tied for 37.
+
+
 ## Download
 
 `prepare_source` downloads `hi_kia_1.0.tar.gz` (750 MB) from
