@@ -29,6 +29,49 @@ The licence is CC BY 4.0 (Zenodo); the corpus paper is cited by its DOI,
 No partition is published; speakers are dealt out in numeric order, the same
 number of each gender per split, so the split is balanced by construction.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Zenodo record 4526477 (SUBESCO; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from Zenodo, no sign-in (the archive is checked against its published MD5).
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 7,000 | 20 | 7.83 |
+
+How these were counted: every `.wav` in the archive (44.1 kHz in 4,555 files and 48 kHz in 2,445; 724 of them stereo; 2.75 to 6.03 s); hours from the file lengths. Speakers are the 20 names in the file names `F_01_OISHI_S_1_ANGRY_1.wav` (10 male, 10 female; 10 sentences, 7 emotions, 5 takes each).
+
+### Files per label
+
+| emotion in the file name | samples |
+|---|---|
+| ANGRY | 1,000 |
+| DISGUST | 1,000 |
+| FEAR | 1,000 |
+| HAPPY | 1,000 |
+| NEUTRAL | 1,000 |
+| SAD | 1,000 |
+| SURPRISE | 1,000 |
+
+How these were counted: the emotion field of each file name.
+
+### Issues in the release
+
+- In the 724 stereo files the right channel is almost silent (median level -13.0 dB on the left, -81.5 dB on the right).
+- 31 pairs of takes are the same performance: decoded waveform correlation 1.0000, 2 pairs identical sample for sample, the others differing by about 0.02 s of padding or under 7% of the peak amplitude. 30 pairs have the same speaker, sentence and emotion with different take numbers; one is `M_09` sentence 4 take 5 and sentence 5 take 1 (neutral).
+- Observation by the recipe author (2026-10-26 at the latest): the 31 pairs were listened to and are the same sound.
+- The sampling rate and channel count are mixed (the README says 48 kHz).
+- The transcripts of the ten sentences are in the paper, not in the release.
+
+
 ## Quick start
 
 ```bash
