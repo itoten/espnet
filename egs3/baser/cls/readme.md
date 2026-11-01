@@ -37,6 +37,47 @@ Things to know when reading the scores:
   (`M_5_JUHAYER_S_4_ANGRY_21.wav`), and one speaker is written `Tahsin` instead
   of upper case.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the Kaggle dataset `jabedcse/baser-dataset` (BASER; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Kaggle download with a free account and API token.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 750 | 10 | 0.61 |
+
+How these were counted: every `.wav` in the archive (48 kHz mono, 1.71 to 5.01 s); hours from the file lengths. Speakers are the 10 distinct speaker names in the file names `<F|M>_<n>_<NAME>_S_<sentence>_<EMOTION>_<take>.wav` (five female, five male; 15 files per emotion per speaker from 5 sentences and 3 takes).
+
+### Files per label
+
+| emotion in the file name | samples |
+|---|---|
+| ANGRY | 150 |
+| FEAR | 150 |
+| HAPPY | 150 |
+| NEUTRAL | 150 |
+| SAD | 150 |
+
+How these were counted: the emotion field of each file name.
+
+### Issues in the release
+
+- The Kaggle description says 12 actors (six male, six female); the files have 10 speakers. The reason is not known.
+- 58 files have the same sound as another file of the same speaker and emotion: speaker `RIAD` has three byte-identical takes in all 25 (sentence, emotion) combinations (50 redundant files); `JUHAYER` has 3 redundant files and `MAHI`, `MAHMUD`, `MIFTA` and `TABASSUM` one each; the takes `M_2_MIFTA_S_1_SAD_2` and `_3` differ in bytes but have the same waveform.
+- Observation by the recipe author (2026-10-23): the duplicate groups were listened to and are the same sound.
+- Three file names have no take number (`F_1_CHAITY_S_5_SAD_.wav`, `F_2_IRA_S_1_HAPPY_.wav`, `M_3_MAHMUD_S_1_NEUTRAL_.wav`), one has take 21 (`M_5_JUHAYER_S_4_ANGRY_21.wav`), and one speaker is written `Tahsin` without upper case.
+- The release has no transcripts, so what each sentence number says is unknown; the page does not describe the recording method.
+
+
 ## Provenance
 
 Kaggle dataset `jabedcse/baser-dataset` (version 1, 2023-12-16), licence shown on
