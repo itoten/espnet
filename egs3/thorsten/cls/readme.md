@@ -18,6 +18,47 @@ this recipe are speaker-dependent. The split works on sentences instead: all
 eight recordings of a sentence go to the same split, so the same German text
 never appears in both train and test.
 
+## The data
+
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-01 against the OpenSLR resource 110 (Thorsten-Emotional v02; Zenodo record 5525023; downloaded around 2026-10-15). All counts cover every sample in the release, before any filtering by this recipe.
+
+### Access
+
+Direct download from OpenSLR, no sign-in.
+
+### Size of the release
+
+| samples | speakers | total hours |
+|---|---|---|
+| 2,399 | 1 | 2.93 |
+
+How these were counted: every `.wav` in the archive (22.05 kHz mono 16-bit, 1.15 to 12.38 s); hours from the file lengths. One German speaker reads the same 300 sentences in eight ways.
+
+### Files per label
+
+| label (directory name in the release) | samples |
+|---|---|
+| amused | 300 |
+| angry | 300 |
+| disgusted | 300 |
+| drunk | 300 |
+| neutral | 300 |
+| sleepy | 300 |
+| surprised | 300 |
+| whisper | 299 |
+
+How these were counted: the directory each file is in. `drunk`, `sleepy` and `whisper` are speaking styles, not emotions.
+
+### Issues in the release
+
+- The description lists 300 recordings per style (2,400 in all); the `whisper` directory holds 299.
+- The release has no listening test.
+
+
 ## Data and licence
 
 The corpus is one German speaker reading the same 300 sentences in 8 ways. The release
