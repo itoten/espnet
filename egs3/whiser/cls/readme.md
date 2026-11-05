@@ -61,20 +61,20 @@ How these were counted: every row of `labels_consensus.csv` (equal to the wav fi
 
 ### Files per label
 
-| `EmoClass` code in `labels_consensus.csv` | read as (corpus documentation) | samples |
-|---|---|---|
-| N | neutral | 3,492 |
-| X | no agreed label | 916 |
-| H | happy | 345 |
-| A | angry | 293 |
-| S | sad | 284 |
-| O | other (free text) | 47 |
-| U | surprise | 33 |
-| C | contempt | 10 |
-| F | fear | 6 |
-| D | disgust | 1 |
+| `EmoClass` code in `labels_consensus.csv` | read as (corpus documentation) | samples | hours |
+|---|---|---|---|
+| N | neutral | 3,492 | 4.105 |
+| X | no agreed label | 916 | 1.089 |
+| H | happy | 345 | 0.407 |
+| A | angry | 293 | 0.308 |
+| S | sad | 284 | 0.319 |
+| O | other (free text) | 47 | 0.065 |
+| U | surprise | 33 | 0.038 |
+| C | contempt | 10 | 0.017 |
+| F | fear | 6 | 0.006 |
+| D | disgust | 1 | 0.001 |
 
-How these were counted: the `EmoClass` column. The table also holds arousal, valence and dominance scores (`EmoAct`, `EmoVal`, `EmoDom`) and a `Split_Set` column.
+How these were counted: the `EmoClass` column. The table also holds arousal, valence and dominance scores (`EmoAct`, `EmoVal`, `EmoDom`) and a `Split_Set` column. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
