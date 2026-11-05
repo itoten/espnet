@@ -53,14 +53,14 @@ How these were counted: every `.wav` under `Sound Source/<Emotion>/` (44.1 kHz m
 
 ### Files per label
 
-| label (emotion folder in the release) | emotion code in the file name | samples |
-|---|---|---|
-| Angry | kz | 487 |
-| Sad | sk | 483 |
-| Calm | mt | 408 |
-| Happy | hl | 357 |
+| label (emotion folder in the release) | emotion code in the file name | samples | hours |
+|---|---|---|---|
+| Angry | kz | 487 | 0.126 |
+| Sad | sk | 483 | 0.129 |
+| Calm | mt | 408 | 0.111 |
+| Happy | hl | 357 | 0.097 |
 
-How these were counted: the emotion folder each file is in (the code in the file name agrees; the folder-to-code reading kz, sk, mt, hl follows the recipe). The release has no disgust, fear, neutral or surprise class. The numbers per speaker and emotion are uneven: `1157` has no `Calm` or `Happy` and `7895` only 29 `Happy`.
+How these were counted: the emotion folder each file is in (the code in the file name agrees; the folder-to-code reading kz, sk, mt, hl follows the recipe). The release has no disgust, fear, neutral or surprise class. The numbers per speaker and emotion are uneven: `1157` has no `Calm` or `Happy` and `7895` only 29 `Happy`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
