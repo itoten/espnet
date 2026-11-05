@@ -38,14 +38,14 @@ How these were counted: every `.wav` in the archive (44.1 kHz mono 16-bit, 0.45 
 
 ### Files per label
 
-| label (the `emotion` tier of the TextGrid) | samples |
-|---|---|
-| neutral | 338 |
-| anger | 306 |
-| joy | 271 |
-| sadness | 249 |
+| label (the `emotion` tier of the TextGrid) | samples | hours |
+|---|---|---|
+| neutral | 338 | 0.327 |
+| anger | 306 | 0.295 |
+| joy | 271 | 0.236 |
+| sadness | 249 | 0.227 |
 
-How these were counted: the value in the last tier (`emotion`) of each `<id>.TextGrid`.
+How these were counted: the value in the last tier (`emotion`) of each `<id>.TextGrid`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
