@@ -50,15 +50,15 @@ How these were counted: every `.wav` in the archive (44.1 or 48 kHz, mono or ste
 
 ### Files per label
 
-| emotion code in the file name | read as (paper's Table 4) | samples |
-|---|---|---|
-| 01 | happy | 306 |
-| 02 | sad | 306 |
-| 03 | angry | 306 |
-| 04 | surprise | 306 |
-| 05 | neutral | 243 |
+| emotion code in the file name | read as (paper's Table 4) | samples | hours |
+|---|---|---|---|
+| 01 | happy | 306 | 0.285 |
+| 02 | sad | 306 | 0.288 |
+| 03 | angry | 306 | 0.283 |
+| 04 | surprise | 306 | 0.290 |
+| 05 | neutral | 243 | 0.228 |
 
-How these were counted: the third field of the RAVDESS-style file name `<mode>-<type>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral exists for 27 speakers only (Actors 11, 12, 13, 16, 18, 20 and 29 have none). The release has no disgust or fear class. The intensity field is determined by the emotion (angry and surprise are strong, the others normal).
+How these were counted: the third field of the RAVDESS-style file name `<mode>-<type>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral exists for 27 speakers only (Actors 11, 12, 13, 16, 18, 20 and 29 have none). The release has no disgust or fear class. The intensity field is determined by the emotion (angry and surprise are strong, the others normal). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
