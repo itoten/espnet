@@ -45,17 +45,17 @@ How these were counted: every `.wav` in the seven emotion folders (48 kHz mono 1
 
 ### Files per label
 
-| label (emotion folder in the release) | samples |
-|---|---|
-| neutral | 1,196 |
-| sadness | 1,187 |
-| anger | 1,129 |
-| surprise | 969 |
-| happiness | 785 |
-| disgust | 738 |
-| fear | 671 |
+| label (emotion folder in the release) | samples | hours |
+|---|---|---|
+| neutral | 1,196 | 0.387 |
+| sadness | 1,187 | 0.543 |
+| anger | 1,129 | 0.337 |
+| surprise | 969 | 0.308 |
+| happiness | 785 | 0.245 |
+| disgust | 738 | 0.246 |
+| fear | 671 | 0.230 |
 
-How these were counted: the emotion folder each file is in (the digit in the file name agrees). The emotion of the table (`Corpus information.xlsx`) after validation equals the folder for every file.
+How these were counted: the emotion folder each file is in (the digit in the file name agrees). The emotion of the table (`Corpus information.xlsx`) after validation equals the folder for every file. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
