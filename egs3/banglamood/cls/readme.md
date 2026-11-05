@@ -46,18 +46,18 @@ How these were counted: every `.wav` in `<Emotion>/<Gender>/` (48 kHz mono 16-bi
 
 ### Files per label
 
-| label (emotion folder in the release) | samples |
-|---|---|
-| Angry | 611 |
-| Neutral | 610 |
-| Fear | 449 |
-| Disappointment | 343 |
-| Sad | 337 |
-| Surprised | 303 |
-| Happy | 300 |
-| Excitement | 267 |
+| label (emotion folder in the release) | samples | hours |
+|---|---|---|
+| Angry | 611 | 0.504 |
+| Neutral | 610 | 0.574 |
+| Fear | 449 | 0.416 |
+| Disappointment | 343 | 0.302 |
+| Sad | 337 | 0.321 |
+| Surprised | 303 | 0.244 |
+| Happy | 300 | 0.283 |
+| Excitement | 267 | 0.257 |
 
-How these were counted: the emotion folder each file is in; the counts equal those in the description. The release has no disgust class. The description says three native Bangla annotators labelled the clips from tone, expression, situation, screams, cries and meaning, and that the videos were divided among them; whether more than one annotator judged a clip is not stated.
+How these were counted: the emotion folder each file is in; the counts equal those in the description. The release has no disgust class. The description says three native Bangla annotators labelled the clips from tone, expression, situation, screams, cries and meaning, and that the videos were divided among them; whether more than one annotator judged a clip is not stated. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
