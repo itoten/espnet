@@ -46,16 +46,16 @@ How these were counted: every `.wav` under `synthesized_audio/` (all 16 kHz mono
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| boredom | 1,112 |
-| neutral | 1,093 |
-| happiness | 1,075 |
-| sadness | 939 |
-| fear | 929 |
-| anger | 853 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| boredom | 1,112 | 2.431 |
+| neutral | 1,093 | 2.134 |
+| happiness | 1,075 | 1.580 |
+| sadness | 939 | 2.849 |
+| fear | 929 | 1.174 |
+| anger | 853 | 0.977 |
 
-How these were counted: the `emotion` column of the official `db.emotion.categories.train.desired.csv` and `db.emotion.categories.test.desired.csv`, which together list all 6,001 files. The label is the emotion given to the synthesizer.
+How these were counted: the `emotion` column of the official `db.emotion.categories.train.desired.csv` and `db.emotion.categories.test.desired.csv`, which together list all 6,001 files. The label is the emotion given to the synthesizer. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
