@@ -35,14 +35,14 @@ How these were counted: every `.wav` in `TRAIN/` (250) and `TEST/` (110) (44.1 k
 
 ### Files per label
 
-| label (the `Class` column of `TRAIN.csv`) | samples |
-|---|---|
-| Negative | 87 |
-| Positive | 82 |
-| Neutral | 81 |
-| (no label; `TEST/`) | 110 |
+| label (the `Class` column of `TRAIN.csv`) | samples | hours |
+|---|---|---|
+| Negative | 87 | 0.057 |
+| Positive | 82 | 0.061 |
+| Neutral | 81 | 0.066 |
+| (no label; `TEST/`) | 110 | 0.082 |
 
-How these were counted: the `Class` column of `TRAIN.csv`, which lists the 250 `TRAIN/` files; the 110 files of `TEST/` have no label.
+How these were counted: the `Class` column of `TRAIN.csv`, which lists the 250 `TRAIN/` files; the 110 files of `TEST/` have no label. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
