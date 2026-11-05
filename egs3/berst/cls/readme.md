@@ -41,17 +41,17 @@ How these were counted: every row of the `metadata.csv` of the `train`, `validat
 
 ### Files per label
 
-| label (the `affect` column of the release) | samples |
-|---|---|
-| fear | 684 |
-| disgust | 677 |
-| joy | 657 |
-| neutral | 657 |
-| anger | 651 |
-| surprise | 613 |
-| sadness | 584 |
+| label (the `affect` column of the release) | samples | hours |
+|---|---|---|
+| fear | 684 | 0.550 |
+| disgust | 677 | 0.578 |
+| joy | 657 | 0.554 |
+| neutral | 657 | 0.524 |
+| anger | 651 | 0.540 |
+| surprise | 613 | 0.488 |
+| sadness | 584 | 0.490 |
 
-How these were counted: the `affect` column of the three `metadata.csv` files. The dataset card states that the labels were not validated by listeners.
+How these were counted: the `affect` column of the three `metadata.csv` files. The dataset card states that the labels were not validated by listeners. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
