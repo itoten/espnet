@@ -46,17 +46,17 @@ How these were counted: every `.wav` under `recordings/<speaker>/<emotion>/` (48
 
 ### Files per label
 
-| label (emotion folder, transliterated Albanian) | read as (recipe mapping) | samples |
-|---|---|---|
-| neutral | neutral | 60 |
-| gezim | happy | 60 |
-| trishtim | sad | 60 |
-| zemerim | angry | 60 |
-| frike | fear | 60 |
-| habi | surprise | 60 |
-| neveri | disgust | 60 |
+| label (emotion folder, transliterated Albanian) | read as (recipe mapping) | samples | hours |
+|---|---|---|---|
+| neutral | neutral | 60 | 0.059 |
+| gezim | happy | 60 | 0.049 |
+| trishtim | sad | 60 | 0.062 |
+| zemerim | angry | 60 | 0.049 |
+| frike | fear | 60 | 0.047 |
+| habi | surprise | 60 | 0.052 |
+| neveri | disgust | 60 | 0.050 |
 
-How these were counted: the emotion folder of each recording (six sentences, read by every speaker in all seven emotions).
+How these were counted: the emotion folder of each recording (six sentences, read by every speaker in all seven emotions). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
