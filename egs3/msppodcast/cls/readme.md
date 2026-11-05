@@ -44,20 +44,20 @@ How these were counted: every `.wav` in `Audios/` (16 kHz mono in 263,225 files 
 
 ### Files per label
 
-| `EmoClass` code in `labels_consensus.csv` | read as (corpus documentation) | rows |
-|---|---|---|
-| N | neutral | 78,718 |
-| H | happy | 58,284 |
-| X | no agreed label | 48,177 |
-| A | angry | 35,860 |
-| S | sad | 24,230 |
-| U | surprise | 5,845 |
-| C | contempt | 5,585 |
-| O | other (free text) | 3,719 |
-| D | disgust | 2,744 |
-| F | fear | 1,543 |
+| `EmoClass` code in `labels_consensus.csv` | read as (corpus documentation) | rows | hours |
+|---|---|---|---|
+| N | neutral | 78,718 | 117.068 |
+| H | happy | 58,284 | 90.738 |
+| X | no agreed label | 48,177 | 74.017 |
+| A | angry | 35,860 | 54.436 |
+| S | sad | 24,230 | 36.592 |
+| U | surprise | 5,845 | 8.826 |
+| C | contempt | 5,585 | 9.462 |
+| O | other (free text) | 3,719 | 6.139 |
+| D | disgust | 2,744 | 4.624 |
+| F | fear | 1,543 | 2.379 |
 
-How these were counted: the `EmoClass` column of `labels_consensus.csv` (the consensus of the crowd workers' votes). The table also holds arousal, valence and dominance scores and a `Split_Set` column: Train 169,190, Development 34,399, Test1 46,294, Test2 14,822 rows.
+How these were counted: the `EmoClass` column of `labels_consensus.csv` (the consensus of the crowd workers' votes). The table also holds arousal, valence and dominance scores and a `Split_Set` column: Train 169,190, Development 34,399, Test1 46,294, Test2 14,822 rows. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. 1 row(s) of `H` have no readable audio file and add nothing to the hours. The 3,200 audio files that have no row in `labels_consensus.csv` (5.23 hours) are in no row.
 
 ### Issues in the release
 
