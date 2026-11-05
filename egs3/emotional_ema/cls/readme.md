@@ -65,15 +65,15 @@ How these were counted: every `.wav` in the archive (22.05 kHz mono, 1.4 to 63 s
 
 ### Files per label
 
-| `best_emo` code in the release | read as | samples |
-|---|---|---|
-| 1 | neutral | 277 |
-| 2 | angry | 182 |
-| 3 | happy | 160 |
-| 4 | sad | 175 |
-| 5 | fear | 159 |
+| `best_emo` code in the release | read as | samples | hours |
+|---|---|---|---|
+| 1 | neutral | 277 | 0.436 |
+| 2 | angry | 182 | 0.291 |
+| 3 | happy | 160 | 0.257 |
+| 4 | sad | 175 | 0.359 |
+| 5 | fear | 159 | 0.285 |
 
-How these were counted: the `<utterance> <code>` lines of the `<group>_best_emo` tables, which hold the final label of the listener evaluation (953 lines, one per non-dummy file). The archive does not explain the codes; the order is read from its per-listener evaluation file.
+How these were counted: the `<utterance> <code>` lines of the `<group>_best_emo` tables, which hold the final label of the listener evaluation (953 lines, one per non-dummy file). The archive does not explain the codes; the order is read from its per-listener evaluation file. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
