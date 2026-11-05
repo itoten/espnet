@@ -47,17 +47,17 @@ How these were counted: every `.wav` named `<Emotion>_<n>_<Gender>.wav` (all 3.0
 
 ### Files per label
 
-| label (emotion in the file name) | samples |
-|---|---|
-| Angry | 745 |
-| Disgust | 745 |
-| Fear | 745 |
-| Happy | 745 |
-| Neutral | 745 |
-| Sad | 745 |
-| Surprise | 745 |
+| label (emotion in the file name) | samples | hours |
+|---|---|---|
+| Angry | 745 | 0.621 |
+| Disgust | 745 | 0.621 |
+| Fear | 745 | 0.621 |
+| Happy | 745 | 0.621 |
+| Neutral | 745 | 0.621 |
+| Sad | 745 | 0.621 |
+| Surprise | 745 | 0.621 |
 
-How these were counted: the emotion field of each file name.
+How these were counted: the emotion field of each file name. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
