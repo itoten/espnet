@@ -50,17 +50,17 @@ How these were counted: every `.wav` in the download (44.1 kHz mono 16-bit, 1.63
 
 ### Files per label
 
-| emotion code in the file name | read as | samples |
-|---|---|---|
-| n | neutral | 120 |
-| a | anger | 60 |
-| d | disgust | 60 |
-| f | fear | 60 |
-| h | happiness | 60 |
-| sa | sadness | 60 |
-| su | surprise | 60 |
+| emotion code in the file name | read as | samples | hours |
+|---|---|---|---|
+| n | neutral | 120 | 0.120 |
+| a | anger | 60 | 0.062 |
+| d | disgust | 60 | 0.066 |
+| f | fear | 60 | 0.062 |
+| h | happiness | 60 | 0.063 |
+| sa | sadness | 60 | 0.075 |
+| su | surprise | 60 | 0.063 |
 
-How these were counted: the letters after the speaker in each file name. Neutral has twice as many files because the common and emotion-specific sentences were also recorded neutral (30 neutral sentences per speaker, 120 utterances per speaker).
+How these were counted: the letters after the speaker in each file name. Neutral has twice as many files because the common and emotion-specific sentences were also recorded neutral (30 neutral sentences per speaker, 120 utterances per speaker). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
