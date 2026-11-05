@@ -46,16 +46,16 @@ How these were counted: every `.wav` in the archive (stereo; 44.1 kHz in 432 fil
 
 ### Files per label
 
-| emotion code in the file name | read as (paper's Table 5) | samples |
-|---|---|---|
-| 01 | anger | 132 |
-| 02 | disgust | 132 |
-| 03 | fear | 132 |
-| 04 | happy | 132 |
-| 05 | sad | 132 |
-| 06 | surprise | 132 |
+| emotion code in the file name | read as (paper's Table 5) | samples | hours |
+|---|---|---|---|
+| 01 | anger | 132 | 0.211 |
+| 02 | disgust | 132 | 0.230 |
+| 03 | fear | 132 | 0.235 |
+| 04 | happy | 132 | 0.238 |
+| 05 | sad | 132 | 0.243 |
+| 06 | surprise | 132 | 0.230 |
 
-How these were counted: the last field of each file name. The release has no neutral class.
+How these were counted: the last field of each file name. The release has no neutral class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
