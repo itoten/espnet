@@ -37,17 +37,17 @@ How these were counted: every `.wav` in `audio/` (44.1 kHz stereo 16-bit, 0.53 t
 
 ### Files per label
 
-| emotion code in the file name | read as | samples |
-|---|---|---|
-| 1 | angry | 500 |
-| 2 | fear | 500 |
-| 3 | boredom | 500 |
-| 4 | disgust | 500 |
-| 5 | happy | 500 |
-| 6 | neutral | 500 |
-| 7 | sad | 500 |
+| emotion code in the file name | read as | samples | hours |
+|---|---|---|---|
+| 1 | angry | 500 | 0.398 |
+| 2 | fear | 500 | 0.450 |
+| 3 | boredom | 500 | 0.399 |
+| 4 | disgust | 500 | 0.446 |
+| 5 | happy | 500 | 0.385 |
+| 6 | neutral | 500 | 0.442 |
+| 7 | sad | 500 | 0.522 |
 
-How these were counted: the third field of each file name; checked against the Urdu emotion words in `UrduSER_Description.xlsx` and against the emotion folders of the release's zip: both agree for all 3,500 files. The release has no surprise class.
+How these were counted: the third field of each file name; checked against the Urdu emotion words in `UrduSER_Description.xlsx` and against the emotion folders of the release's zip: both agree for all 3,500 files. The release has no surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
