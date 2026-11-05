@@ -46,16 +46,16 @@ How these were counted: every `.wav` in the archive (1.50 to 7.20 s; mono at 44.
 
 ### Files per label
 
-| emotion number in the file name | read as (recipe mapping) | samples |
-|---|---|---|
-| 01 | angry | 78 |
-| 02 | sad | 78 |
-| 03 | surprise | 78 |
-| 04 | happy | 78 |
-| 05 | fear | 78 |
-| 06 | neutral | 78 |
+| emotion number in the file name | read as (recipe mapping) | samples | hours |
+|---|---|---|---|
+| 01 | angry | 78 | 0.076 |
+| 02 | sad | 78 | 0.092 |
+| 03 | surprise | 78 | 0.081 |
+| 04 | happy | 78 | 0.082 |
+| 05 | fear | 78 | 0.092 |
+| 06 | neutral | 78 | 0.079 |
 
-How these were counted: the second field of each file name (13 speakers x 6 emotions x 6 sentences). The release has no disgust class.
+How these were counted: the second field of each file name (13 speakers x 6 emotions x 6 sentences). The release has no disgust class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
