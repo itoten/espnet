@@ -63,17 +63,17 @@ How these were counted: every `.wav` in the archive (equal to the 1,400 rows of 
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| Angry | 200 |
-| Disgust | 200 |
-| Fear | 200 |
-| Happy | 200 |
-| Neutral | 200 |
-| Sad | 200 |
-| Surprise | 200 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| Angry | 200 | 0.132 |
+| Disgust | 200 | 0.145 |
+| Fear | 200 | 0.162 |
+| Happy | 200 | 0.143 |
+| Neutral | 200 | 0.143 |
+| Sad | 200 | 0.165 |
+| Surprise | 200 | 0.152 |
 
-How these were counted: the `emotion_label` column of `UFTBESD_Metadata.csv`.
+How these were counted: the `emotion_label` column of `UFTBESD_Metadata.csv`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
