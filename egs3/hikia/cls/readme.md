@@ -47,14 +47,14 @@ How these were counted: every `.wav` in `hi_kia/wav` (48 kHz stereo 16-bit, 0.24
 
 ### Files per label
 
-| emotion letter in the file name | read as | samples |
-|---|---|---|
-| a | angry | 107 |
-| h | happy | 129 |
-| n | neutral | 119 |
-| s | sad | 133 |
+| emotion letter in the file name | read as | samples | hours |
+|---|---|---|---|
+| a | angry | 107 | 0.018 |
+| h | happy | 129 | 0.021 |
+| n | neutral | 119 | 0.019 |
+| s | sad | 133 | 0.029 |
 
-How these were counted: the last letter of each file name; it agrees with the `emo` column of the release's `annotation.csv` for all 488 files.
+How these were counted: the last letter of each file name; it agrees with the `emo` column of the release's `annotation.csv` for all 488 files. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
