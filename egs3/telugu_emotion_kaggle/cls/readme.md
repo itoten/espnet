@@ -47,15 +47,15 @@ How these were counted: every `.wav` under `telugu/<emotion>/` (44.1 kHz stereo,
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| angry | 96 |
-| happy | 94 |
-| nuetral | 103 |
-| sad | 80 |
-| suprised | 85 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| angry | 96 | 0.127 |
+| happy | 94 | 0.107 |
+| nuetral | 103 | 0.123 |
+| sad | 80 | 0.116 |
+| suprised | 85 | 0.056 |
 
-How these were counted: the name of the folder each file is in. The folder names `nuetral` and `suprised` are spelled so in the release.
+How these were counted: the name of the folder each file is in. The folder names `nuetral` and `suprised` are spelled so in the release. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. 2 row(s) of `sad` have no readable audio file and add nothing to the hours.
 
 ### Issues in the release
 
