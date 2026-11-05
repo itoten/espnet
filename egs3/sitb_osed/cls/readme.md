@@ -45,16 +45,16 @@ How these were counted: every `.wav` under the `Actor_*` directories (mostly 22.
 
 ### Files per label
 
-| emotion code in the file name | read as | samples |
-|---|---|---|
-| 01 | angry | 1,997 |
-| 02 | disgust | 2,043 |
-| 03 | fear | 1,990 |
-| 04 | happy | 1,995 |
-| 05 | sad | 2,118 |
-| 06 | surprise | 1,967 |
+| emotion code in the file name | read as | samples | hours |
+|---|---|---|---|
+| 01 | angry | 1,997 | 2.966 |
+| 02 | disgust | 2,043 | 3.374 |
+| 03 | fear | 1,990 | 3.330 |
+| 04 | happy | 1,995 | 3.088 |
+| 05 | sad | 2,118 | 3.519 |
+| 06 | surprise | 1,967 | 2.837 |
 
-How these were counted: the second field of the file name `<prefix><sample>-<emotion>-<dialect>-<actor>.wav` (for example `a58-01-02-07.wav`); the sample prefix (`a`, `d`, `f`, `h`, `s`, `sr`) agrees with the code. The release has no neutral class.
+How these were counted: the second field of the file name `<prefix><sample>-<emotion>-<dialect>-<actor>.wav` (for example `a58-01-02-07.wav`); the sample prefix (`a`, `d`, `f`, `h`, `s`, `sr`) agrees with the code. The release has no neutral class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
