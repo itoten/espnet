@@ -34,17 +34,17 @@ How these were counted: every row of the train (1,116) and test (280) parquet fi
 
 ### Files per label
 
-| label (the `emotion` column) | samples |
-|---|---|
-| fear | 223 |
-| anger | 219 |
-| happiness | 218 |
-| enthusiasm | 198 |
-| neutral | 191 |
-| disgust | 185 |
-| sadness | 162 |
+| label (the `emotion` column) | samples | hours |
+|---|---|---|
+| fear | 223 | 0.373 |
+| anger | 219 | 0.372 |
+| happiness | 218 | 0.359 |
+| enthusiasm | 198 | 0.312 |
+| neutral | 191 | 0.288 |
+| disgust | 185 | 0.358 |
+| sadness | 162 | 0.280 |
 
-How these were counted: the `emotion` column of all rows. The label is the emotion that each actor was privately given to play, not the judgement of independent listeners.
+How these were counted: the `emotion` column of all rows. The label is the emotion that each actor was privately given to play, not the judgement of independent listeners. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
