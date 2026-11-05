@@ -49,17 +49,17 @@ How these were counted: every row of the 8 parquet files (48 kHz mono 16-bit, 1.
 
 ### Files per label
 
-| label (the `emotion` column of the release) | samples |
-|---|---|
-| angry | 769 |
-| fearful | 623 |
-| playfulness | 621 |
-| happy | 603 |
-| sad | 546 |
-| surprise | 508 |
-| neutral | 490 |
+| label (the `emotion` column of the release) | samples | hours |
+|---|---|---|
+| angry | 769 | 1.427 |
+| fearful | 623 | 1.915 |
+| playfulness | 621 | 1.231 |
+| happy | 603 | 1.508 |
+| sad | 546 | 1.731 |
+| surprise | 508 | 1.252 |
+| neutral | 490 | 1.135 |
 
-How these were counted: the `emotion` column of the parquet files (the source spells `fearful`).
+How these were counted: the `emotion` column of the parquet files (the source spells `fearful`). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
