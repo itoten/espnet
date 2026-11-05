@@ -46,17 +46,17 @@ How these were counted: every `.wav` in the archive (48 kHz mono 16-bit, 2.56 to
 
 ### Files per label
 
-| label (French emotion directory) | code in the file name | samples |
-|---|---|---|
-| Colère | C | 144 |
-| Dégoût | D | 144 |
-| Joie | J | 144 |
-| Peur | P | 144 |
-| Surprise | S | 144 |
-| Tristesse | T | 144 |
-| Neutre | N | 72 |
+| label (French emotion directory) | code in the file name | samples | hours |
+|---|---|---|---|
+| Colère | C | 144 | 0.180 |
+| Dégoût | D | 144 | 0.198 |
+| Joie | J | 144 | 0.173 |
+| Peur | P | 144 | 0.171 |
+| Surprise | S | 144 | 0.167 |
+| Tristesse | T | 144 | 0.184 |
+| Neutre | N | 72 | 0.082 |
 
-How these were counted: the emotion directory of each file (the letter in the file name agrees). Every emotion except neutral was recorded at two intensities, low and high; neutral at one intensity only, hence half as many files.
+How these were counted: the emotion directory of each file (the letter in the file name agrees). Every emotion except neutral was recorded at two intensities, low and high; neutral at one intensity only, hence half as many files. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
