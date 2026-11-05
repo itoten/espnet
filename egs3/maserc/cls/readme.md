@@ -72,16 +72,16 @@ How these were counted: every `.wav` in the archive (44.1 kHz stereo; 766 files 
 
 ### Files per label
 
-| label (emotion word in the file name, case-folded) | samples |
-|---|---|
-| neutral | 134 |
-| angry | 136 |
-| surprise | 135 |
-| fear | 135 |
-| sad | 134 |
-| happy | 134 |
+| label (emotion word in the file name, case-folded) | samples | hours |
+|---|---|---|
+| neutral | 134 | 0.143 |
+| angry | 136 | 0.143 |
+| surprise | 135 | 0.128 |
+| fear | 135 | 0.132 |
+| sad | 134 | 0.131 |
+| happy | 134 | 0.146 |
 
-How these were counted: the emotion word in each file name, lower-cased, with the four misspellings of surprise (`surpsise`, `Surprsie`, `suprise`, and a `Track 3Surprise` prefix) counted as surprise.
+How these were counted: the emotion word in each file name, lower-cased, with the four misspellings of surprise (`surpsise`, `Surprsie`, `suprise`, and a `Track 3Surprise` prefix) counted as surprise. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
