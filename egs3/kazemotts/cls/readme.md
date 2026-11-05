@@ -44,16 +44,16 @@ How these were counted: every `.wav` under `<narrator>/<train|eval>/` (22.05 kHz
 
 ### Files per label
 
-| label (emotion in the file name) | samples |
-|---|---|
-| neutral | 9,385 |
-| surprise | 9,179 |
-| fear | 9,098 |
-| angry | 9,059 |
-| happy | 9,059 |
-| sad | 8,980 |
+| label (emotion in the file name) | samples | hours |
+|---|---|---|
+| neutral | 9,385 | 12.694 |
+| surprise | 9,179 | 12.717 |
+| fear | 9,098 | 12.127 |
+| angry | 9,059 | 12.021 |
+| happy | 9,059 | 12.426 |
+| sad | 8,980 | 12.874 |
 
-How these were counted: the emotion field of each file name `<narrator>_<emotion>_<id>.wav`. The release has no disgust class.
+How these were counted: the emotion field of each file name `<narrator>_<emotion>_<id>.wav`. The release has no disgust class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
