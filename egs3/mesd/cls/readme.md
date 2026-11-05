@@ -51,16 +51,16 @@ How these were counted: every `.wav` in the release (48 kHz mono 24-bit, 0.20 to
 
 ### Files per label
 
-| label (emotion in the file name) | human recordings | naturalness-reduced copies |
-|---|---|---|
-| Anger | 143 | 48 |
-| Disgust | 144 | 48 |
-| Fear | 144 | 48 |
-| Happiness | 144 | 48 |
-| Neutral | 143 | 48 |
-| Sadness | 144 | 48 |
+| label (emotion in the file name) | human recordings | hours | naturalness-reduced copies | hours |
+|---|---|---|---|---|
+| Anger | 143 | 0.028 | 48 | 0.010 |
+| Disgust | 144 | 0.033 | 48 | 0.009 |
+| Fear | 144 | 0.026 | 48 | 0.007 |
+| Happiness | 144 | 0.038 | 48 | 0.008 |
+| Neutral | 143 | 0.021 | 48 | 0.006 |
+| Sadness | 144 | 0.028 | 48 | 0.008 |
 
-How these were counted: the emotion field of each file name `<Emotion>_<voice>_<word corpus>_<word>.wav`. According to the paper the recordings were selected by a cubic SVM classifier, not by human listeners, from 1,152 recorded per voice type.
+How these were counted: the emotion field of each file name `<Emotion>_<voice>_<word corpus>_<word>.wav`. According to the paper the recordings were selected by a cubic SVM classifier, not by human listeners, from 1,152 recorded per voice type. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
