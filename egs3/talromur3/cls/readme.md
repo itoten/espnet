@@ -60,17 +60,17 @@ How these were counted: every `.flac` under `recordings/` (48 kHz 24-bit mono, 0
 
 ### Files per label
 
-| label (style directory name in the release) | samples |
-|---|---|
-| neutral | 3,396 |
-| happy | 3,396 |
-| sad | 3,396 |
-| angry | 3,396 |
-| surprised | 3,396 (3,056, and 340 of speaker `M02` in a directory spelled `suprised`) |
-| helpful | 3,396 |
-| addendum / addendum_style2 | 1,140 (570 each) |
+| label (style directory name in the release) | samples | hours |
+|---|---|---|
+| neutral | 3,396 | 3.896 |
+| happy | 3,396 | 3.868 |
+| sad | 3,396 | 4.039 |
+| angry | 3,396 | 3.623 |
+| surprised | 3,396 (3,056, and 340 of speaker `M02` in a directory spelled `suprised`) | 4.102 |
+| helpful | 3,396 | 4.248 |
+| addendum / addendum_style2 | 1,140 (570 each) | 0.441 |
 
-How these were counted: the style directory of each recording, as given in each speaker's `index.tsv`. The non-neutral styles were also read at five intensity levels (1 to 5), which are listed in the index. The addendum is a short reading of the alphabet and the numbers 0 to 20.
+How these were counted: the style directory of each recording, as given in each speaker's `index.tsv`. The non-neutral styles were also read at five intensity levels (1 to 5), which are listed in the index. The addendum is a short reading of the alphabet and the numbers 0 to 20. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
