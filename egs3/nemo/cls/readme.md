@@ -48,16 +48,16 @@ How these were counted: every row of the two parquet shards (24 kHz mono 16-bit,
 
 ### Files per label
 
-| label (the `emotion` column) | samples |
-|---|---|
-| neutral | 809 |
-| sadness | 769 |
-| anger | 749 |
-| happiness | 749 |
-| fear | 736 |
-| surprised | 669 |
+| label (the `emotion` column) | samples | hours |
+|---|---|---|
+| neutral | 809 | 0.575 |
+| sadness | 769 | 0.575 |
+| anger | 749 | 0.470 |
+| happiness | 749 | 0.487 |
+| fear | 736 | 0.509 |
+| surprised | 669 | 0.457 |
 
-How these were counted: the `emotion` column of all rows.
+How these were counted: the `emotion` column of all rows. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
