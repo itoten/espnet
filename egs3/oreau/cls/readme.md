@@ -50,17 +50,17 @@ How these were counted: every `.wav` in `OréauFR_02` (44.1 kHz stereo 16-bit fr
 
 ### Files per label
 
-| emotion letter in the file name | read as (French) | samples |
-|---|---|---|
-| N | neutral (neutre) | 70 |
-| C | angry (colère) | 67 |
-| D | disgust (dégoût) | 67 |
-| J | happy (joie) | 62 |
-| S | surprise | 62 |
-| T | sad (tristesse) | 55 |
-| P | fear (peur) | 51 |
+| emotion letter in the file name | read as (French) | samples | hours |
+|---|---|---|---|
+| N | neutral (neutre) | 70 | 0.044 |
+| C | angry (colère) | 67 | 0.053 |
+| D | disgust (dégoût) | 67 | 0.064 |
+| J | happy (joie) | 62 | 0.042 |
+| S | surprise | 62 | 0.047 |
+| T | sad (tristesse) | 55 | 0.045 |
+| P | fear (peur) | 51 | 0.041 |
 
-How these were counted: the emotion letter in each file name. According to the documentation, version 2 keeps the utterances that at least 50% of the listeners in the perception test recognised correctly and found natural; the individual results are not distributed. Each emotion has its own sentences (79 in all).
+How these were counted: the emotion letter in each file name. According to the documentation, version 2 keeps the utterances that at least 50% of the listeners in the perception test recognised correctly and found natural; the individual results are not distributed. Each emotion has its own sentences (79 in all). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
