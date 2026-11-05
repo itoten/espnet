@@ -43,14 +43,14 @@ How these were counted: every `.wav` in the archive (44.1 kHz stereo, 1.2 to 7.1
 
 ### Files per label
 
-| emotion letter in the file name | read as | samples |
-|---|---|---|
-| a | angry | 94 |
-| h | happy | 91 |
-| n | neutral | 92 |
-| s | sad | 100 |
+| emotion letter in the file name | read as | samples | hours |
+|---|---|---|---|
+| a | angry | 94 | 0.088 |
+| h | happy | 91 | 0.071 |
+| n | neutral | 92 | 0.057 |
+| s | sad | 100 | 0.098 |
 
-How these were counted: the letter after the actor code in `<m|w><actor><emotion><take>.wav`.
+How these were counted: the letter after the actor code in `<m|w><actor><emotion><take>.wav`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
