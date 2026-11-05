@@ -54,17 +54,17 @@ How these were counted: every `.avi` video in `Utemo/` (1920x1080, 30 fps; the a
 
 ### Files per label
 
-| label (emotion word in the file name) | samples |
-|---|---|
-| Neutral | 254 |
-| Anger | 249 |
-| Disgust | 244 |
-| Fear | 244 |
-| Happiness | 242 |
-| Sadness | 289 |
-| Surprise | 279 |
+| label (emotion word in the file name) | samples | hours |
+|---|---|---|
+| Neutral | 254 | 0.271 |
+| Anger | 249 | 0.246 |
+| Disgust | 244 | 0.269 |
+| Fear | 244 | 0.273 |
+| Happiness | 242 | 0.248 |
+| Sadness | 289 | 0.391 |
+| Surprise | 279 | 0.313 |
 
-How these were counted: the emotion word at the start of each file name. The description calls the videos "validated"; the validation procedure is not described.
+How these were counted: the emotion word at the start of each file name. The description calls the videos "validated"; the validation procedure is not described. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
