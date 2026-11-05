@@ -35,14 +35,14 @@ How these were counted: every `.wav` in the archive (24.4 kHz mono 16-bit, 1.73 
 
 ### Files per label
 
-| emotion letter in the file name | read as | samples |
-|---|---|---|
-| A | angry | 450 |
-| C | calm | 450 |
-| H | happy | 450 |
-| S | sad | 450 |
+| emotion letter in the file name | read as | samples | hours |
+|---|---|---|---|
+| A | angry | 450 | 0.325 |
+| C | calm | 450 | 0.350 |
+| H | happy | 450 | 0.301 |
+| S | sad | 450 | 0.353 |
 
-How these were counted: the first letter of each file name (225 files per emotion and gender). The documentation describes the labels as emotional speaking styles, with `calm` used instead of `neutral`.
+How these were counted: the first letter of each file name (225 files per emotion and gender). The documentation describes the labels as emotional speaking styles, with `calm` used instead of `neutral`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
