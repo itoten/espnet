@@ -62,16 +62,16 @@ How these were counted: every `.wav` under `audio/` (8 kHz mono except one 44.1 
 
 ### Files per label
 
-| label (the `EmotionalState` column of `interactions.csv`) | utterances with a label and a recording |
-|---|---|
-| neutral | 3,305 |
-| slightly angry | 693 |
-| angry | 137 |
-| very angry | 104 |
-| friendly | 4 |
-| garbage | 589 |
+| label (the `EmotionalState` column of `interactions.csv`) | utterances with a label and a recording | hours |
+|---|---|---|
+| neutral | 3,305 | 1.410 |
+| slightly angry | 693 | 0.413 |
+| angry | 137 | 0.080 |
+| very angry | 104 | 0.063 |
+| friendly | 4 | 0.005 |
+| garbage | 589 | 0.245 |
 
-How these were counted: the `EmotionalState` column of `interactions.csv` for the 4,832 user utterances that have both a label and a recording (from 291 of the 302 annotated calls); the other recordings (about 3,600, including whole calls) have no label. The 4,243 labelled utterances other than `garbage` last 1.97 hours in total (0.58 to 21.7 s).
+How these were counted: the `EmotionalState` column of `interactions.csv` for the 4,832 user utterances that have both a label and a recording (from 291 of the 302 annotated calls); the other recordings (about 3,600, including whole calls) have no label. The 4,243 labelled utterances other than `garbage` last 1.97 hours in total (0.58 to 21.7 s). Hours per label are measured in the same way as the total hours above and summed over the rows of that label. Only the 4,832 labelled utterances and the 589 `garbage` rows are in the table, so the hours of the other recordings (whole calls included) are in no row.
 
 ### Issues in the release
 
