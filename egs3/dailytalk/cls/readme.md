@@ -70,17 +70,17 @@ How these were counted: every utterance in `metadata.json` (2,541 dialogues; 44.
 
 ### Files per label
 
-| label (the `emotion` field of `metadata.json`) | samples |
-|---|---|
-| no emotion | 18,966 |
-| happiness | 3,856 |
-| surprise | 407 |
-| sadness | 301 |
-| anger | 159 |
-| disgust | 66 |
-| fear | 18 |
+| label (the `emotion` field of `metadata.json`) | samples | hours |
+|---|---|---|
+| no emotion | 18,966 | 17.142 |
+| happiness | 3,856 | 3.532 |
+| surprise | 407 | 0.374 |
+| sadness | 301 | 0.349 |
+| anger | 159 | 0.187 |
+| disgust | 66 | 0.071 |
+| fear | 18 | 0.020 |
 
-How these were counted: the `emotion` field of every utterance of `metadata.json`. The field is inherited from the text annotation of the DailyDialog corpus; the voice actors performed accordingly.
+How these were counted: the `emotion` field of every utterance of `metadata.json`. The field is inherited from the text annotation of the DailyDialog corpus; the voice actors performed accordingly. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
