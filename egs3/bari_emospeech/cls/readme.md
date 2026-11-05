@@ -31,7 +31,7 @@ including 9 of these; those 9 are skipped too because they are not numbered.
 > as a practical reference for users. They are not peer-reviewed measurements and should not be
 > cited as research results; cite the corpus documentation instead.
 
-Checked on 2026-11-01 against the Mendeley Data record `hpfv67fgb8` version 1 (BARI-EmoSpeech, downloaded around 2026-10-15; the local copy was deleted after the review, so the counts are those recorded then). All counts cover every sample in the release, before any filtering by this recipe.
+Checked on 2026-11-01 against the Mendeley Data record `hpfv67fgb8` version 1 (BARI-EmoSpeech, `BARI-EmoSpeech.zip`, 105 MB, downloaded again on 2026-11-05). All counts cover every sample in the release, before any filtering by this recipe.
 
 ### Access
 
@@ -41,25 +41,25 @@ Direct download from Mendeley Data, no sign-in.
 
 | samples | speakers | total hours |
 |---|---|---|
-| 2,312 | unknown | 2.12 |
+| 2,312 | unknown | 1.67 |
 
-How these were counted: the `.m4a` files under `BarishalAudio/<class>/` (AAC at 44.1 or 48 kHz, mostly mono; hours from the file lengths of all files, including the 25 non-numbered ones listed below). The archive has no speaker information; the record's description says 5 speakers, but by listening and a speaker-verification model the clips sound like one voice, so the number is unknown.
+How these were counted: the `.m4a` files under `BarishalAudio/<class>/` (AAC at 44.1 or 48 kHz, mostly mono; hours from the container duration read with ffprobe (checked against full decoding on 9 files), over all files, including the 25 non-numbered ones listed below). The archive has no speaker information; the record's description says 5 speakers, but by listening and a speaker-verification model the clips sound like one voice, so the number is unknown.
 
 ### Files per label
 
-| label (directory name in the release) | samples |
-|---|---|
-| Affection | 500 |
-| Happiness | 407 |
-| Jealousy | 605 |
-| Normal | 500 |
-| Sadness | 300 |
+| label (directory name in the release) | samples | hours |
+|---|---|---|
+| Affection | 500 | 0.299 |
+| Happiness | 407 | 0.295 |
+| Jealousy | 605 | 0.633 |
+| Normal | 500 | 0.217 |
+| Sadness | 300 | 0.227 |
 
-How these were counted: the class directory of each `.m4a` file. The 2,312 files are those named in the record's description; 25 files in `Jealousy/` are not numbered like the rest (see below), so the numbered recordings are 2,303 (Jealousy 596).
+How these were counted: the class directory of each `.m4a` file. The 2,312 files are those named in the record's description; 25 files in `Jealousy/` are not numbered like the rest (see below), so the numbered recordings are 2,303 (Jealousy 596). Hours per label are measured in the same way as the total hours above and summed over the files of that label.
 
 ### Issues in the release
 
-- The record says the files are 16 kHz wav with train/validation splits and a CSV; the archive has AAC `.m4a` files and no split or CSV. The total duration is given as 1.67 hours in the record and measured as 2.12 hours over all files.
+- The record says the files are 16 kHz wav with train/validation splits and a CSV; the archive has AAC `.m4a` files and no split or CSV. The total duration is given as 1.67 hours in the record; the same value was measured over all files.
 - 25 files in `Jealousy/` are not utterances: long voice notes (up to 651 s), a ringtone, a keyboard-typing sound and a music loop.
 - A speaker-verification model (ESPnet-SPK, SKA-TDNN) puts 96% of the 2,303 numbered recordings in one cluster; the 15 outliers were not listened to.
 - Observation by the recipe author (2026-10-23): the recordings of each emotion and each (claimed) speaker were listened to; they all sound like the same voice (female, childlike), and the paralinguistic expression sounded the same in all emotions. Whisper (100 clips, fixed to Bangla) transcripts show that the meaning of the sentences corresponds to the label.
