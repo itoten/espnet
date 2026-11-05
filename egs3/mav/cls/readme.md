@@ -46,19 +46,19 @@ How these were counted: every `.wav` in `Sounds/` (44.1 kHz mono 16-bit, 0.24 to
 
 ### Files per label
 
-| label (the `Emotion` column of `Sounds.csv`) | samples |
-|---|---|
-| anger | 10 |
-| disgust | 10 |
-| fear | 10 |
-| pain | 10 |
-| sadness | 10 |
-| surprise | 10 |
-| happiness | 10 |
-| pleasure | 10 |
-| neutral | 10 |
+| label (the `Emotion` column of `Sounds.csv`) | samples | hours |
+|---|---|---|
+| anger | 10 | 0.003 |
+| disgust | 10 | 0.003 |
+| fear | 10 | 0.002 |
+| pain | 10 | 0.002 |
+| sadness | 10 | 0.006 |
+| surprise | 10 | 0.001 |
+| happiness | 10 | 0.004 |
+| pleasure | 10 | 0.004 |
+| neutral | 10 | 0.003 |
 
-How these were counted: the `Emotion` column of the tab-separated `Sounds.csv` (also holding `Actor_ID`, `Sex` and acoustic measures).
+How these were counted: the `Emotion` column of the tab-separated `Sounds.csv` (also holding `Actor_ID`, `Sex` and acoustic measures). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
