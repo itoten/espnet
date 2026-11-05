@@ -54,22 +54,22 @@ How these were counted: every `.wav` under `ASVP_UPDATE/` (all speech channel 01
 
 ### Files per label
 
-| emotion code in the file name (third field) | samples |
-|---|---|
-| 02 | 997 |
-| 05 | 935 |
-| 03 | 459 |
-| 04 | 432 |
-| 08 | 244 |
-| 12 | 194 |
-| 06 | 98 |
-| 07 | 76 |
-| 09 | 62 |
-| 11 | 26 |
-| 10 | 17 |
-| 01 | 15 |
+| emotion code in the file name (third field) | samples | hours |
+|---|---|---|
+| 02 | 997 | 1.885 |
+| 05 | 935 | 1.669 |
+| 03 | 459 | 0.715 |
+| 04 | 432 | 0.828 |
+| 08 | 244 | 0.192 |
+| 12 | 194 | 0.428 |
+| 06 | 98 | 0.119 |
+| 07 | 76 | 0.073 |
+| 09 | 62 | 0.086 |
+| 11 | 26 | 0.045 |
+| 10 | 17 | 0.019 |
+| 01 | 15 | 0.018 |
 
-How these were counted: the third field of each file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<actor>-<age>-<source>-<language>[-...].wav`. The record gives 02 neutral, 03 happy, 04 sad, 05 angry, 06 fearful, 07 disgust and 08 surprised; the remaining codes (01, 09, 10, 11, 12) are the five emotions boredom, excited, pleasure, pain and disappointment, and their order was not checked. The number of fields varies between files (8 to 12).
+How these were counted: the third field of each file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<actor>-<age>-<source>-<language>[-...].wav`. The record gives 02 neutral, 03 happy, 04 sad, 05 angry, 06 fearful, 07 disgust and 08 surprised; the remaining codes (01, 09, 10, 11, 12) are the five emotions boredom, excited, pleasure, pain and disappointment, and their order was not checked. The number of fields varies between files (8 to 12). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
