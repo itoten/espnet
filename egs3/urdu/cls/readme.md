@@ -59,14 +59,14 @@ How these were counted: every `.wav` in the repository (44.1 kHz mono 16-bit; 20
 
 ### Files per label
 
-| label (emotion folder; code in the file name) | samples |
-|---|---|
-| Angry (A) | 100 |
-| Happy (H) | 100 |
-| Neutral (N) | 100 |
-| Sad (S) | 100 |
+| label (emotion folder; code in the file name) | samples | hours |
+|---|---|---|
+| Angry (A) | 100 | 0.069 |
+| Happy (H) | 100 | 0.069 |
+| Neutral (N) | 100 | 0.069 |
+| Sad (S) | 100 | 0.069 |
 
-How these were counted: the emotion folder each file is in (the letter A, H, N or S in the file name agrees). According to the paper, four students of two universities labelled the clips from audio and video and the clips on which at least two agreed were kept; the individual ratings are not in the release.
+How these were counted: the emotion folder each file is in (the letter A, H, N or S in the file name agrees). According to the paper, four students of two universities labelled the clips from audio and video and the clips on which at least two agreed were kept; the individual ratings are not in the release. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
