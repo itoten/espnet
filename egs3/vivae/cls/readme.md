@@ -34,16 +34,16 @@ How these were counted: every `.wav` in `full_set` (44.1 kHz mono 16-bit, 0.40 t
 
 ### Files per label
 
-| label (emotion word in the file name) | samples |
-|---|---|
-| pleasure | 202 |
-| surprise | 187 |
-| pain | 185 |
-| fear | 176 |
-| anger | 174 |
-| achievement | 161 |
+| label (emotion word in the file name) | samples | hours |
+|---|---|---|
+| pleasure | 202 | 0.051 |
+| surprise | 187 | 0.047 |
+| pain | 185 | 0.048 |
+| fear | 176 | 0.040 |
+| anger | 174 | 0.045 |
+| achievement | 161 | 0.041 |
 
-How these were counted: the emotion word of each file name `<speaker>_<emotion>_<intensity>_<number>.wav`; four intensities (low 262, moderate 269, strong 282, peak 272). `pleasure` denotes sexual pleasure in the description.
+How these were counted: the emotion word of each file name `<speaker>_<emotion>_<intensity>_<number>.wav`; four intensities (low 262, moderate 269, strong 282, peak 272). `pleasure` denotes sexual pleasure in the description. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
