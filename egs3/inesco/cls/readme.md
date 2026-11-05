@@ -35,13 +35,13 @@ How these were counted: every `.wav` in the archive (44.1 kHz 16-bit, 1.1 to 11.
 
 ### Files per label
 
-| emotion letter in the file name | sentence numbers (naming guideline) | samples |
-|---|---|---|
-| h (happiness) | 001 to 211 | 844 |
-| s (sadness) | 402 to 600 | 796 |
-| a (anger) | 212 to 401 | 759 |
+| emotion letter in the file name | sentence numbers (naming guideline) | samples | hours |
+|---|---|---|---|
+| h (happiness) | 001 to 211 | 844 | 1.035 |
+| s (sadness) | 402 to 600 | 796 | 1.184 |
+| a (anger) | 212 to 401 | 759 | 0.806 |
 
-How these were counted: the letter after the speaker in each file name `<speaker>_<emotion><sentence>.wav`; the release's `Guideline of File Naming INESCO Dataset.pdf` assigns sentence numbers to the emotions as shown, and all 2,399 file names agree. Each sentence is therefore read in a single emotion and the three emotions use different sentences. The release has no neutral, fear, disgust or surprise class.
+How these were counted: the letter after the speaker in each file name `<speaker>_<emotion><sentence>.wav`; the release's `Guideline of File Naming INESCO Dataset.pdf` assigns sentence numbers to the emotions as shown, and all 2,399 file names agree. Each sentence is therefore read in a single emotion and the three emotions use different sentences. The release has no neutral, fear, disgust or surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. 1 row(s) of `h (happiness)` have no readable audio file and add nothing to the hours.
 
 ### Issues in the release
 
