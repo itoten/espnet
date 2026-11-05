@@ -43,17 +43,17 @@ How these were counted: the 22,100 distinct `key` values of `train.jsonl`, `val.
 
 ### Files per label
 
-| label (the `emotion` field of the lists) | samples (distinct keys) |
-|---|---|
-| angry | 3,486 |
-| happy | 3,269 |
-| neutral | 3,188 |
-| sad | 3,174 |
-| surprised | 3,072 |
-| fearful | 2,961 |
-| disgusted | 2,950 |
+| label (the `emotion` field of the lists) | samples (distinct keys) | hours |
+|---|---|---|
+| angry | 3,486 | 5.759 |
+| happy | 3,269 | 6.021 |
+| neutral | 3,188 | 4.951 |
+| sad | 3,174 | 6.939 |
+| surprised | 3,072 | 5.667 |
+| fearful | 2,961 | 5.516 |
+| disgusted | 2,950 | 5.590 |
 
-How these were counted: the `emotion` field of the lists, one count per distinct `key`. The lists divide the keys into train 21,050, val 350 and test 700. The label is the emotion requested from the model, not one that listeners heard.
+How these were counted: the `emotion` field of the lists, one count per distinct `key`. The lists divide the keys into train 21,050, val 350 and test 700. The label is the emotion requested from the model, not one that listeners heard. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
