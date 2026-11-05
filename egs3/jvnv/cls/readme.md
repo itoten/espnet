@@ -48,16 +48,16 @@ How these were counted: every `.wav` under `jvnv_v1/<speaker>/<emotion>/<session
 
 ### Files per label
 
-| label (emotion in the file name) | samples |
-|---|---|
-| anger | 249 |
-| disgust | 258 |
-| fear | 265 |
-| happy | 280 |
-| sad | 257 |
-| surprise | 306 |
+| label (emotion in the file name) | samples | hours |
+|---|---|---|
+| anger | 249 | 0.528 |
+| disgust | 258 | 0.590 |
+| fear | 265 | 0.648 |
+| happy | 280 | 0.746 |
+| sad | 257 | 0.822 |
+| surprise | 306 | 0.610 |
 
-How these were counted: the emotion field of each file name `<speaker>_<emotion>_<session>_<item>.wav`; the session is `regular` (1,375 files; the nonverbal phrase was designated) or `free` (240; the speaker chose it). The release has no neutral class.
+How these were counted: the emotion field of each file name `<speaker>_<emotion>_<session>_<item>.wav`; the session is `regular` (1,375 files; the nonverbal phrase was designated) or `free` (240; the speaker chose it). The release has no neutral class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
