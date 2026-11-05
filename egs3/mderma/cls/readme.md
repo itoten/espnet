@@ -33,14 +33,14 @@ How these were counted: every `.wav` file of the record (48 kHz stereo 16-bit in
 
 ### Files per label
 
-| label (first word of the file name, case-folded) | samples |
-|---|---|
-| sad | 384 |
-| angry | 342 |
-| neutral | 312 |
-| happy | 307 |
+| label (first word of the file name, case-folded) | samples | hours |
+|---|---|---|
+| sad | 384 | 0.654 |
+| angry | 342 | 0.459 |
+| neutral | 312 | 0.520 |
+| happy | 307 | 0.542 |
 
-How these were counted: the first word of each file name (`Angry_male_44_1_9-xjWLfu.wav`, `sad_chunk_3.wav`, `sad0.wav`). The release has no disgust, fear or surprise class. According to the paper five native speakers listened to every segment and kept those on which at least three agreed (Fleiss' kappa 0.89).
+How these were counted: the first word of each file name (`Angry_male_44_1_9-xjWLfu.wav`, `sad_chunk_3.wav`, `sad0.wav`). The release has no disgust, fear or surprise class. According to the paper five native speakers listened to every segment and kept those on which at least three agreed (Fleiss' kappa 0.89). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
