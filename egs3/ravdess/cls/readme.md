@@ -45,18 +45,18 @@ How these were counted: every `.wav` under the `Actor_NN` folders (48 kHz; 1,435
 
 ### Files per label
 
-| emotion code in the file name | read as (record description) | samples |
-|---|---|---|
-| 01 | neutral | 96 |
-| 02 | calm | 192 |
-| 03 | happy | 192 |
-| 04 | sad | 192 |
-| 05 | angry | 192 |
-| 06 | fearful | 192 |
-| 07 | disgust | 192 |
-| 08 | surprised | 192 |
+| emotion code in the file name | read as (record description) | samples | hours |
+|---|---|---|---|
+| 01 | neutral | 96 | 0.093 |
+| 02 | calm | 192 | 0.202 |
+| 03 | happy | 192 | 0.194 |
+| 04 | sad | 192 | 0.197 |
+| 05 | angry | 192 | 0.206 |
+| 06 | fearful | 192 | 0.191 |
+| 07 | disgust | 192 | 0.210 |
+| 08 | surprised | 192 | 0.186 |
 
-How these were counted: the third field of the file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral has half as many files because it was recorded at one intensity only.
+How these were counted: the third field of the file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral has half as many files because it was recorded at one intensity only. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
