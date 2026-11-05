@@ -37,16 +37,16 @@ How these were counted: every `.wav` under the actor folders (16 kHz 16-bit; 1,6
 
 ### Files per label
 
-| emotion code in the file name | read as (repository README) | samples |
-|---|---|---|
-| 01 | neutral | 280 |
-| 02 | sad | 280 |
-| 03 | happy | 280 |
-| 04 | surprise | 280 |
-| 05 | fear | 280 |
-| 06 | angry | 280 |
+| emotion code in the file name | read as (repository README) | samples | hours |
+|---|---|---|---|
+| 01 | neutral | 280 | 0.216 |
+| 02 | sad | 280 | 0.290 |
+| 03 | happy | 280 | 0.238 |
+| 04 | surprise | 280 | 0.216 |
+| 05 | fear | 280 | 0.277 |
+| 06 | angry | 280 | 0.248 |
 
-How these were counted: the emotion field (third field) of each file name. The codes are mapped as in the repository README.
+How these were counted: the emotion field (third field) of each file name. The codes are mapped as in the repository README. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
