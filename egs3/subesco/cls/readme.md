@@ -51,17 +51,17 @@ How these were counted: every `.wav` in the archive (44.1 kHz in 4,555 files and
 
 ### Files per label
 
-| emotion in the file name | samples |
-|---|---|
-| ANGRY | 1,000 |
-| DISGUST | 1,000 |
-| FEAR | 1,000 |
-| HAPPY | 1,000 |
-| NEUTRAL | 1,000 |
-| SAD | 1,000 |
-| SURPRISE | 1,000 |
+| emotion in the file name | samples | hours |
+|---|---|---|
+| ANGRY | 1,000 | 1.119 |
+| DISGUST | 1,000 | 1.118 |
+| FEAR | 1,000 | 1.123 |
+| HAPPY | 1,000 | 1.119 |
+| NEUTRAL | 1,000 | 1.117 |
+| SAD | 1,000 | 1.118 |
+| SURPRISE | 1,000 | 1.117 |
 
-How these were counted: the emotion field of each file name.
+How these were counted: the emotion field of each file name. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
