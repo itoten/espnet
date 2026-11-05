@@ -44,19 +44,19 @@ from the release.
 
 ### Files per label
 
-| label (as in the release) | table rows |
-|---|---|
-| Neutral | 2,984 |
-| Anger | 1,109 |
-| Sadness | 811 |
-| Joy | 569 |
-| Surprise | 390 |
-| Disgust | 162 |
-| Fear | 135 |
-| Frustration | 1 |
-| Confusion | 1 |
+| label (as in the release) | table rows | hours |
+|---|---|---|
+| Neutral | 2,984 | 6.597 |
+| Anger | 1,109 | 4.009 |
+| Sadness | 811 | 1.956 |
+| Joy | 569 | 1.099 |
+| Surprise | 390 | 0.868 |
+| Disgust | 162 | 0.593 |
+| Fear | 135 | 0.242 |
+| Frustration | 1 | 0.002 |
+| Confusion | 1 | 0.001 |
 
-How these were counted: the `Emotion` column of all 6,162 rows of the table.
+How these were counted: the `Emotion` column of all 6,162 rows of the table. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. 1 row(s) of `Neutral` have no readable audio file; 1 row(s) of `Anger` have no readable audio file; 1 row(s) of `Surprise` have no readable audio file and add nothing to the hours.
 
 ### Issues in the release
 
