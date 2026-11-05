@@ -60,15 +60,15 @@ How these were counted: every `.wav` in the archive (16 kHz mono, 1.96 to 3.75 s
 
 ### Files per label
 
-| emotion tag in the file name | samples |
-|---|---|
-| calm | 3,825 |
-| Fearful | 1,625 |
-| angry | 1,133 |
-| happy | 988 |
-| None | 164 |
+| emotion tag in the file name | samples | hours |
+|---|---|---|
+| calm | 3,825 | 3.224 |
+| Fearful | 1,625 | 1.377 |
+| angry | 1,133 | 0.967 |
+| happy | 988 | 0.844 |
+| None | 164 | 0.137 |
 
-How these were counted: the emotion field of each file name. The keyword field has 8 values: unknown 1,192, background 1,116, help 1,069, go 963, bacho 948, yes 875, stop 787, no 785.
+How these were counted: the emotion field of each file name. The keyword field has 8 values: unknown 1,192, background 1,116, help 1,069, go 963, bacho 948, yes 875, stop 787, no 785. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
