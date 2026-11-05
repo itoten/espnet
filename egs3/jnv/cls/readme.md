@@ -63,16 +63,16 @@ How these were counted: every `.wav` under the four speaker folders (48 kHz ster
 
 ### Files per label
 
-| label (emotion in the file name) | samples |
-|---|---|
-| angry | 68 |
-| disgust | 54 |
-| fear | 50 |
-| happy | 76 |
-| sad | 40 |
-| surprise | 132 |
+| label (emotion in the file name) | samples | hours |
+|---|---|---|
+| angry | 68 | 0.064 |
+| disgust | 54 | 0.051 |
+| fear | 50 | 0.047 |
+| happy | 76 | 0.069 |
+| sad | 40 | 0.046 |
+| surprise | 132 | 0.118 |
 
-How these were counted: the emotion field of each file name `<speaker>_<emotion>_<id>_<session>.wav`. The session letter is `R` (phrase designated) or `F` (phrase chosen by the speaker). Every speaker has 33 surprise, 19 happy, 17 angry and 10 sad clips; disgust 13 to 15 and fear 12 to 13.
+How these were counted: the emotion field of each file name `<speaker>_<emotion>_<id>_<session>.wav`. The session letter is `R` (phrase designated) or `F` (phrase chosen by the speaker). Every speaker has 33 surprise, 19 happy, 17 angry and 10 sad clips; disgust 13 to 15 and fear 12 to 13. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
