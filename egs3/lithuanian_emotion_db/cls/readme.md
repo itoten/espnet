@@ -55,18 +55,18 @@ How these were counted: every `.wav` under `EMOdb/<speaker> Zmogus/<speaker> <Em
 
 ### Files per label
 
-| label (emotion folder, Lithuanian name without diacritics) | samples |
-|---|---|
-| sad | 342 |
-| happy | 260 |
-| neutral | 245 |
-| angry | 239 |
-| disgust | 150 |
-| surprise | 105 |
-| fear | 103 |
-| Ilgesys (longing) | 9 |
+| label (emotion folder, Lithuanian name without diacritics) | samples | hours |
+|---|---|---|
+| sad | 342 | 0.403 |
+| happy | 260 | 0.285 |
+| neutral | 245 | 0.266 |
+| angry | 239 | 0.250 |
+| disgust | 150 | 0.194 |
+| surprise | 105 | 0.135 |
+| fear | 103 | 0.117 |
+| Ilgesys (longing) | 9 | 0.009 |
 
-How these were counted: the emotion folder each file is in; the English names are those in the recipe's mapping (the folder name must agree with the file name `<speaker> <Emotion>_<phrase>.wav`). The number per speaker and emotion is very uneven (4 to 98).
+How these were counted: the emotion folder each file is in; the English names are those in the recipe's mapping (the folder name must agree with the file name `<speaker> <Emotion>_<phrase>.wav`). The number per speaker and emotion is very uneven (4 to 98). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
