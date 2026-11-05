@@ -65,13 +65,13 @@ How these were counted: every segment in the 1,446 transcript files `data/transc
 
 ### Files per label
 
-| label (arg-max of a segment's `emotion` scores) | samples |
-|---|---|
-| neutral | 17,149 |
-| positive | 8,148 |
-| negative | 433 |
+| label (arg-max of a segment's `emotion` scores) | samples | hours |
+|---|---|---|
+| neutral | 17,149 | 5.813 |
+| positive | 8,148 | 5.919 |
+| negative | 433 | 0.292 |
 
-How these were counted: the largest of the three scores (`negative`, `neutral`, `positive`) in each segment's `emotion` field, over all 25,730 segments. The corpus README describes the scores as the output of Gridspace's emotion model; the release has no human emotion judgement.
+How these were counted: the largest of the three scores (`negative`, `neutral`, `positive`) in each segment's `emotion` field, over all 25,730 segments. The corpus README describes the scores as the output of Gridspace's emotion model; the release has no human emotion judgement. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
