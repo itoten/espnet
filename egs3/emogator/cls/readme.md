@@ -47,40 +47,40 @@ How these were counted: every `.mp3` in the repository (0.42 to 2.04 s; 48 kHz i
 
 ### Files per label
 
-| label (category number in the file name; names from the repository README) | samples |
-|---|---|
-| 01 adoration | 1,071 |
-| 02 amusement | 1,071 |
-| 03 anger | 1,071 |
-| 04 awe | 1,071 |
-| 05 confusion | 1,071 |
-| 06 contempt | 1,071 |
-| 07 contentment | 1,071 |
-| 08 desire | 1,071 |
-| 09 disappointment | 1,071 |
-| 10 disgust | 1,071 |
-| 11 distress | 1,071 |
-| 12 ecstasy | 1,071 |
-| 13 elation | 1,071 |
-| 14 embarrassment | 1,071 |
-| 15 fear | 1,071 |
-| 16 guilt | 1,071 |
-| 17 interest | 1,071 |
-| 18 neutral | 1,071 |
-| 19 pain | 1,071 |
-| 20 pride | 1,071 |
-| 21 realization | 1,071 |
-| 22 relief | 1,071 |
-| 23 romantic love | 1,071 |
-| 24 sadness | 1,071 |
-| 25 serenity | 1,071 |
-| 26 shame | 1,071 |
-| 27 surprise (negative) | 1,071 |
-| 28 surprise (positive) | 1,071 |
-| 29 sympathy | 1,071 |
-| 30 triumph | 1,071 |
+| label (category number in the file name; names from the repository README) | samples | hours |
+|---|---|---|
+| 01 adoration | 1,071 | 0.557 |
+| 02 amusement | 1,071 | 0.556 |
+| 03 anger | 1,071 | 0.555 |
+| 04 awe | 1,071 | 0.560 |
+| 05 confusion | 1,071 | 0.557 |
+| 06 contempt | 1,071 | 0.557 |
+| 07 contentment | 1,071 | 0.562 |
+| 08 desire | 1,071 | 0.562 |
+| 09 disappointment | 1,071 | 0.560 |
+| 10 disgust | 1,071 | 0.554 |
+| 11 distress | 1,071 | 0.558 |
+| 12 ecstasy | 1,071 | 0.565 |
+| 13 elation | 1,071 | 0.559 |
+| 14 embarrassment | 1,071 | 0.559 |
+| 15 fear | 1,071 | 0.556 |
+| 16 guilt | 1,071 | 0.560 |
+| 17 interest | 1,071 | 0.559 |
+| 18 neutral | 1,071 | 0.560 |
+| 19 pain | 1,071 | 0.559 |
+| 20 pride | 1,071 | 0.560 |
+| 21 realization | 1,071 | 0.560 |
+| 22 relief | 1,071 | 0.560 |
+| 23 romantic love | 1,071 | 0.561 |
+| 24 sadness | 1,071 | 0.561 |
+| 25 serenity | 1,071 | 0.562 |
+| 26 shame | 1,071 | 0.559 |
+| 27 surprise (negative) | 1,071 | 0.553 |
+| 28 surprise (positive) | 1,071 | 0.556 |
+| 29 sympathy | 1,071 | 0.559 |
+| 30 triumph | 1,071 | 0.560 |
 
-How these were counted: the category number in the file name; every category has exactly 1,071 files (357 contributors x 3 instances).
+How these were counted: the category number in the file name; every category has exactly 1,071 files (357 contributors x 3 instances). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
