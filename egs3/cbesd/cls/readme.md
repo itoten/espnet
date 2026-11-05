@@ -69,16 +69,16 @@ How these were counted: every `.wav` in the `BESD` folders (48 kHz stereo, 0.94 
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| ANGER | 699 |
-| DISGUST | 700 |
-| FEAR | 705 |
-| HAPPY | 700 |
-| NEUTRAL | 700 |
-| SAD | 700 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| ANGER | 699 | 0.432 |
+| DISGUST | 700 | 0.469 |
+| FEAR | 705 | 0.555 |
+| HAPPY | 700 | 0.526 |
+| NEUTRAL | 700 | 0.525 |
+| SAD | 700 | 0.526 |
 
-How these were counted: the emotion folder each file is in, summed over the `TELUGU` and `ENGLISH` folders.
+How these were counted: the emotion folder each file is in, summed over the `TELUGU` and `ENGLISH` folders. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
