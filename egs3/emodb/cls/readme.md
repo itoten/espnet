@@ -47,17 +47,17 @@ How these were counted: every row of `db.emotion.csv` (equal to the `.wav` files
 
 ### Files per label
 
-| label (the `emotion` column of `db.emotion.csv`) | samples |
-|---|---|
-| anger | 137 |
-| fear | 122 |
-| sadness | 121 |
-| happiness | 115 |
-| boredom | 112 |
-| disgust | 105 |
-| neutral | 104 |
+| label (the `emotion` column of `db.emotion.csv`) | samples | hours |
+|---|---|---|
+| anger | 137 | 0.101 |
+| fear | 122 | 0.076 |
+| sadness | 121 | 0.118 |
+| happiness | 115 | 0.080 |
+| boredom | 112 | 0.082 |
+| disgust | 105 | 0.098 |
+| neutral | 104 | 0.070 |
 
-How these were counted: the `emotion` column of all 816 rows. Each row also has `emotion.confidence` and `emotion.naturalness` (listener scores).
+How these were counted: the `emotion` column of all 816 rows. Each row also has `emotion.confidence` and `emotion.naturalness` (listener scores). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
