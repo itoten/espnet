@@ -33,14 +33,14 @@ How these were counted: every `.wav` in `Original_dataset.zip` (the files are Og
 
 ### Files per label
 
-| label (emotion folder in the release) | samples |
-|---|---|
-| Happy | 226 |
-| Sad | 176 |
-| Neutral | 175 |
-| Angry | 170 |
+| label (emotion folder in the release) | samples | hours |
+|---|---|---|
+| Happy | 226 | 0.189 |
+| Sad | 176 | 0.150 |
+| Neutral | 175 | 0.133 |
+| Angry | 170 | 0.122 |
 
-How these were counted: the emotion folder each file is in. The release has no disgust, fear or surprise class.
+How these were counted: the emotion folder each file is in. The release has no disgust, fear or surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
