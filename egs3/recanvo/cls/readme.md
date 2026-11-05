@@ -51,32 +51,32 @@ How these were counted: every row of `dataset_file_directory.csv` (equal to the 
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| selftalk | 1,885 |
-| frustrated | 1,536 |
-| delighted | 1,272 |
-| dysregulated | 704 |
-| social | 634 |
-| request | 419 |
-| affectionate | 129 |
-| yes | 123 |
-| laughter | 93 |
-| dysregulation-sick | 74 |
-| happy | 61 |
-| help | 24 |
-| more | 22 |
-| protest | 21 |
-| bathroom | 20 |
-| dysregulation-bathroom | 18 |
-| no | 12 |
-| glee | 8 |
-| laugh | 8 |
-| tablet | 7 |
-| hunger | 4 |
-| greeting | 3 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| selftalk | 1,885 | 0.695 |
+| frustrated | 1,536 | 0.604 |
+| delighted | 1,272 | 0.423 |
+| dysregulated | 704 | 0.280 |
+| social | 634 | 0.173 |
+| request | 419 | 0.118 |
+| affectionate | 129 | 0.022 |
+| yes | 123 | 0.023 |
+| laughter | 93 | 0.026 |
+| dysregulation-sick | 74 | 0.029 |
+| happy | 61 | 0.020 |
+| help | 24 | 0.008 |
+| more | 22 | 0.006 |
+| protest | 21 | 0.008 |
+| bathroom | 20 | 0.009 |
+| dysregulation-bathroom | 18 | 0.007 |
+| no | 12 | 0.002 |
+| glee | 8 | 0.002 |
+| laugh | 8 | 0.001 |
+| tablet | 7 | 0.001 |
+| hunger | 4 | 0.001 |
+| greeting | 3 | 0.001 |
 
-How these were counted: the `Label` column of `dataset_file_directory.csv`. The labels are not shared by all participants (six are common to all).
+How these were counted: the `Label` column of `dataset_file_directory.csv`. The labels are not shared by all participants (six are common to all). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
