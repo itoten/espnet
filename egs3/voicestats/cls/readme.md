@@ -53,13 +53,13 @@ How these were counted: every `.wav` in the three speaker archives (48 kHz mono 
 
 ### Files per label
 
-| label (style in the file name) | samples |
-|---|---|
-| normal | 300 |
-| happy | 300 |
-| angry | 300 |
+| label (style in the file name) | samples | hours |
+|---|---|---|
+| normal | 300 | 0.743 |
+| happy | 300 | 0.714 |
+| angry | 300 | 0.827 |
 
-How these were counted: the style field of each file name `<speaker>_<emotion>_<sentence>.wav` (the file also sits in a folder `<speaker>_<emotion>`). The site describes the styles as three emotion patterns; `normal` (通常) is the normal reading.
+How these were counted: the style field of each file name `<speaker>_<emotion>_<sentence>.wav` (the file also sits in a folder `<speaker>_<emotion>`). The site describes the styles as three emotion patterns; `normal` (通常) is the normal reading. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
