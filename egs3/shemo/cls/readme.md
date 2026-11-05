@@ -47,16 +47,16 @@ How these were counted: every `.wav` in the two zips (mono; 44.1 kHz in 2,869 fi
 
 ### Files per label
 
-| emotion code in the file name | read as (README) | samples |
-|---|---|---|
-| A | anger | 1,059 |
-| N | neutral | 1,028 |
-| S | sadness | 449 |
-| W | surprise | 225 |
-| H | happiness | 201 |
-| F | fear | 38 |
+| emotion code in the file name | read as (README) | samples | hours |
+|---|---|---|---|
+| A | anger | 1,059 | 1.065 |
+| N | neutral | 1,028 | 1.399 |
+| S | sadness | 449 | 0.604 |
+| W | surprise | 225 | 0.112 |
+| H | happiness | 201 | 0.213 |
+| F | fear | 38 | 0.034 |
 
-How these were counted: the emotion letter of each file name. The release has no disgust class. According to the README, twelve annotators labelled each utterance and the final label is the majority vote; the individual ratings are not distributed.
+How these were counted: the emotion letter of each file name. The release has no disgust class. According to the README, twelve annotators labelled each utterance and the final label is the majority vote; the individual ratings are not distributed. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
