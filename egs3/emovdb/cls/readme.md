@@ -44,38 +44,38 @@ How these were counted: every `.wav` in the 18 archives (mono; 16 kHz in 5,106 f
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| Amused | 1,317 |
-| Angry | 1,268 |
-| Disgusted | 1,019 |
-| Neutral | 1,568 |
-| Sleepy | 1,721 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| Amused | 1,317 | 1.889 |
+| Angry | 1,268 | 1.563 |
+| Disgusted | 1,019 | 1.632 |
+| Neutral | 1,568 | 1.694 |
+| Sleepy | 1,721 | 2.712 |
 
 By speaker and label (one row per archive):
 
-| speaker | label | samples |
-|---|---|---|
-| bea | Amused | 296 |
-| bea | Angry | 304 |
-| bea | Disgusted | 333 |
-| bea | Neutral | 357 |
-| bea | Sleepy | 497 |
-| jenie | Amused | 222 |
-| jenie | Angry | 496 |
-| jenie | Disgusted | 189 |
-| jenie | Neutral | 417 |
-| jenie | Sleepy | 466 |
-| josh | Amused | 298 |
-| josh | Neutral | 302 |
-| josh | Sleepy | 263 |
-| sam | Amused | 501 |
-| sam | Angry | 468 |
-| sam | Disgusted | 497 |
-| sam | Neutral | 492 |
-| sam | Sleepy | 495 |
+| speaker | label | samples | hours |
+|---|---|---|---|
+| bea | Amused | 296 | 0.341 |
+| bea | Angry | 304 | 0.318 |
+| bea | Disgusted | 333 | 0.489 |
+| bea | Neutral | 357 | 0.390 |
+| bea | Sleepy | 497 | 0.854 |
+| jenie | Amused | 222 | 0.306 |
+| jenie | Angry | 496 | 0.728 |
+| jenie | Disgusted | 189 | 0.260 |
+| jenie | Neutral | 417 | 0.525 |
+| jenie | Sleepy | 466 | 0.633 |
+| josh | Amused | 298 | 0.336 |
+| josh | Neutral | 302 | 0.290 |
+| josh | Sleepy | 263 | 0.349 |
+| sam | Amused | 501 | 0.906 |
+| sam | Angry | 468 | 0.517 |
+| sam | Disgusted | 497 | 0.884 |
+| sam | Neutral | 492 | 0.488 |
+| sam | Sleepy | 495 | 0.877 |
 
-How these were counted: the speaker and emotion name of each archive; the file names inside carry neither (the same name appears in several archives), so each archive must be extracted to its own directory. `josh` recorded only Amused, Neutral and Sleepy.
+How these were counted: the speaker and emotion name of each archive; the file names inside carry neither (the same name appears in several archives), so each archive must be extracted to its own directory. `josh` recorded only Amused, Neutral and Sleepy. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. In this second table the hours are those of the files of each archive.
 
 ### Issues in the release
 
