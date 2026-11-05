@@ -61,16 +61,16 @@ How these were counted: every `.avi` file under `s1/` to `s8/` (video with a ste
 
 ### Files per label
 
-| emotion code in the file name | samples |
-|---|---|
-| an | 120 |
-| di | 120 |
-| fe | 120 |
-| ha | 120 |
-| sa | 120 |
-| su | 120 |
+| emotion code in the file name | samples | hours |
+|---|---|---|
+| an | 120 | 0.157 |
+| di | 120 | 0.177 |
+| fe | 120 | 0.162 |
+| ha | 120 | 0.161 |
+| sa | 120 | 0.175 |
+| su | 120 | 0.156 |
 
-How these were counted: the two-letter emotion code at the start of each file name. The release has no neutral class and no label table; the codes are read as angry, disgust, fear, happy, sad and surprise.
+How these were counted: the two-letter emotion code at the start of each file name. The release has no neutral class and no label table; the codes are read as angry, disgust, fear, happy, sad and surprise. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
