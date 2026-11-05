@@ -58,16 +58,16 @@ How these were counted: every `.wav` in the archive (44.1 kHz mono 16-bit, 3.99 
 
 ### Files per label
 
-| emotion code in the file name | samples |
-|---|---|
-| ANG | 265 |
-| DIS | 265 |
-| FEA | 265 |
-| HAP | 264 |
-| NEU | 264 |
-| SAD | 265 |
+| emotion code in the file name | samples | hours |
+|---|---|---|
+| ANG | 265 | 0.356 |
+| DIS | 265 | 0.356 |
+| FEA | 265 | 0.356 |
+| HAP | 264 | 0.355 |
+| NEU | 264 | 0.356 |
+| SAD | 265 | 0.356 |
 
-How these were counted: the emotion code of each file name.
+How these were counted: the emotion code of each file name. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
