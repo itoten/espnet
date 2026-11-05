@@ -52,16 +52,16 @@ How these were counted: every `.wav` in the copy (16 kHz mono, 0.96 to 4.93 s); 
 
 ### Files per label
 
-| label (emotion in the file name) | samples |
-|---|---|
-| angry | 200 |
-| fear | 200 |
-| happy | 200 |
-| neutral | 200 |
-| sad | 200 |
-| surprise | 200 |
+| label (emotion in the file name) | samples | hours |
+|---|---|---|
+| angry | 200 | 0.098 |
+| fear | 200 | 0.117 |
+| happy | 200 | 0.105 |
+| neutral | 200 | 0.092 |
+| sad | 200 | 0.129 |
+| surprise | 200 | 0.094 |
 
-How these were counted: the emotion field of each file name (50 sentences per speaker and emotion; the texts are shared across speakers and emotions).
+How these were counted: the emotion field of each file name (50 sentences per speaker and emotion; the texts are shared across speakers and emotions). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
