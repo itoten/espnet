@@ -41,14 +41,14 @@ How these were counted: every `.wav` under `crowd_train/wavs` and `crowd_test/wa
 
 ### Files per label
 
-| label (the `emotion` field of the official lists) | samples |
-|---|---|
-| neutral | 106,065 |
-| sad | 23,190 |
-| angry | 15,719 |
-| positive | 15,392 |
+| label (the `emotion` field of the official lists) | samples | hours |
+|---|---|---|
+| neutral | 106,065 | 128.296 |
+| sad | 23,190 | 32.837 |
+| angry | 15,719 | 21.133 |
+| positive | 15,392 | 20.222 |
 
-How these were counted: the `emotion` field of `paper_setups/crowd_large.jsonl` (146,715 recordings, train) and `paper_setups/test/crowd_test.jsonl` (13,651, test), obtained with the Dawid-Skene aggregation of the crowd annotations. The paper's table lists 164,387 crowd utterances including an `other` class and the lists 160,366; whether the lists follow the paper's rule exactly (agreement threshold 0.9) was not checked. The release has no disgust, fear or surprise class.
+How these were counted: the `emotion` field of `paper_setups/crowd_large.jsonl` (146,715 recordings, train) and `paper_setups/test/crowd_test.jsonl` (13,651, test), obtained with the Dawid-Skene aggregation of the crowd annotations. The paper's table lists 164,387 crowd utterances including an `other` class and the lists 160,366; whether the lists follow the paper's rule exactly (agreement threshold 0.9) was not checked. The release has no disgust, fear or surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
