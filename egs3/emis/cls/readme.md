@@ -45,14 +45,14 @@ How these were counted: every `.wav` under `wav_src/` (24 kHz mono, 1.82 to 8.11
 
 ### Files per label
 
-| label (voice emotion in the file name) | samples |
-|---|---|
-| angry | 312 |
-| happy | 312 |
-| neutral | 312 |
-| sad | 312 |
+| label (voice emotion in the file name) | samples | hours |
+|---|---|---|
+| angry | 312 | 0.316 |
+| happy | 312 | 0.288 |
+| neutral | 312 | 0.319 |
+| sad | 312 | 0.340 |
 
-How these were counted: the voice emotion in the file name (third field from the end). The label is the emotion requested from the synthesizer (that of the reference voice), not an emotion perceived by listeners. 104 distinct sentences in 26 sentence groups (the number at the start of the file name); 936 recordings are incongruent (text emotion differs from voice emotion) and 312 are congruent.
+How these were counted: the voice emotion in the file name (third field from the end). The label is the emotion requested from the synthesizer (that of the reference voice), not an emotion perceived by listeners. 104 distinct sentences in 26 sentence groups (the number at the start of the file name); 936 recordings are incongruent (text emotion differs from voice emotion) and 312 are congruent. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
