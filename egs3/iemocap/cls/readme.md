@@ -54,21 +54,21 @@ How these were counted: every utterance `.wav` under `Session*/sentences/wav/` (
 
 ### Files per label
 
-| code in `EmoEvaluation` | label (release README) | utterances |
-|---|---|---|
-| xxx | no majority among the annotators | 2,507 |
-| fru | frustrated | 1,849 |
-| neu | neutral | 1,708 |
-| ang | angry | 1,103 |
-| sad | sad | 1,084 |
-| exc | excited | 1,041 |
-| hap | happy | 595 |
-| sur | surprised | 107 |
-| fea | fearful | 40 |
-| oth | other | 3 |
-| dis | disgusted | 2 |
+| code in `EmoEvaluation` | label (release README) | utterances | hours |
+|---|---|---|---|
+| xxx | no majority among the annotators | 2,507 | 2.901 |
+| fru | frustrated | 1,849 | 2.419 |
+| neu | neutral | 1,708 | 1.851 |
+| ang | angry | 1,103 | 1.383 |
+| sad | sad | 1,084 | 1.655 |
+| exc | excited | 1,041 | 1.382 |
+| hap | happy | 595 | 0.718 |
+| sur | surprised | 107 | 0.092 |
+| fea | fearful | 40 | 0.030 |
+| oth | other | 3 | 0.004 |
+| dis | disgusted | 2 | 0.001 |
 
-How these were counted: the categorical code of each utterance in `Session*/dialog/EmoEvaluation/*.txt` (the majority of at least three annotators). `hap` and `exc` are separate codes. The same files hold the individual annotators' evaluations.
+How these were counted: the categorical code of each utterance in `Session*/dialog/EmoEvaluation/*.txt` (the majority of at least three annotators). `hap` and `exc` are separate codes. The same files hold the individual annotators' evaluations. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
