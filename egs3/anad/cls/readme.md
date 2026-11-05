@@ -56,13 +56,13 @@ How these were counted: every `.wav` under the three `1sec_segmented_part*` fold
 
 ### Files per label
 
-| label (the `Emotion` column of `ANAD.csv`) | rows of `ANAD.csv` |
-|---|---|
-| angry | 741 |
-| happy | 505 |
-| surprised | 137 |
+| label (the `Emotion` column of `ANAD.csv`) | rows of `ANAD.csv` | hours |
+|---|---|---|
+| angry | 741 | 0.191 |
+| happy | 505 | 0.114 |
+| surprised | 137 | 0.036 |
 
-How these were counted: the `Emotion` column of `ANAD.csv` (1,383 rows). The label is constant within a call: calls `V1`, `V3`, `V8` are happy, `V2` and `V6` surprised, `V4`, `V5` and `V7` angry. Of the 1,420 wav files, 86 have no row in the table and 49 rows have no wav file; 1,334 have both.
+How these were counted: the `Emotion` column of `ANAD.csv` (1,383 rows). The label is constant within a call: calls `V1`, `V3`, `V8` are happy, `V2` and `V6` surprised, `V4`, `V5` and `V7` angry. Of the 1,420 wav files, 86 have no row in the table and 49 rows have no wav file; 1,334 have both. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. 18 row(s) of `angry` have no readable audio file; 31 row(s) of `happy` have no readable audio file and add nothing to the hours.
 
 ### Issues in the release
 
