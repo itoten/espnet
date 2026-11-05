@@ -44,19 +44,19 @@ values in the json files (organised in 15 two-person groups).
 The release has one label set per modality; each json file gives the five annotators' answers
 and the final `emotion_result`. Counts of `emotion_result` over all 19,250 utterances:
 
-| label (as in the release) | Audio labels | Text labels | Video labels |
-|---|---|---|---|
-| neutral | 9,378 | 7,903 | 6,608 |
-| angry | 3,820 | 3,698 | 4,190 |
-| happy | 2,105 | 1,620 | 4,451 |
-| surprised | 1,363 | 2,712 | 1,084 |
-| sad | 1,110 | 1,183 | 964 |
-| disgusted | 818 | 1,111 | 1,563 |
-| fearful | 656 | 1,023 | 390 |
+| label (as in the release) | Audio labels | hours | Text labels | hours | Video labels | hours |
+|---|---|---|---|---|---|---|
+| neutral | 9,378 | 10.749 | 7,903 | 9.242 | 6,608 | 8.062 |
+| angry | 3,820 | 4.915 | 3,698 | 5.101 | 4,190 | 5.394 |
+| happy | 2,105 | 2.489 | 1,620 | 1.894 | 4,451 | 5.006 |
+| surprised | 1,363 | 1.207 | 2,712 | 2.344 | 1,084 | 0.816 |
+| sad | 1,110 | 2.035 | 1,183 | 1.897 | 964 | 1.652 |
+| disgusted | 818 | 1.242 | 1,111 | 1.598 | 1,563 | 2.158 |
+| fearful | 656 | 0.966 | 1,023 | 1.526 | 390 | 0.516 |
 
 How these were counted: `emotion_result` in each `Audio/json`, `Text/json` and `Video/json`
 file. The `Multimodal` labels (video with audio) were not downloaded; the dataset page lists
-neutral 6,853, and its table differs from all three label sets above.
+neutral 6,853, and its table differs from all three label sets above. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
