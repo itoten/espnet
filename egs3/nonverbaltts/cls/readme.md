@@ -84,19 +84,19 @@ How these were counted: every row of the 11 parquet files (indexes are all uniqu
 
 ### Files per label
 
-| label (the `Emotion` column of the release) | samples |
-|---|---|
-| neutral | 2,406 |
-| happy | 1,605 |
-| other | 1,177 |
-| sad | 387 |
-| disgusted | 78 |
-| surprised | 34 |
-| angry | 25 |
-| fearful | 10 |
-| (no tag) | 534 |
+| label (the `Emotion` column of the release) | samples | hours |
+|---|---|---|
+| neutral | 2,406 | 6.446 |
+| happy | 1,605 | 4.316 |
+| other | 1,177 | 3.702 |
+| sad | 387 | 1.012 |
+| disgusted | 78 | 0.145 |
+| surprised | 34 | 0.040 |
+| angry | 25 | 0.047 |
+| fearful | 10 | 0.023 |
+| (no tag) | 534 | 1.855 |
 
-How these were counted: the `Emotion` column of all rows. `other` here is an emotion tag, not the `other` split (see below).
+How these were counted: the `Emotion` column of all rows. `other` here is an emotion tag, not the `other` split (see below). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
