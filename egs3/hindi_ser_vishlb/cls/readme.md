@@ -54,18 +54,18 @@ How these were counted: every `.wav` under `my Dataset/<speaker>/session<N>/<emo
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| anger | 400 |
-| disgust | 400 |
-| fear | 400 |
-| happy | 400 |
-| neutral | 400 |
-| sad | 400 |
-| sarcastic | 400 |
-| surprise | 400 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| anger | 400 | 0.320 |
+| disgust | 400 | 0.365 |
+| fear | 400 | 0.405 |
+| happy | 400 | 0.342 |
+| neutral | 400 | 0.321 |
+| sad | 400 | 0.381 |
+| sarcastic | 400 | 0.355 |
+| surprise | 400 | 0.360 |
 
-How these were counted: the emotion folder each file is in (two file names carry typos, `dusgust` and `happpy`, so the folder is used).
+How these were counted: the emotion folder each file is in (two file names carry typos, `dusgust` and `happpy`, so the folder is used). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
