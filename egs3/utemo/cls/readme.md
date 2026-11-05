@@ -50,7 +50,7 @@ Direct download from Mendeley Data, no sign-in. Version 2 has the same `Utemo.zi
 |---|---|---|
 | 1,801 | 14 | 2.01 |
 
-How these were counted: every `.avi` video in `Utemo/` (1920x1080, 30 fps; the audio stream is 48 kHz mono 16-bit PCM, 1.9 to 9.9 s); hours from the audio lengths. Speakers are the 14 actor numbers in the file names `<Emotion>_Actor<n>_P<m>_F<l>.avi` (7 female, 7 male, as stated by the authors; 110 to 144 recordings each).
+How these were counted: every `.avi` video in `Utemo/` (1920x1080, 30 fps; the audio stream is 48 kHz mono 16-bit PCM, 1.9 to 9.9 s); hours from the decoded audio length of each file. Speakers are the 14 actor numbers in the file names `<Emotion>_Actor<n>_P<m>_F<l>.avi` (7 female, 7 male, as stated by the authors; 110 to 144 recordings each).
 
 ### Files per label
 
@@ -59,10 +59,10 @@ How these were counted: every `.avi` video in `Utemo/` (1920x1080, 30 fps; the a
 | Neutral | 254 | 0.271 |
 | Anger | 249 | 0.246 |
 | Disgust | 244 | 0.269 |
-| Fear | 244 | 0.273 |
-| Happiness | 242 | 0.248 |
-| Sadness | 289 | 0.391 |
-| Surprise | 279 | 0.313 |
+| Fear | 244 | 0.272 |
+| Happiness | 242 | 0.247 |
+| Sadness | 289 | 0.390 |
+| Surprise | 279 | 0.312 |
 
 How these were counted: the emotion word at the start of each file name. The description calls the videos "validated"; the validation procedure is not described. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 

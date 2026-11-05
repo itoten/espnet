@@ -30,21 +30,21 @@ Direct download from the MELD project's file server, no sign-in.
 
 | samples | speakers | total hours |
 |---|---|---|
-| 13,708 | 304 (character names) | 12.07 |
+| 13,708 | 304 (character names) | 12.09 |
 
-How these were counted: every row of the three `*_sent_emo.csv` tables (train 9,989, valid 1,109, test 2,610); hours from the `StartTime` and `EndTime` of the rows (the audio is inside the mp4 files, mostly 6-channel AAC). Speakers are the distinct `Speaker` values, which are character names of the series and concentrate on the six main characters.
+How these were counted: every row of the three `*_sent_emo.csv` tables (train 9,989, valid 1,109, test 2,610); hours from the decoded audio length of each row's mp4 file (mostly 6-channel AAC); the one mp4 that is missing and the one that cannot be decoded (see below) add nothing. Speakers are the distinct `Speaker` values, which are character names of the series and concentrate on the six main characters.
 
 ### Files per label
 
 | label (the `Emotion` column) | samples | hours |
 |---|---|---|
-| neutral | 6,436 | 5.372 |
-| joy | 2,308 | 2.158 |
-| surprise | 1,636 | 1.225 |
-| anger | 1,607 | 1.489 |
-| sadness | 1,002 | 1.053 |
-| disgust | 361 | 0.442 |
-| fear | 358 | 0.328 |
+| neutral | 6,436 | 5.380 |
+| joy | 2,308 | 2.163 |
+| surprise | 1,636 | 1.226 |
+| anger | 1,607 | 1.492 |
+| sadness | 1,002 | 1.056 |
+| disgust | 361 | 0.441 |
+| fear | 358 | 0.330 |
 
 How these were counted: the `Emotion` column of all rows of the three tables. The label is the majority vote of three annotators who also saw the video. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 

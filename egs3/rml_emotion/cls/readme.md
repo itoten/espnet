@@ -19,8 +19,8 @@ in each of six emotions: `angry`, `disgust`, `fear`, `happy`, `sad` and
 500 samples" were selected by a listening test; the download has no marker for
 which clips these are, so this recipe uses every clip except six exact duplicates
 (714 in all). The Kaggle release is avi
-video with a stereo audio track (44.1 kHz in 669 clips, 48 kHz in 51), 2.13 to
-8.37 s long, 0.99 hours in total; the Kaggle description says 22,050 Hz and a
+video with a stereo audio track (44.1 kHz in 669 clips, 48 kHz in 51), 2.19 to
+8.22 s long, 1.02 hours in total; the Kaggle description says 22,050 Hz and a
 single channel. `create_dataset` extracts the audio as 16 kHz mono wav with ffmpeg.
 
 Files are laid out as `s<N>/s<N>/[f<M><lang>/]<emo><take>.avi`. The emotion is
@@ -55,20 +55,20 @@ Kaggle download with a free account and API token.
 
 | samples | speakers | total hours |
 |---|---|---|
-| 720 | 8 (see below) | 0.99 |
+| 720 | 8 (see below) | 1.02 |
 
-How these were counted: every `.avi` file under `s1/` to `s8/` (video with a stereo audio track, 44.1 kHz in 669 files and 48 kHz in 51; 2.13 to 8.37 s); hours from the audio lengths. The release does not say that a folder `s1` to `s8` is one person; 8 is the number of folders (the Kaggle page and the original page also speak of 8 subjects).
+How these were counted: every `.avi` file under `s1/` to `s8/` (video with a stereo audio track, 44.1 kHz in 669 files and 48 kHz in 51; 2.19 to 8.22 s); hours from the decoded audio length of each file (the container durations, which include the video track, add up to 0.99 hours). The release does not say that a folder `s1` to `s8` is one person; 8 is the number of folders (the Kaggle page and the original page also speak of 8 subjects).
 
 ### Files per label
 
 | emotion code in the file name | samples | hours |
 |---|---|---|
-| an | 120 | 0.157 |
-| di | 120 | 0.177 |
-| fe | 120 | 0.162 |
-| ha | 120 | 0.161 |
-| sa | 120 | 0.175 |
-| su | 120 | 0.156 |
+| an | 120 | 0.162 |
+| di | 120 | 0.182 |
+| fe | 120 | 0.166 |
+| ha | 120 | 0.167 |
+| sa | 120 | 0.179 |
+| su | 120 | 0.162 |
 
 How these were counted: the two-letter emotion code at the start of each file name. The release has no neutral class and no label table; the codes are read as angry, disgust, fear, happy, sad and surprise. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 

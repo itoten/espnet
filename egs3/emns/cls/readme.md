@@ -30,22 +30,22 @@ Direct download from OpenSLR, no sign-in.
 
 | samples | speakers | total hours |
 |---|---|---|
-| 1,181 (audio files) | 1 | 2.32 |
+| 1,181 (audio files) | 1 | 1.91 |
 
-How these were counted: every `.webm` in `cleaned_webm/` (48 kHz mono Opus, 1.9 to 15.3 s); hours from the file lengths. `metadata.csv` (pipe-separated) has 1,205 rows; the 1,181 rows with `status` = `Complete` have audio and 24 rows (`Needs Updating`) do not. The speaker is one woman in her twenties (the `gender` and `age` columns).
+How these were counted: every `.webm` in `cleaned_webm/` (48 kHz mono Opus, 1.22 to 12.08 s); hours from the decoded audio length of each file (the container durations are longer, because the first audio packet of each file starts after an initial offset, for example 7.755 s in `recorded_audio_fCBtcy4.webm`). `metadata.csv` (pipe-separated) has 1,205 rows; the 1,181 rows with `status` = `Complete` have audio and 24 rows (`Needs Updating`) do not. The speaker is one woman in her twenties (the `gender` and `age` columns).
 
 ### Files per label
 
 | label (the `emotion` column, rows with audio) | samples | hours |
 |---|---|---|
-| Disgust | 162 | 0.351 |
-| Happy | 157 | 0.292 |
-| Surprised | 151 | 0.304 |
-| Excited | 150 | 0.264 |
-| Neutral | 149 | 0.264 |
-| Sad | 147 | 0.344 |
-| Sarcastic | 139 | 0.269 |
-| Angry | 126 | 0.229 |
+| Disgust | 162 | 0.296 |
+| Happy | 157 | 0.240 |
+| Surprised | 151 | 0.250 |
+| Excited | 150 | 0.221 |
+| Neutral | 149 | 0.209 |
+| Sad | 147 | 0.283 |
+| Sarcastic | 139 | 0.223 |
+| Angry | 126 | 0.188 |
 
 How these were counted: the `emotion` column of the 1,181 `Complete` rows. The 24 rows without audio have Angry 7, Excited 5, Disgust 3, Sarcastic 3, Sad 3, Surprised 2 and Happy 1; their dates run from 2022-07-27 to 2022-08-19. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
@@ -62,7 +62,7 @@ reading narrative sentences "for games, television and graphic novels" in eight
 styles. `metadata.csv` also holds an intensity `level` (0 to 10), the
 sentence text, a `description` (the reading instruction, for example emphasis on given
 words), a `status` and the path of the recording. The recipe uses only the label.
-The release used here has 1,181 recordings (2.32 hours, 1.9 to 15.3 seconds, 48 kHz
+The release used here has 1,181 recordings (1.91 hours, 1.22 to 12.08 seconds, 48 kHz
 mono Opus). The classes are disgust 162, happy 157, surprised 151, excited 150,
 neutral 149, sad 147, sarcastic 139 and angry 126.
 
