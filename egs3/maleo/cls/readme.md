@@ -35,17 +35,17 @@ How these were counted: every audio file under `audio/<emotion>/` (44.1 kHz ster
 
 ### Files per label
 
-| label (folder name in the release) | read as (Indonesian) | samples |
-|---|---|---|
-| Jijik | disgust | 100 |
-| Marah | angry | 100 |
-| Netral | neutral | 100 |
-| Sedih | sad | 100 |
-| Senang | happy | 100 |
-| Takut | fear | 100 |
-| Terkejut | surprise | 100 |
+| label (folder name in the release) | read as (Indonesian) | samples | hours |
+|---|---|---|---|
+| Jijik | disgust | 100 | 0.084 |
+| Marah | angry | 100 | 0.083 |
+| Netral | neutral | 100 | 0.068 |
+| Sedih | sad | 100 | 0.086 |
+| Senang | happy | 100 | 0.085 |
+| Takut | fear | 100 | 0.084 |
+| Terkejut | surprise | 100 | 0.084 |
 
-How these were counted: the folder each file is in. The card says the label is the dominant emotion perceived by listening; it does not say who listened or how many people, and gives no agreement figure; some clips mix two emotions.
+How these were counted: the folder each file is in. The card says the label is the dominant emotion perceived by listening; it does not say who listened or how many people, and gives no agreement figure; some clips mix two emotions. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
