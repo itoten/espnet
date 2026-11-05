@@ -37,17 +37,17 @@ How these were counted: every row of `metadata/samples.csv` (equal to the `.wav`
 
 ### Files per label
 
-| label (the `emotion_expressed` column) | samples |
-|---|---|
-| anger | 986 |
-| disgust | 986 |
-| fear | 986 |
-| joy | 986 |
-| neutrality | 986 |
-| sadness | 986 |
-| surprise | 986 |
+| label (the `emotion_expressed` column) | samples | hours |
+|---|---|---|
+| anger | 986 | 0.825 |
+| disgust | 986 | 0.994 |
+| fear | 986 | 0.968 |
+| joy | 986 | 0.789 |
+| neutrality | 986 | 0.869 |
+| sadness | 986 | 0.987 |
+| surprise | 986 | 0.874 |
 
-How these were counted: the `emotion_expressed` column of `samples.csv`: the emotion the actor was asked to express (18 sentences per actor in seven intentions).
+How these were counted: the `emotion_expressed` column of `samples.csv`: the emotion the actor was asked to express (18 sentences per actor in seven intentions). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
