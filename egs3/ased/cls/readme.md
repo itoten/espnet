@@ -57,15 +57,15 @@ How these were counted: every `.wav` in the repository (16 kHz mono 16-bit, 2.0 
 
 ### Files per label
 
-| emotion letter in the file name | read as | samples |
-|---|---|---|
-| n | neutral | 522 |
-| f | fear | 510 |
-| a | angry | 486 |
-| h | happy | 486 |
-| s | sad | 470 |
+| emotion letter in the file name | read as | samples | hours |
+|---|---|---|---|
+| n | neutral | 522 | 0.452 |
+| f | fear | 510 | 0.501 |
+| a | angry | 486 | 0.346 |
+| h | happy | 486 | 0.392 |
+| s | sad | 470 | 0.416 |
 
-How these were counted: the first letter of each file name, case-folded (one file is capitalised, `S4-04-02-01-29.wav`); each file also sits in a folder numbered after its emotion. The release has no disgust or surprise class. The description says 4,550 recordings were planned and eight judges kept 2,474.
+How these were counted: the first letter of each file name, case-folded (one file is capitalised, `S4-04-02-01-29.wav`); each file also sits in a folder numbered after its emotion. The release has no disgust or surprise class. The description says 4,550 recordings were planned and eight judges kept 2,474. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
