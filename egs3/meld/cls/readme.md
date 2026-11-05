@@ -36,17 +36,17 @@ How these were counted: every row of the three `*_sent_emo.csv` tables (train 9,
 
 ### Files per label
 
-| label (the `Emotion` column) | samples |
-|---|---|
-| neutral | 6,436 |
-| joy | 2,308 |
-| surprise | 1,636 |
-| anger | 1,607 |
-| sadness | 1,002 |
-| disgust | 361 |
-| fear | 358 |
+| label (the `Emotion` column) | samples | hours |
+|---|---|---|
+| neutral | 6,436 | 5.372 |
+| joy | 2,308 | 2.158 |
+| surprise | 1,636 | 1.225 |
+| anger | 1,607 | 1.489 |
+| sadness | 1,002 | 1.053 |
+| disgust | 361 | 0.442 |
+| fear | 358 | 0.328 |
 
-How these were counted: the `Emotion` column of all rows of the three tables. The label is the majority vote of three annotators who also saw the video.
+How these were counted: the `Emotion` column of all rows of the three tables. The label is the majority vote of three annotators who also saw the video. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
