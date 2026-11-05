@@ -40,18 +40,18 @@ How these were counted: every `.wav` in the archive (22.05 kHz mono 16-bit, 1.15
 
 ### Files per label
 
-| label (directory name in the release) | samples |
-|---|---|
-| amused | 300 |
-| angry | 300 |
-| disgusted | 300 |
-| drunk | 300 |
-| neutral | 300 |
-| sleepy | 300 |
-| surprised | 300 |
-| whisper | 299 |
+| label (directory name in the release) | samples | hours |
+|---|---|---|
+| amused | 300 | 0.306 |
+| angry | 300 | 0.339 |
+| disgusted | 300 | 0.384 |
+| drunk | 300 | 0.422 |
+| neutral | 300 | 0.309 |
+| sleepy | 300 | 0.507 |
+| surprised | 300 | 0.301 |
+| whisper | 299 | 0.365 |
 
-How these were counted: the directory each file is in. `drunk`, `sleepy` and `whisper` are speaking styles, not emotions.
+How these were counted: the directory each file is in. `drunk`, `sleepy` and `whisper` are speaking styles, not emotions. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
