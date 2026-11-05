@@ -36,18 +36,18 @@ How these were counted: every `.webm` in `cleaned_webm/` (48 kHz mono Opus, 1.9 
 
 ### Files per label
 
-| label (the `emotion` column, rows with audio) | samples |
-|---|---|
-| Disgust | 162 |
-| Happy | 157 |
-| Surprised | 151 |
-| Excited | 150 |
-| Neutral | 149 |
-| Sad | 147 |
-| Sarcastic | 139 |
-| Angry | 126 |
+| label (the `emotion` column, rows with audio) | samples | hours |
+|---|---|---|
+| Disgust | 162 | 0.351 |
+| Happy | 157 | 0.292 |
+| Surprised | 151 | 0.304 |
+| Excited | 150 | 0.264 |
+| Neutral | 149 | 0.264 |
+| Sad | 147 | 0.344 |
+| Sarcastic | 139 | 0.269 |
+| Angry | 126 | 0.229 |
 
-How these were counted: the `emotion` column of the 1,181 `Complete` rows. The 24 rows without audio have Angry 7, Excited 5, Disgust 3, Sarcastic 3, Sad 3, Surprised 2 and Happy 1; their dates run from 2022-07-27 to 2022-08-19.
+How these were counted: the `emotion` column of the 1,181 `Complete` rows. The 24 rows without audio have Angry 7, Excited 5, Disgust 3, Sarcastic 3, Sad 3, Surprised 2 and Happy 1; their dates run from 2022-07-27 to 2022-08-19. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
