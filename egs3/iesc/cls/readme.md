@@ -60,15 +60,15 @@ How these were counted: every `.wav` under `Speaker-<n>/<Emotion>/` (all 16-bit;
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| Anger | 120 |
-| Fear | 120 |
-| Happy | 120 |
-| Neutral | 120 |
-| Sad | 120 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| Anger | 120 | 0.101 |
+| Fear | 120 | 0.119 |
+| Happy | 120 | 0.114 |
+| Neutral | 120 | 0.102 |
+| Sad | 120 | 0.124 |
 
-How these were counted: the emotion folder each file is in; the file name `<E>-<take>-<n>-<sentence>.wav` carries the emotion letter, the take, the speaker and the sentence (1 or 2).
+How these were counted: the emotion folder each file is in; the file name `<E>-<take>-<n>-<sentence>.wav` carries the emotion letter, the take, the speaker and the sentence (1 or 2). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
