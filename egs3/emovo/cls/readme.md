@@ -45,17 +45,17 @@ How these were counted: every `.wav` in the archive (48 kHz 16-bit; stereo from 
 
 ### Files per label
 
-| emotion code in the file name | read as (Italian) | samples |
-|---|---|---|
-| dis | disgust (disgusto) | 84 |
-| gio | happy (gioia) | 84 |
-| neu | neutral (neutro) | 84 |
-| pau | fear (paura) | 84 |
-| rab | angry (rabbia) | 84 |
-| sor | surprise (sorpresa) | 84 |
-| tri | sad (tristezza) | 84 |
+| emotion code in the file name | read as (Italian) | samples | hours |
+|---|---|---|---|
+| dis | disgust (disgusto) | 84 | 0.081 |
+| gio | happy (gioia) | 84 | 0.068 |
+| neu | neutral (neutro) | 84 | 0.067 |
+| pau | fear (paura) | 84 | 0.072 |
+| rab | angry (rabbia) | 84 | 0.068 |
+| sor | surprise (sorpresa) | 84 | 0.073 |
+| tri | sad (tristezza) | 84 | 0.080 |
 
-How these were counted: the three-letter Italian code at the start of each file name `<emotion>-<speaker>-<sentence>.wav`; 14 sentences, of which 8 to 10 are nonsense sentences.
+How these were counted: the three-letter Italian code at the start of each file name `<emotion>-<speaker>-<sentence>.wav`; 14 sentences, of which 8 to 10 are nonsense sentences. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
