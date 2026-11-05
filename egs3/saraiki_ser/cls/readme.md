@@ -45,16 +45,16 @@ How these were counted: every audio file in the six emotion folders (opus, mono,
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| Angry | 200 |
-| Fear | 200 |
-| Happy | 200 |
-| Neutral | 200 |
-| Sad | 200 |
-| Shock | 200 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| Angry | 200 | 0.177 |
+| Fear | 200 | 0.175 |
+| Happy | 200 | 0.158 |
+| Neutral | 200 | 0.192 |
+| Sad | 200 | 0.143 |
+| Shock | 200 | 0.233 |
 
-How these were counted: the emotion folder each file is in.
+How these were counted: the emotion folder each file is in. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
