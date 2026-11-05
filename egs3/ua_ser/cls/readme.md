@@ -45,14 +45,14 @@ How these were counted: every row of `dataset.csv` (equal to the clips in `clips
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| angry | 259 |
-| happy | 244 |
-| sad | 227 |
-| neutral | 222 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| angry | 259 | 0.136 |
+| happy | 244 | 0.130 |
+| sad | 227 | 0.144 |
+| neutral | 222 | 0.136 |
 
-How these were counted: the `emotion` column of `dataset.csv`.
+How these were counted: the `emotion` column of `dataset.csv`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
