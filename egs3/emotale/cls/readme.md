@@ -57,15 +57,15 @@ How these were counted: every `.wav` in `wav/` (48 kHz stereo, 1.07 to 7.44 s; 4
 
 ### Files per label
 
-| label (code in the file name) | read as | samples |
-|---|---|---|
-| A | angry | 160 |
-| B | boredom | 160 |
-| H | happy | 160 |
-| N | neutral | 160 |
-| S | sad | 160 |
+| label (code in the file name) | read as | samples | hours |
+|---|---|---|---|
+| A | angry | 160 | 0.121 |
+| B | boredom | 160 | 0.132 |
+| H | happy | 160 | 0.110 |
+| N | neutral | 160 | 0.121 |
+| S | sad | 160 | 0.133 |
 
-How these were counted: the emotion code in the file name; it equals the `gt_emotion` column of `annotations.csv` for every file (the enacted emotion).
+How these were counted: the emotion code in the file name; it equals the `gt_emotion` column of `annotations.csv` for every file (the enacted emotion). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
