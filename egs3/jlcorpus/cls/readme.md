@@ -47,20 +47,20 @@ How these were counted: every `.wav` in `Raw JL corpus (unchecked and unannotate
 
 ### Files per label
 
-| emotion in the file name | samples |
-|---|---|
-| angry | 240 |
-| anxious | 240 |
-| apologetic | 240 |
-| assertive | 240 |
-| concerned | 240 |
-| encouraging | 240 |
-| excited | 240 |
-| happy | 240 |
-| neutral | 240 |
-| sad | 240 |
+| emotion in the file name | samples | hours |
+|---|---|---|
+| angry | 240 | 0.136 |
+| anxious | 240 | 0.149 |
+| apologetic | 240 | 0.141 |
+| assertive | 240 | 0.140 |
+| concerned | 240 | 0.147 |
+| encouraging | 240 | 0.136 |
+| excited | 240 | 0.137 |
+| happy | 240 | 0.135 |
+| neutral | 240 | 0.140 |
+| sad | 240 | 0.150 |
 
-How these were counted: the emotion field of each file name (four speakers x ten emotions x 60 files). Five are the usual primary emotions (`angry`, `excited`, `happy`, `neutral`, `sad`) and five are secondary (`anxious`, `apologetic`, `assertive`, `concerned`, `encouraging`, as in the README; the names of the secondary emotions differ between documents).
+How these were counted: the emotion field of each file name (four speakers x ten emotions x 60 files). Five are the usual primary emotions (`angry`, `excited`, `happy`, `neutral`, `sad`) and five are secondary (`anxious`, `apologetic`, `assertive`, `concerned`, `encouraging`, as in the README; the names of the secondary emotions differ between documents). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
