@@ -35,16 +35,16 @@ How these were counted: every `.wav` in `AudioWAV/` (16 kHz mono, 1.27 to 5.01 s
 
 ### Files per label
 
-| emotion code in the file name | samples |
-|---|---|
-| ANG | 1,271 |
-| DIS | 1,271 |
-| FEA | 1,271 |
-| HAP | 1,271 |
-| NEU | 1,087 |
-| SAD | 1,271 |
+| emotion code in the file name | samples | hours |
+|---|---|---|
+| ANG | 1,271 | 0.912 |
+| DIS | 1,271 | 0.981 |
+| FEA | 1,271 | 0.887 |
+| HAP | 1,271 | 0.827 |
+| NEU | 1,087 | 0.734 |
+| SAD | 1,271 | 0.916 |
 
-How these were counted: the emotion field of each file name (12 sentences; four intensity levels: low, medium, high and unspecified).
+How these were counted: the emotion field of each file name (12 sentences; four intensity levels: low, medium, high and unspecified). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
