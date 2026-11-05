@@ -44,15 +44,15 @@ How these were counted: every `.wav` in the repository (44.1 kHz stereo in 149 f
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| angry | 49 |
-| sad | 49 |
-| happy | 41 |
-| fear | 28 |
-| neutral | 28 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| angry | 49 | 0.325 |
+| sad | 49 | 0.259 |
+| happy | 41 | 0.151 |
+| fear | 28 | 0.196 |
+| neutral | 28 | 0.182 |
 
-How these were counted: the emotion folder each file is in.
+How these were counted: the emotion folder each file is in. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
