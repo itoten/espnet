@@ -40,15 +40,15 @@ How these were counted: every `.wav` under `YSED/<emotion>/` (48 kHz stereo 16-b
 
 ### Files per label
 
-| label (emotion folder in the release) | samples |
-|---|---|
-| neutral | 305 |
-| sad | 303 |
-| happy | 294 |
-| angry | 286 |
-| fearful | 244 |
+| label (emotion folder in the release) | samples | hours |
+|---|---|---|
+| neutral | 305 | 0.201 |
+| sad | 303 | 0.266 |
+| happy | 294 | 0.192 |
+| angry | 286 | 0.169 |
+| fearful | 244 | 0.179 |
 
-How these were counted: the emotion folder each file is in (the initial letter of the file name agrees). According to the paper the initial 6,035 recordings were reduced to the 1,432 that at least four of six judges accepted as the intended emotion. The release has no disgust or surprise class.
+How these were counted: the emotion folder each file is in (the initial letter of the file name agrees). According to the paper the initial 6,035 recordings were reduced to the 1,432 that at least four of six judges accepted as the intended emotion. The release has no disgust or surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
