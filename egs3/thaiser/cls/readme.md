@@ -36,17 +36,17 @@ How these were counted: every entry of `emotion_label.json` (44.1 kHz FLAC, mono
 
 ### Files per label
 
-| label (`majority_emo` in `emotion_label.json`) | samples | assigned to the actor (`assigned_emo`) |
-|---|---|---|
-| Frustrated | 7,864 | 5,270 |
-| Neutral | 7,359 | 5,090 |
-| Happy | 4,070 | 6,348 |
-| Angry | 3,111 | 6,148 |
-| Sad | 2,781 | 4,998 |
-| None (no majority) | 2,664 | - |
-| other | 5 | - |
+| label (`majority_emo` in `emotion_label.json`) | samples | hours | assigned to the actor (`assigned_emo`) |
+|---|---|---|---|
+| Frustrated | 7,864 | 12.699 | 5,270 |
+| Neutral | 7,359 | 9.695 | 5,090 |
+| Happy | 4,070 | 5.542 | 6,348 |
+| Angry | 3,111 | 4.180 | 6,148 |
+| Sad | 2,781 | 5.546 | 4,998 |
+| None (no majority) | 2,664 | unknown | - |
+| other | 5 | unknown | - |
 
-How these were counted: the `majority_emo` field (the majority of the crowd annotators, 3 to 11 per recording) and the `assigned_emo` field (the emotion the actor was asked for) over all 27,854 entries. The majority label equals the assigned emotion for 16,491 of the 25,185 recordings with a majority (65%). The release has no disgust, fear or surprise class.
+How these were counted: the `majority_emo` field (the majority of the crowd annotators, 3 to 11 per recording) and the `assigned_emo` field (the emotion the actor was asked for) over all 27,854 entries. The majority label equals the assigned emotion for 16,491 of the 25,185 recordings with a majority (65%). The release has no disgust, fear or surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label. The audio of the 2,669 recordings without a usable majority label (`None`, `other`) was not at hand, so their hours are unknown; the release description gives 41.6 hours for all 27,854.
 
 ### Issues in the release
 
