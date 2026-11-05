@@ -36,14 +36,14 @@ How these were counted: every row of the parquet file (16 kHz mono; 5,178 clips 
 
 ### Files per label
 
-| label (the `emotion` column) | samples |
-|---|---|
-| neutral | 1,507 |
-| angry | 1,466 |
-| happy | 1,228 |
-| sad | 1,079 |
+| label (the `emotion` column) | samples | hours |
+|---|---|---|
+| neutral | 1,507 | 0.924 |
+| angry | 1,466 | 0.806 |
+| happy | 1,228 | 0.844 |
+| sad | 1,079 | 0.602 |
 
-How these were counted: the `emotion` column.
+How these were counted: the `emotion` column. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
