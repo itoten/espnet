@@ -34,15 +34,15 @@ How these were counted: every `.wav` in `audio/` (mono 16-bit; 44.1 kHz in 210 f
 
 ### Files per label
 
-| emotion code in the file name | read as (naming guidelines) | samples |
-|---|---|---|
-| 01 | neutral | 60 |
-| 02 | happy | 60 |
-| 03 | surprise | 60 |
-| 04 | disgust | 60 |
-| 05 | disappointed | 60 |
+| emotion code in the file name | read as (naming guidelines) | samples | hours |
+|---|---|---|---|
+| 01 | neutral | 60 | 0.050 |
+| 02 | happy | 60 | 0.050 |
+| 03 | surprise | 60 | 0.050 |
+| 04 | disgust | 60 | 0.055 |
+| 05 | disappointed | 60 | 0.054 |
 
-How these were counted: the second field of each file name (10 actors x 5 emotions x 2 intensities (01 normal, 02 strong) x 3 repetitions). The release has no angry, fear or sad class.
+How these were counted: the second field of each file name (10 actors x 5 emotions x 2 intensities (01 normal, 02 strong) x 3 repetitions). The release has no angry, fear or sad class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
