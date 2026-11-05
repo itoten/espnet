@@ -56,16 +56,16 @@ How these were counted: every `.avi` under the `subject N/` folders (48 kHz ster
 
 ### Files per label
 
-| label (emotion folder in the release) | samples |
-|---|---|
-| anger | 216 |
-| disgust | 216 |
-| fear | 216 |
-| happiness | 213 |
-| sadness | 216 |
-| surprise | 216 |
+| label (emotion folder in the release) | samples | hours |
+|---|---|---|
+| anger | 216 | 0.224 |
+| disgust | 216 | 0.186 |
+| fear | 216 | 0.180 |
+| happiness | 213 | 0.165 |
+| sadness | 216 | 0.204 |
+| surprise | 216 | 0.180 |
 
-How these were counted: the emotion folder of each `.avi` file (`subject N/<emotion>/sentence k/`).
+How these were counted: the emotion folder of each `.avi` file (`subject N/<emotion>/sentence k/`). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
