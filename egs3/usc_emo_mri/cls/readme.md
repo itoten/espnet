@@ -57,16 +57,16 @@ How these were counted: every row of the `labels/utt_time_stamp` files of the 10
 
 ### Files per label
 
-| emotion ID in `labels/meta` | meaning (README) | samples |
-|---|---|---|
-| 1 | neutral | 656 |
-| 2 | angry | 563 |
-| 3 | happy | 542 |
-| 4 | sad | 544 |
-| 5 | not described | 29 |
-| (no row in `meta`) | - | 29 |
+| emotion ID in `labels/meta` | meaning (README) | samples | hours |
+|---|---|---|---|
+| 1 | neutral | 656 | 0.650 |
+| 2 | angry | 563 | 0.559 |
+| 3 | happy | 542 | 0.544 |
+| 4 | sad | 544 | 0.610 |
+| 5 | not described | 29 | 0.031 |
+| (no row in `meta`) | - | 29 | 0.024 |
 
-How these were counted: the `emotion ID` column of the `labels/meta` files of the 10 speakers (2,334 rows); 29 of the 2,363 time-stamp rows have no row in `meta`.
+How these were counted: the `emotion ID` column of the `labels/meta` files of the 10 speakers (2,334 rows); 29 of the 2,363 time-stamp rows have no row in `meta`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
