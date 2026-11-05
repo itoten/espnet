@@ -47,15 +47,15 @@ How these were counted: every `.wav` under the five emotion folders (44.1 kHz mo
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| anger | 121 |
-| disgust | 122 |
-| fear | 120 |
-| happiness | 119 |
-| sadness | 123 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| anger | 121 | 0.121 |
+| disgust | 122 | 0.155 |
+| fear | 120 | 0.125 |
+| happiness | 119 | 0.133 |
+| sadness | 123 | 0.156 |
 
-How these were counted: the emotion folder each file is in; the first letter of the file name agrees with the folder. The release has no neutral and no surprise class.
+How these were counted: the emotion folder each file is in; the first letter of the file name agrees with the folder. The release has no neutral and no surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
