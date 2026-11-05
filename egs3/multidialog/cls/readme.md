@@ -40,18 +40,18 @@ The metadata holds 8,723 distinct `conv_id` values.
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| Curious to dive deeper | 81,096 |
-| Neutral | 41,234 |
-| Surprised | 30,307 |
-| Happy | 29,464 |
-| Sad | 2,488 |
-| Disgusted | 1,439 |
-| Fearful | 923 |
-| Angry | 903 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| Curious to dive deeper | 81,096 | 130.196 |
+| Neutral | 41,234 | 69.741 |
+| Surprised | 30,307 | 61.095 |
+| Happy | 29,464 | 52.035 |
+| Sad | 2,488 | 5.302 |
+| Disgusted | 1,439 | 3.158 |
+| Fearful | 923 | 1.968 |
+| Angry | 903 | 1.956 |
 
-How these were counted: the `emotion` field of every row of `metadata.jsonl`.
+How these were counted: the `emotion` field of every row of `metadata.jsonl`. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
