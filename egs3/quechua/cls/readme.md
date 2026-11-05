@@ -40,21 +40,21 @@ How these were counted: every `.wav` in `Audios/` (mostly 44.1 kHz mono: 12,409;
 
 ### Files per label
 
-| label (the `Emotion` column of `Data.xlsx`, as written) | samples |
-|---|---|
-| happy | 1,380 |
-| sleepy | 1,380 |
-| sadness | 1,380 |
-| calm | 1,380 |
-| fear | 1,380 |
-| excited | 1,380 |
-| neutral | 1,380 |
-| anger | 920 |
-| angry | 460 |
-| boredom | 920 |
-| bored | 460 |
+| label (the `Emotion` column of `Data.xlsx`, as written) | samples | hours |
+|---|---|---|
+| happy | 1,380 | 1.866 |
+| sleepy | 1,380 | 1.621 |
+| sadness | 1,380 | 1.829 |
+| calm | 1,380 | 1.523 |
+| fear | 1,380 | 1.596 |
+| excited | 1,380 | 1.654 |
+| neutral | 1,380 | 1.735 |
+| anger | 920 | 0.983 |
+| angry | 460 | 0.495 |
+| boredom | 920 | 1.327 |
+| bored | 460 | 0.611 |
 
-How these were counted: the `Emotion` column of all 12,420 rows of `Data.xlsx`. `anger` and `angry` are two spellings of one emotion (1,380 together), as are `boredom` and `bored` (1,380 together), so each of the nine emotions has 1,380 recordings (6 actors x 230 script items).
+How these were counted: the `Emotion` column of all 12,420 rows of `Data.xlsx`. `anger` and `angry` are two spellings of one emotion (1,380 together), as are `boredom` and `bored` (1,380 together), so each of the nine emotions has 1,380 recordings (6 actors x 230 script items). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
