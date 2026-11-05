@@ -42,28 +42,28 @@ language and gender.
 
 ### Files per label
 
-| label (as in the release) | samples |
-|---|---|
-| WIKI | 144,250 |
-| CONV | 124,578 |
-| PROPER NOUN | 104,068 |
-| BOOK | 55,788 |
-| NEWS | 41,782 |
-| HAPPY | 21,975 |
-| ANGER | 21,467 |
-| FEAR | 20,712 |
-| SURPRISE | 20,484 |
-| DISGUST | 20,134 |
-| SAD | 20,070 |
-| ALEXA | 13,292 |
-| INDIC | 12,852 |
-| BB | 6,769 |
-| DIGI | 5,452 |
-| UMANG | 5,436 |
-| SANGRAH | 1,837 |
+| label (as in the release) | samples | hours |
+|---|---|---|
+| WIKI | 144,250 | 400.972 |
+| CONV | 124,578 | 139.395 |
+| PROPER NOUN | 104,068 | 57.363 |
+| BOOK | 55,788 | 91.377 |
+| NEWS | 41,782 | 92.092 |
+| HAPPY | 21,975 | 48.120 |
+| ANGER | 21,467 | 46.692 |
+| FEAR | 20,712 | 46.495 |
+| SURPRISE | 20,484 | 46.117 |
+| DISGUST | 20,134 | 44.630 |
+| SAD | 20,070 | 48.304 |
+| ALEXA | 13,292 | 12.254 |
+| INDIC | 12,852 | 25.965 |
+| BB | 6,769 | 12.876 |
+| DIGI | 5,452 | 13.579 |
+| UMANG | 5,436 | 14.866 |
+| SANGRAH | 1,837 | 4.306 |
 
 How these were counted: the `style` column of every row. The 70 duplicated filenames below
-are counted under both of their styles.
+are counted under both of their styles. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
