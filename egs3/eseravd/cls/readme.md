@@ -45,16 +45,16 @@ How these were counted: every `.wav` under `E-SERAVD 1.2/.../02_Audio-Only/` (44
 
 ### Files per label
 
-| label (folder name in the release) | samples |
-|---|---|
-| 01_Angry | 500 |
-| 02_Sad | 500 |
-| 03_Neutral | 500 |
-| 04_Happy | 500 |
-| 05_Disgust | 500 |
-| 06_Fear | 500 |
+| label (folder name in the release) | samples | hours |
+|---|---|---|
+| 01_Angry | 500 | 0.322 |
+| 02_Sad | 500 | 0.319 |
+| 03_Neutral | 500 | 0.364 |
+| 04_Happy | 500 | 0.328 |
+| 05_Disgust | 500 | 0.328 |
+| 06_Fear | 500 | 0.338 |
 
-How these were counted: the emotion folder each file is in (the number in the file name agrees).
+How these were counted: the emotion folder each file is in (the number in the file name agrees). Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
