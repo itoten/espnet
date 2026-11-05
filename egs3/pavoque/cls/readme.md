@@ -47,15 +47,15 @@ How these were counted: every utterance listed in the five style YAML files (one
 
 ### Files per label
 
-| label (`style` in the YAML files) | samples |
-|---|---|
-| neutral | 3,126 |
-| angry | 601 |
-| happy | 584 |
-| poker | 575 |
-| sad | 556 |
+| label (`style` in the YAML files) | samples | hours |
+|---|---|---|
+| neutral | 3,126 | 5.362 |
+| angry | 601 | 0.745 |
+| happy | 584 | 0.758 |
+| poker | 575 | 0.818 |
+| sad | 556 | 0.921 |
 
-How these were counted: the `style` field of the YAML entries (equal to the file each entry is in). `poker` is the speaking style of a calm gambler; the styles are named after the SEMAINE virtual characters (Poppy: cheerful, Obadiah: gloomy, Spike: aggressive, Poker: calm gambler). The release has no disgust, fear or surprise class.
+How these were counted: the `style` field of the YAML entries (equal to the file each entry is in). `poker` is the speaking style of a calm gambler; the styles are named after the SEMAINE virtual characters (Poppy: cheerful, Obadiah: gloomy, Spike: aggressive, Poker: calm gambler). The release has no disgust, fear or surprise class. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
 
 ### Issues in the release
 
