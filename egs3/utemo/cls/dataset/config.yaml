@@ -7,7 +7,9 @@ builder:
 
   # Download --------------------------------------------------------------
   # Mendeley Data x5rmd28h73 (v2; v2 holds the same zip as v1), CC BY-NC 3.0; the public file link needs no
-  # login. 2.5 GB zip. Only the AVI files are kept.
+  # login. 2.5 GB zip. Only the AVI files are kept. Mendeley rejects the
+  # default urllib user agent (403), so the request sends another one, as
+  # uftbesd/cls does.
   archive_url: https://data.mendeley.com/public-files/datasets/x5rmd28h73/files/e12e699f-366a-423e-8692-19ff3bb18e79/file_downloaded
   archive_name: Utemo.zip
   archive_sha256: 605dfe5a4bfdc2ed122283cc60dee0f96593fe8846365e37ee077daf54e02809

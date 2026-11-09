@@ -8,6 +8,7 @@ import os
 import re
 import shutil
 import subprocess
+import urllib.request
 import zipfile
 from importlib import resources
 from pathlib import Path
@@ -16,7 +17,6 @@ from typing import Iterator
 
 from espnet3.components.data.dataset_builder import DatasetBuilder
 from espnet3.utils.config_utils import load_config_with_defaults
-from espnet3.utils.download_utils import download_url
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +141,18 @@ def _extract_videos(archive: Path, destination: Path) -> None:
             zf.extract(member, destination)
 
 
+def _fetch(url: str, path: Path) -> None:
+    """Download ``url`` to ``path``; Mendeley rejects the default user agent.
+
+    The same request as ``egs3/uftbesd/cls``, which downloads from Mendeley Data
+    too: with urllib's default user agent the server answers 403 Forbidden.
+    """
+    logger.info("Downloading %s", url)
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(request, timeout=60) as resp, path.open("wb") as out:
+        shutil.copyfileobj(resp, out, 1 << 20)
+
+
 def _download_source(destination: Path) -> None:
     """Fetch the archive, check its SHA-256 and unpack the videos.
 
@@ -155,7 +167,7 @@ def _download_source(destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     archive_path = destination / str(_CFG["archive_name"])
     part = archive_path.with_suffix(archive_path.suffix + ".part")
-    download_url(str(_CFG["archive_url"]), part, logger=logger)
+    _fetch(str(_CFG["archive_url"]), part)
     digest = _sha256(part)
     if digest != str(_CFG["archive_sha256"]):
         raise ValueError(f"SHA-256 mismatch for {archive_path.name}: {digest}")

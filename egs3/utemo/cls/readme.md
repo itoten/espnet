@@ -77,7 +77,9 @@ How these were counted: the emotion word at the start of each file name. The des
 
 `prepare_source` downloads `Utemo.zip` (2.5 GB, SHA-256 checked) from
 [Mendeley Data](https://data.mendeley.com/datasets/x5rmd28h73/2) (version 2) through its public
-file link, with no login, extracts the AVI files and deletes the archive. Measured
+file link, with no login, extracts the AVI files and deletes the archive. Mendeley
+answers 403 Forbidden to urllib's default user agent (seen on 2026-11-09), so the
+request sends `User-Agent: Mozilla/5.0`, as `egs3/uftbesd/cls` does. Measured
 on one run: 17 minutes 53 seconds to download (about 2.3 MB/s) and 14 seconds to
 extract; `create_dataset`, `remove_long_short` and `prepare_labels` together took
 131 seconds (create_dataset alone 107 s, almost all of it extracting the audio
