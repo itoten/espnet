@@ -1,0 +1,101 @@
+builder:
+  # Corpora ---------------------------------------------------------------
+  # The 72 corpora kept for experiment multidataset_ser_01 by the dataset
+  # filter of ser_dataset_db (`local/dataset_filtering/output/
+  # multidataset_ser_01/result.csv`, status `kept` or `kept_unverified`;
+  # generated 2026-11-09 from DB commit 25de395). Each is downloaded and
+  # converted by its own `egs3/<corpus>/cls` recipe, into the places its
+  # `<CORPUS>` and `<CORPUS>_OUTPUT` environment variables give, exactly as
+  # running that recipe alone would. `kept_unverified` means the DB does not
+  # say whether the labels are automatic or the speech synthetic. Two of the 72
+  # are commented out while their servers are down (see the readme), so 70 are
+  # prepared.
+  corpora:
+    - aesdd
+    - albemo
+    - banglaser
+    - banspemo
+    - bari_emospeech
+    - baser
+    - berst
+    - brytserc                # kept_unverified
+    - cafe
+    - cbesd
+    - cremad
+    - csemotions
+    - dailytalk
+    # On hold: the CDN's certificate expired on 2026-11-04. Put back once the
+    # server renews it (the check is not disabled: no checksum is published).
+    # - dusha
+    - eesc
+    - emns
+    - emodb
+    - emogator
+    - emospeech_keywords
+    - emotional_ema
+    - emotiontalk
+    - emouerj
+    - emovdb                  # kept_unverified
+    - emozionalmente
+    # On hold: on 2026-11-09 enterface.net answered no request, from three
+    # different networks. Put back once the site is up again.
+    # - enterface05             # kept_unverified
+    - eseravd
+    - hikia
+    - indianenglish           # kept_unverified
+    - indowavesentiment
+    - inesco
+    - javanese_ser_2black0
+    - jlcorpus
+    - jnv
+    - jvnv
+    - kannada
+    - kazemotts               # kept_unverified
+    - legov2
+    - maserc
+    - mav
+    - mcaespps
+    - meld
+    - mesd
+    - mess
+    - multidialog             # kept_unverified
+    - nemo
+    - nonverbaltts
+    - oreau
+    - pavoque
+    - polishemo
+    - quechua
+    - rasa
+    - ravdess
+    - recanvo
+    - resd
+    - saraiki_ser
+    - ses_ed
+    - ses_sd
+    - shemo
+    - sitb_osed
+    - subesco
+    - talromur3
+    - telugu_emotion_kaggle   # kept_unverified
+    - tess
+    - thaiser
+    - thorsten
+    - turevdb
+    - ua_ser
+    - uftbesd
+    - usc_emo_mri
+    - utemo
+    - vivae
+    - ysed
+
+  # Retries ---------------------------------------------------------------
+  # A corpus whose preparation fails with a network error that can pass
+  # (connection reset, timeout, HTTP 5xx/408/429, a failed `git` or `kaggle`
+  # call) is tried again after `wait_seconds`, doubled after every failure,
+  # up to `attempts` tries in all. Each corpus recipe resumes or restarts its
+  # own download, so a retry is safe. Errors that will not pass by waiting
+  # (HTTP 4xx, an untrusted or expired server certificate, a missing token or
+  # file) fail at once.
+  retry:
+    attempts: 4
+    wait_seconds: 60

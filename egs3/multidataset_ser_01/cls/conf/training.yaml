@@ -1,0 +1,36 @@
+##########################################################
+#                    TRAINING SETTING                    #
+##########################################################
+# Only `create_dataset` can run yet: it downloads and converts the 72 corpora
+# listed in `dataset/config.yaml`, each with its own `egs3/<corpus>/cls`
+# recipe. Training and evaluation are added once the corpora's roles are
+# decided.
+#   python run.py --stages create_dataset --training_config conf/training.yaml
+#
+# Set MULTIDATASET_SER_01_ONLY to a space-separated list of corpus names to
+# prepare only those, e.g. MULTIDATASET_SER_01_ONLY="ravdess emodb".
+#
+##########################################################
+#                  SYSTEM AND PATH SETTING               #
+##########################################################
+# Left empty on purpose. Without it ESPnet3 instantiates `model` through Hydra
+# instead of routing it to an ESPnet2 task.
+task:
+
+# The stage log is written here. The corpora themselves go wherever each
+# corpus's own `<CORPUS>` and `<CORPUS>_OUTPUT` variables point.
+data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,./data}
+
+create_dataset:
+  recipe_dir: ${recipe_dir}
+  only: ${oc.env:MULTIDATASET_SER_01_ONLY,null}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# `create_dataset` needs one entry to find this recipe's builder. The
+# `Dataset` itself is not defined yet.
+dataset:
+  train:
+    - data_src_args:
+        split: train
