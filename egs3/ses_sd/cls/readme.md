@@ -78,11 +78,13 @@ How these were counted: the emotion code of each file name. Hours per label are 
 
 ## Download
 
-The data is obtained manually; the recipe raises an error with the URL when it is
-missing. Download the zip from
-[Kaggle](https://www.kaggle.com/datasets/angeluxarmenta/ses-sd) (a free Kaggle
-account is needed), unzip it and set `$SES_SD` to the directory that holds the
-`SES-SD/` folder (the wav files may be at any depth below it). Measured on one run:
+`prepare_source` downloads the zip from
+[Kaggle](https://www.kaggle.com/datasets/angeluxarmenta/ses-sd) with the Kaggle CLI
+(`kaggle`, which needs an API token from https://www.kaggle.com/settings/api in
+`~/.kaggle/access_token` or `$KAGGLE_API_TOKEN`), unzips it into `$SES_SD` and
+deletes the zip, as `egs3/jlcorpus/cls` does. A zip downloaded by hand also works:
+unzip it and set `$SES_SD` to the directory that holds the `SES-SD/` folder (the wav
+files may be at any depth below it). Measured on one run:
 about 16 seconds to download the 0.4 GB zip with the Kaggle REST API;
 `create_dataset`, `remove_long_short` and `prepare_labels` together took about 2
 minutes (four recipes were prepared at the same time).

@@ -6,8 +6,12 @@ builder:
   dataset_path: download
 
   # Source ----------------------------------------------------------------
-  # Manual download from Kaggle (free account). No download is attempted here.
+  # Kaggle (free account). `prepare_source` fetches it with the Kaggle CLI,
+  # which needs an API token (~/.kaggle/access_token or $KAGGLE_API_TOKEN),
+  # as jlcorpus/cls does.
   kaggle_url: https://www.kaggle.com/datasets/jettysowmith/telugu-emotion-speech
+  kaggle_dataset: jettysowmith/telugu-emotion-speech
+  remove_archive: true
   # Fewer files means an incomplete extraction.
   expected_files: 456
 

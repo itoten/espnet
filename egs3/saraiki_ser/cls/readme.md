@@ -66,9 +66,12 @@ How these were counted: the emotion folder each file is in. Hours per label are 
 
 ## Download
 
-The recipe does not download the data. Download the zip from the Kaggle page
-above (8.4 MB, free Kaggle account) and unzip it into `$SARAIKI_SER`. If the folders
-are missing, `create_dataset` stops with an error that gives the URL. Measured on
+`prepare_source` downloads the zip from the Kaggle page above (8.4 MB) with the
+Kaggle CLI (`kaggle`, which needs an API token from
+https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
+`$KAGGLE_API_TOKEN`), unzips it into `$SARAIKI_SER` and deletes the zip, as
+`egs3/jlcorpus/cls` does. A zip downloaded by hand and unzipped into
+`$SARAIKI_SER` also works. Measured on
 one run, the download took a few seconds (not timed) and `create_dataset`,
 `remove_long_short` and `prepare_labels` together took about 78 seconds.
 

@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import subprocess
+import zipfile
 from importlib import resources
 from pathlib import Path
 from random import Random
@@ -84,7 +85,9 @@ def resolve_source_root(
     raise FileNotFoundError(
         "Saraiki audio not found. Checked:\n  "
         + "\n  ".join(checked)
-        + f"\nDownload and unzip {_CFG['kaggle_url']} (free Kaggle account), then "
+        + "\nLet `prepare_source` download it with the Kaggle CLI (an API token "
+        "in ~/.kaggle/access_token or $KAGGLE_API_TOKEN), or download and unzip "
+        f"{_CFG['kaggle_url']} (free Kaggle account), then "
         f"set ${_CFG['source_env_var']} to the directory holding the "
         "`Angry/`, `Fear/`, `Happy/`, `Neutral/`, `Sad/` and `Shock/` folders."
     )
@@ -200,6 +203,77 @@ def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
     return assignment
 
 
+def _download_source(destination: Path) -> None:
+    """Fetch the corpus from Kaggle and unpack it into ``destination``.
+
+    Kaggle is the only distribution point, so the Kaggle CLI and an API token
+    are required, as in ``egs3/jlcorpus/cls``.
+
+    Args:
+        destination: Directory to unpack into.
+
+    Raises:
+        RuntimeError: If the Kaggle CLI is missing.
+        subprocess.CalledProcessError: If the download fails.
+        FileNotFoundError: If Kaggle wrote no archive.
+        zipfile.BadZipFile: If the archive cannot be extracted.
+    """
+    if shutil.which("kaggle") is None:
+        raise RuntimeError(
+            "The `kaggle` command is required to download Saraiki, which is "
+            "published on Kaggle. Install it with `pip install kaggle`, then put "
+            "an API token from https://www.kaggle.com/settings/api in "
+            "~/.kaggle/access_token or in $KAGGLE_API_TOKEN."
+        )
+    destination.mkdir(parents=True, exist_ok=True)
+    dataset = str(_CFG["kaggle_dataset"])
+    logger.info("Downloading %s from Kaggle", dataset)
+    subprocess.run(
+        ["kaggle", "datasets", "download", "-d", dataset, "-p", str(destination)],
+        check=True,
+    )
+
+    archives = sorted(destination.glob("*.zip"))
+    if not archives:
+        raise FileNotFoundError(f"Kaggle wrote no archive into {destination}")
+    for archive in archives:
+        _extract_zip(archive, destination)
+        if _CFG.get("remove_archive", False):
+            archive.unlink(missing_ok=True)
+
+
+def _extract_zip(archive: Path, destination: Path) -> None:
+    """Extract one zip archive into ``destination``.
+
+    Only members starting with ``extract_prefix`` and ending with
+    ``extract_suffix`` (both optional in ``dataset/config.yaml``) are written.
+    Members are checked against the destination first: ``ZipFile.extractall``
+    does not reject absolute paths or ``..`` components on its own.
+
+    Args:
+        archive: Archive to read.
+        destination: Directory to extract into.
+
+    Raises:
+        ValueError: If a member would be written outside ``destination``.
+        zipfile.BadZipFile: If the archive is invalid.
+    """
+    prefix = str(_CFG.get("extract_prefix") or "")
+    suffix = str(_CFG.get("extract_suffix") or "").lower()
+    logger.info("Extracting %s", archive.name)
+    destination = destination.resolve()
+    with zipfile.ZipFile(archive) as zf:
+        members = [
+            name
+            for name in zf.namelist()
+            if name.startswith(prefix) and name.lower().endswith(suffix)
+        ]
+        for name in members:
+            if not (destination / name).resolve().is_relative_to(destination):
+                raise ValueError(f"{archive.name} escapes its destination: {name}")
+        zf.extractall(path=destination, members=members)
+
+
 class SaraikiSerBuilder(DatasetBuilder):
     """Prepare Saraiki for the classification recipe.
 
@@ -227,12 +301,25 @@ class SaraikiSerBuilder(DatasetBuilder):
         source_dir: str | Path | None = None,
         **_kwargs,
     ) -> None:
-        """Check that the manually extracted corpus is available.
+        """Download and unpack the corpus unless it is already available.
+
+        Args:
+            recipe_dir: Recipe directory, used to resolve relative locations.
+            source_dir: Explicit corpus location, tried before the environment
+                variable and the recipe-local download directory.
 
         Raises:
-            FileNotFoundError: With the Kaggle URL if the tree is missing.
+            FileNotFoundError: If the tree is still incomplete afterwards.
+            RuntimeError: If the Kaggle CLI is missing.
         """
-        resolve_source_root(Path(recipe_dir).resolve(), source_dir)
+        recipe_root = Path(recipe_dir).resolve()
+        if self.is_source_prepared(recipe_dir, source_dir):
+            logger.info("Saraiki already present; skipping download")
+            return
+
+        destination = next(iter_source_candidates(recipe_root, source_dir))
+        _download_source(destination)
+        resolve_source_root(recipe_root, source_dir)
 
     def is_built(self, recipe_dir: str | Path, **_kwargs) -> bool:
         """Check whether every split manifest already exists."""

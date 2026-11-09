@@ -83,8 +83,11 @@ How these were counted: the emotion field of each file name. Hours per label are
 Kaggle dataset `jabedcse/baser-dataset` (version 1, 2023-12-16), licence shown on
 Kaggle: Apache 2.0. The required citation was not checked; see the Kaggle page.
 
-Kaggle requires a login, so the recipe does not download. Download the zip and
-extract it into `$BASER` so that `BASER_DATASET/` holds the 750 wav files.
+`prepare_source` downloads the zip with the Kaggle CLI (`kaggle`, which needs an
+API token from https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
+`$KAGGLE_API_TOKEN`), extracts it into `$BASER` and deletes the zip, as
+`egs3/jlcorpus/cls` does. A zip downloaded by hand also works: extract it into
+`$BASER` so that `BASER_DATASET/` holds the 750 wav files.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.

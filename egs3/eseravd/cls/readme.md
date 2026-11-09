@@ -84,10 +84,14 @@ recipe):
 
 ## Download
 
-The Kaggle dataset needs a login and the zip is about 6.4 GB because it also holds
-the video, so the recipe does not download it. Download it by hand, extract only the
-`.wav` files of `E-SERAVD 1.2` and point `$ESERAVD` at the folder holding it;
-otherwise `create_dataset` stops with the URL. On one run `create_dataset` took 130
+`prepare_source` downloads the Kaggle dataset with the Kaggle CLI (`kaggle`, which
+needs an API token from https://www.kaggle.com/settings/api in
+`~/.kaggle/access_token` or `$KAGGLE_API_TOKEN`), as `egs3/jlcorpus/cls` does. The
+zip is about 6.4 GB because it also holds the video and two older releases, so only
+the `.wav` files of `E-SERAVD 1.2` are extracted into `$ESERAVD`
+(`extract_prefix` and `extract_suffix` in `dataset/config.yaml`), and the zip is
+deleted. A zip downloaded by hand also works: extract the same files and point
+`$ESERAVD` at the folder holding `E-SERAVD 1.2/`. On one run `create_dataset` took 130
 seconds. The download time was not measured.
 
 ## Splits

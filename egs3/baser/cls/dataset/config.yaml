@@ -8,9 +8,13 @@ builder:
   audio_subdir: BASER_DATASET
 
   # Download --------------------------------------------------------------
-  # Kaggle needs a login, so the recipe does not download. Fetch the zip by
-  # hand and extract it so that `BASER_DATASET/` lies inside `$BASER`.
+  # `prepare_source` fetches the zip with the Kaggle CLI, which needs an API
+  # token (~/.kaggle/access_token or $KAGGLE_API_TOKEN), as jlcorpus/cls does.
+  # A zip fetched by hand also works: extract it so that `BASER_DATASET/`
+  # lies inside `$BASER`.
   request_url: https://www.kaggle.com/datasets/jabedcse/baser-dataset
+  kaggle_dataset: jabedcse/baser-dataset
+  remove_archive: true
   # Fewer files means an interrupted extraction.
   expected_files: 750
 

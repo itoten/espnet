@@ -83,10 +83,13 @@ How these were counted: the emotion field of each file name. The keyword field h
 
 ## Download
 
-The Kaggle dataset ([ujjwal9/emospeech](https://www.kaggle.com/datasets/ujjwal9/emospeech))
-needs a Kaggle login, so the recipe does not download it. Download the zip by hand,
-extract it and point `$EMOSPEECH_KEYWORDS` at the folder that holds
-`emospeech-dataset-v1/`; otherwise `create_dataset` stops with the URL. On one run
+`prepare_source` downloads the Kaggle dataset
+([ujjwal9/emospeech](https://www.kaggle.com/datasets/ujjwal9/emospeech)) with the
+Kaggle CLI (`kaggle`, which needs an API token from
+https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
+`$KAGGLE_API_TOKEN`), extracts it into `$EMOSPEECH_KEYWORDS` and deletes the zip,
+as `egs3/jlcorpus/cls` does. A zip downloaded by hand also works: extract it and
+point `$EMOSPEECH_KEYWORDS` at the folder that holds `emospeech-dataset-v1/`. On one run
 `create_dataset`, which copies the audio, took 342 seconds. The download time was
 not measured.
 

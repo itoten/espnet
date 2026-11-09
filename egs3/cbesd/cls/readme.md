@@ -95,8 +95,11 @@ Kaggle dataset `pranuthi19/bilingual-emotion-speech-datasetbesd` (version 1,
 2024-02-07), licence shown on Kaggle: CC BY-SA 4.0. The required citation was
 not checked; see the Kaggle page.
 
-Kaggle requires a login, so the recipe does not download. Download the zip and
-extract it into `$CBESD` so that `BESD/` lies inside it.
+`prepare_source` downloads the zip with the Kaggle CLI (`kaggle`, which needs an
+API token from https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
+`$KAGGLE_API_TOKEN`), extracts it into `$CBESD` and deletes the zip, as
+`egs3/jlcorpus/cls` does. A zip downloaded by hand also works: extract it into
+`$CBESD` so that `BESD/` lies inside it.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.

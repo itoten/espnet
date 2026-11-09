@@ -69,11 +69,13 @@ How these were counted: the name of the folder each file is in. The folder names
 
 ## Download
 
-The data is obtained manually; the recipe raises an error with the URL when it is
-missing. Download the zip from
-[Kaggle](https://www.kaggle.com/datasets/jettysowmith/telugu-emotion-speech) (a
-free Kaggle account is needed), unzip it and set `$TELUGU_EMOTION_KAGGLE` to the
-directory that holds `telugu/`. Measured on one run: about 10 seconds to download
+`prepare_source` downloads the zip from
+[Kaggle](https://www.kaggle.com/datasets/jettysowmith/telugu-emotion-speech) with
+the Kaggle CLI (`kaggle`, which needs an API token from
+https://www.kaggle.com/settings/api in `~/.kaggle/access_token` or
+`$KAGGLE_API_TOKEN`), unzips it into `$TELUGU_EMOTION_KAGGLE` and deletes the zip,
+as `egs3/jlcorpus/cls` does. A zip downloaded by hand also works: unzip it and set
+`$TELUGU_EMOTION_KAGGLE` to the directory that holds `telugu/`. Measured on one run: about 10 seconds to download
 the 0.2 GB zip with the Kaggle REST API; `create_dataset`, `remove_long_short` and
 `prepare_labels` together took about 54 seconds (four recipes were prepared at the
 same time).

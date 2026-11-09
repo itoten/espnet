@@ -8,9 +8,16 @@ builder:
   release_dir: E-SERAVD 1.2
 
   # Source ----------------------------------------------------------------
-  # Manual download from Kaggle (free account, CC BY 4.0). The zip is 6.4 GB
-  # because it also holds the mp4 video; extracting the .wav files is enough.
+  # Kaggle (free account, CC BY 4.0). `prepare_source` fetches it with the
+  # Kaggle CLI, which needs an API token (~/.kaggle/access_token or
+  # $KAGGLE_API_TOKEN), as jlcorpus/cls does. The zip is 6.4 GB because it
+  # also holds the mp4 video and two older releases; only the .wav files of
+  # `release_dir` are extracted (`extract_prefix`, `extract_suffix`).
   kaggle_url: https://www.kaggle.com/datasets/ahmadnafibudianto/e-seravd-speech-emotion-recognition-av-dataset
+  kaggle_dataset: ahmadnafibudianto/e-seravd-speech-emotion-recognition-av-dataset
+  remove_archive: true
+  extract_prefix: "E-SERAVD 1.2/"
+  extract_suffix: .wav
   # Fewer files means an incomplete extraction.
   expected_files: 3000
 

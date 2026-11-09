@@ -6,9 +6,12 @@ builder:
   dataset_path: download
 
   # Source ----------------------------------------------------------------
-  # Manual download from Kaggle (free account, CC BY-NC-SA 4.0); the zip is
-  # about 0.5 GB.
+  # Kaggle (free account, CC BY-NC-SA 4.0); the zip is about 0.5 GB.
+  # `prepare_source` fetches it with the Kaggle CLI, which needs an API token
+  # (~/.kaggle/access_token or $KAGGLE_API_TOKEN), as jlcorpus/cls does.
   kaggle_url: https://www.kaggle.com/datasets/ujjwal9/emospeech
+  kaggle_dataset: ujjwal9/emospeech
+  remove_archive: true
   # Fewer files means an incomplete extraction.
   # Byte-identical recordings with one label are kept once when true; false keeps
   # every copy (the count check is then skipped). Label-conflicting copies are always dropped.

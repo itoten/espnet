@@ -1,10 +1,14 @@
 builder:
   # Source layout ---------------------------------------------------------
-  # `<source>/<Emotion>/<Emotion>_<NNN>.opus`, 200 files per folder. Obtained
-  # manually from Kaggle (free account); no download is attempted here.
+  # `<source>/<Emotion>/<Emotion>_<NNN>.opus`, 200 files per folder, from
+  # Kaggle (free account). `prepare_source` fetches it with the Kaggle CLI,
+  # which needs an API token (~/.kaggle/access_token or $KAGGLE_API_TOKEN),
+  # as jlcorpus/cls does.
   source_env_var: SARAIKI_SER
   dataset_path: download
   kaggle_url: https://www.kaggle.com/datasets/mrjunaidsiyal/speech-emotion-recognition-saraiki-audio-dataset
+  kaggle_dataset: mrjunaidsiyal/speech-emotion-recognition-saraiki-audio-dataset
+  remove_archive: true
   # Fewer files means an incomplete extraction.
   expected_files: 1200
 
