@@ -132,8 +132,8 @@ files are averaged to mono. Split counts:
 
 Both are optional.
 
-- `EMOTIONTALK` - a directory holding the extracted `Audio` folder, or where to download
-  it (default `download/` under the recipe)
+- `EMOTIONTALK` - a directory holding `Audio.tar` (or the extracted `Audio` folder), or
+  where to download it (default `download/` under the recipe)
 - `EMOTIONTALK_OUTPUT` - where the converted audio and manifests are written (default `data/`)
 
 ## Download
@@ -144,9 +144,12 @@ authors** (access is then granted immediately), and make your token available
 (`huggingface-cli login` or `$HF_TOKEN`). Without this, `prepare_source` stops with an
 error that says so.
 
-`prepare_source` downloads `Audio.tar` (14.8 GB), extracts it (about 15 GB more) and
-deletes the archive. A partial download is resumed. If `Audio.tar` is still there next
-to `Audio`, the extraction was interrupted, and the next run extracts it again. Measured: the download took about 7 minutes; `create_dataset`
+`prepare_source` downloads `Audio.tar` (14.8 GB) and keeps it as it is; a partial
+download is resumed. The archive is not extracted: it is not compressed, so `build()`
+reads the labels and each recording straight from it, which avoids writing about
+38,500 small files. If a directory holds an already extracted `Audio` folder and no
+`Audio.tar`, that folder is read instead. Measured (from the extracted folder, before
+the archive was read in place): the download took about 7 minutes; `create_dataset`
 (converting 19,250 files with 16 parallel ffmpeg jobs) took about 2 minutes;
 `collect_stats` took about 34 seconds.
 

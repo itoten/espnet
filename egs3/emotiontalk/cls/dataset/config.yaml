@@ -1,7 +1,10 @@
 builder:
   # Source layout ---------------------------------------------------------
-  # `Audio.tar` of the Hugging Face dataset extracts to `Audio/json/<group>/
-  # .../<utterance>.json` (labels) and `Audio/wav/<group>/.../<utterance>.wav`.
+  # `Audio.tar` of the Hugging Face dataset holds `Audio/json/<group>/.../
+  # <utterance>.json` (labels) and `Audio/wav/<group>/.../<utterance>.wav`.
+  # It is kept as downloaded and read in place (it is not compressed, so each
+  # file is read at its offset); nothing is extracted. A directory holding an
+  # already extracted `Audio` folder instead is read as well.
   # The label is `emotion_result` of the audio-only annotation: five annotators
   # who only listened, each with a confidence, combined by the authors.
   source_env_var: EMOTIONTALK
@@ -15,9 +18,9 @@ builder:
   # share its username and email with the authors. 14.8 GB.
   hf_repo: BAAI/Emotiontalk
   archive_name: Audio.tar
+  # An `Audio.tar` of another size is taken as an interrupted download.
   archive_size: 14811722752
-  remove_archive: true
-  # Fewer utterances than this means an interrupted extraction.
+  # Fewer labelled utterances than this means a damaged source.
   expected_utterances: 19250
 
   # Labels ----------------------------------------------------------------

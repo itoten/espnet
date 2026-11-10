@@ -31,17 +31,6 @@ _CFG = _load_builder_config()
 _EMOTION_MAP = {str(k): str(v) for k, v in _CFG["emotion_map"].items()}
 
 
-def _extraction_unfinished(candidate: Path) -> bool:
-    """Tell whether an extraction into ``candidate`` was interrupted.
-
-    With ``remove_archive`` the archive is deleted only after it has been
-    extracted completely, so an archive still next to ``Audio`` means the
-    extraction stopped part-way (for example, the job was killed). Without
-    ``remove_archive`` this cannot be told and ``False`` is returned.
-    """
-    return bool(_CFG["remove_archive"]) and (candidate / _CFG["archive_name"]).is_file()
-
-
 def iter_source_candidates(
     recipe_root: Path, source_dir: str | Path | None = None
 ) -> Iterator[Path]:
@@ -62,40 +51,51 @@ def iter_source_candidates(
     yield recipe_root / _CFG["dataset_path"]
 
 
-def resolve_source_root(
-    recipe_root: Path, source_dir: str | Path | None = None
-) -> Path:
-    """Return the first candidate holding the extracted labels and audio.
+def _complete_archive(candidate: Path) -> Path | None:
+    """Return ``candidate/Audio.tar`` if it has its full size, else None."""
+    archive = candidate / _CFG["archive_name"]
+    if archive.is_file() and archive.stat().st_size == int(_CFG["archive_size"]):
+        return archive
+    return None
+
+
+def _has_extracted_tree(candidate: Path) -> bool:
+    return (candidate / _CFG["json_dir"]).is_dir() and (
+        candidate / _CFG["wav_dir"]
+    ).is_dir()
+
+
+def resolve_source(recipe_root: Path, source_dir: str | Path | None = None) -> Path:
+    """Return the EmotionTalk audio to read: the archive or an extracted tree.
+
+    In each candidate directory a complete ``Audio.tar`` is preferred, read in
+    place without extracting it; otherwise an already extracted ``Audio``
+    folder (``Audio/json`` and ``Audio/wav``) is used.
 
     Args:
         recipe_root: Resolved recipe directory.
         source_dir: Explicit location, tried first when given.
 
     Returns:
-        Path: Directory holding ``Audio/json`` and ``Audio/wav``.
+        Path: The ``Audio.tar`` file, or the directory holding ``Audio``.
 
     Raises:
-        FileNotFoundError: If no candidate holds both directories, or the one
-            that does still holds the archive (see :func:`_extraction_unfinished`).
+        FileNotFoundError: If no candidate holds either.
     """
     checked = []
     for candidate in iter_source_candidates(recipe_root, source_dir):
-        if (candidate / _CFG["json_dir"]).is_dir() and (
-            candidate / _CFG["wav_dir"]
-        ).is_dir():
-            if not _extraction_unfinished(candidate):
-                return candidate
-            logger.warning(
-                "%s still holds %s: the extraction did not finish",
-                candidate,
-                _CFG["archive_name"],
-            )
+        archive = _complete_archive(candidate)
+        if archive is not None:
+            return archive
+        if _has_extracted_tree(candidate):
+            return candidate
         checked.append(str(candidate))
     raise FileNotFoundError(
         "EmotionTalk audio not found. Checked:\n  "
         + "\n  ".join(checked)
-        + f"\nSet ${_CFG['source_env_var']} to a directory holding the extracted "
-        f"`Audio` folder, or let `prepare_source` download `{_CFG['archive_name']}`."
+        + f"\nSet ${_CFG['source_env_var']} to a directory holding "
+        f"`{_CFG['archive_name']}` (or the extracted `Audio` folder), or let "
+        "`prepare_source` download it."
     )
 
 
@@ -154,14 +154,6 @@ def _download_archive(destination: Path) -> Path:
     return target
 
 
-def _extract_archive(archive: Path, source_root: Path) -> None:
-    """Extract the archive into ``source_root`` and optionally delete it."""
-    with tarfile.open(archive) as tar:
-        tar.extractall(source_root, filter="data")
-    if _CFG["remove_archive"]:
-        archive.unlink()
-
-
 def resolve_data_root(recipe_root: Path) -> Path:
     """Return the directory the converted audio and manifests are written into.
 
@@ -177,15 +169,53 @@ def resolve_data_root(recipe_root: Path) -> Path:
     return recipe_root / _CFG["data_path"]
 
 
-def read_entries(source_root: Path) -> list[dict[str, str]]:
-    """Read the label files and match each to its audio file.
+def _scan_archive(archive: Path) -> tuple[list[tuple[str, dict]], dict[str, tuple[int, int]]]:
+    """Read the label files and locate the audio files inside ``Audio.tar``.
 
-    Args:
-        source_root: Directory returned by :func:`resolve_source_root`.
+    The archive is not compressed, so each member's bytes sit at a fixed
+    offset and can be read later without extracting anything.
 
     Returns:
-        list[dict[str, str]]: Keys ``utt_id``, ``source``, ``speaker``,
-        ``split`` and ``label``, sorted by id.
+        The labels as ``(member name, parsed JSON)`` and, for each audio
+        member name, its ``(offset, size)`` in the archive.
+    """
+    json_prefix = f"{_CFG['json_dir']}/"
+    wav_prefix = f"{_CFG['wav_dir']}/"
+    labels: list[tuple[str, dict]] = []
+    audio: dict[str, tuple[int, int]] = {}
+    with tarfile.open(archive) as tar:
+        for member in tar:
+            if not member.isfile():
+                continue
+            if member.name.startswith(json_prefix) and member.name.endswith(".json"):
+                with tar.extractfile(member) as fh:
+                    labels.append((member.name[len(json_prefix):], json.load(fh)))
+            elif member.name.startswith(wav_prefix):
+                audio[member.name[len(wav_prefix):]] = (member.offset_data, member.size)
+    return labels, audio
+
+
+def _scan_tree(source_root: Path) -> list[tuple[str, dict]]:
+    """Read the label files of an extracted ``Audio`` folder."""
+    json_root = source_root / _CFG["json_dir"]
+    labels = []
+    for path in json_root.glob("*/*/*/*.json"):
+        with path.open(encoding="utf-8") as fh:
+            labels.append((path.relative_to(json_root).as_posix(), json.load(fh)))
+    return labels
+
+
+def read_entries(source: Path) -> list[dict]:
+    """Read the label files and match each to its audio.
+
+    Args:
+        source: Path returned by :func:`resolve_source`: ``Audio.tar`` or a
+            directory holding the extracted ``Audio`` folder.
+
+    Returns:
+        list[dict]: Keys ``utt_id``, ``speaker``, ``split``, ``label`` and the
+        audio: ``source`` (a file path) for an extracted folder, or
+        ``archive``, ``offset`` and ``size`` for the archive. Sorted by id.
 
     Raises:
         ValueError: If a label is unknown or there are too few utterances.
@@ -193,36 +223,46 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     """
     valid_groups = {str(g) for g in _CFG["valid_groups"]}
     test_groups = {str(g) for g in _CFG["test_groups"]}
-    json_root = source_root / _CFG["json_dir"]
-    wav_root = source_root / _CFG["wav_dir"]
+    in_archive = source.is_file()
+    if in_archive:
+        labels, audio = _scan_archive(source)
+    else:
+        labels = _scan_tree(source)
+        wav_root = source / _CFG["wav_dir"]
 
     entries = []
-    for path in sorted(json_root.glob("*/*/*/*.json")):
-        with path.open(encoding="utf-8") as fh:
-            row = json.load(fh)
+    for json_name, row in sorted(labels):
         emotion = row["emotion_result"]
         if emotion not in _EMOTION_MAP:
             raise ValueError(
                 f"Unknown emotion {emotion!r}. Known: {sorted(_EMOTION_MAP)}"
             )
-        wav = wav_root / row["file_path"]
-        if not wav.is_file():
-            raise FileNotFoundError(f"Audio listed in the labels is missing: {wav}")
-        group = path.relative_to(json_root).parts[0]
+        group = json_name.split("/")[0]
         split = "train"
         if group in valid_groups:
             split = "valid"
         elif group in test_groups:
             split = "test"
-        entries.append(
-            {
-                "utt_id": f"emotiontalk-{path.stem}",
-                "source": str(wav),
-                "speaker": str(row["speaker_id"]),
-                "split": split,
-                "label": _EMOTION_MAP[emotion],
-            }
-        )
+        entry = {
+            "utt_id": f"emotiontalk-{Path(json_name).stem}",
+            "speaker": str(row["speaker_id"]),
+            "split": split,
+            "label": _EMOTION_MAP[emotion],
+        }
+        if in_archive:
+            location = audio.get(row["file_path"])
+            if location is None:
+                raise FileNotFoundError(
+                    f"Audio listed in the labels is missing from {source}: "
+                    f"{_CFG['wav_dir']}/{row['file_path']}"
+                )
+            entry.update(archive=str(source), offset=location[0], size=location[1])
+        else:
+            wav = wav_root / row["file_path"]
+            if not wav.is_file():
+                raise FileNotFoundError(f"Audio listed in the labels is missing: {wav}")
+            entry["source"] = str(wav)
+        entries.append(entry)
     if len(entries) < int(_CFG["expected_utterances"]):
         raise ValueError(
             f"Found {len(entries)} utterances, expected {_CFG['expected_utterances']}"
@@ -238,8 +278,9 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
 class EmotiontalkBuilder(DatasetBuilder):
     """Prepare EmotionTalk for the classification recipe.
 
-    `prepare_source` downloads and extracts ``Audio.tar`` (the Hugging Face
-    dataset is gated; see ``readme.md``). `build()` converts every utterance
+    `prepare_source` downloads ``Audio.tar`` (the Hugging Face dataset is
+    gated; see ``readme.md``) and keeps it as it is. `build()` reads the
+    labels and the audio straight from the archive, converts every utterance
     to 16 kHz mono and writes one manifest per split, following the published
     speaker-group partition.
     """
@@ -254,7 +295,7 @@ class EmotiontalkBuilder(DatasetBuilder):
         if self.is_built(recipe_dir):
             return True
         try:
-            resolve_source_root(Path(recipe_dir).resolve(), source_dir)
+            resolve_source(Path(recipe_dir).resolve(), source_dir)
         except FileNotFoundError:
             return False
         return True
@@ -265,7 +306,7 @@ class EmotiontalkBuilder(DatasetBuilder):
         source_dir: str | Path | None = None,
         **_kwargs,
     ) -> None:
-        """Download and extract the audio unless it is already available.
+        """Download ``Audio.tar`` unless the audio is already available.
 
         Args:
             recipe_dir: Recipe directory, used to resolve relative locations.
@@ -274,16 +315,14 @@ class EmotiontalkBuilder(DatasetBuilder):
 
         Raises:
             PermissionError: If the account has not agreed to the dataset's terms.
-            FileNotFoundError: If the tree is still incomplete afterwards.
+            ValueError: If the download does not reach its listed size.
         """
         recipe_root = Path(recipe_dir).resolve()
         if self.is_source_prepared(recipe_dir, source_dir):
             logger.info("EmotionTalk already present; skipping download")
             return
         destination = next(iter_source_candidates(recipe_root, source_dir))
-        archive = _download_archive(destination)
-        _extract_archive(archive, destination)
-        resolve_source_root(recipe_root, source_dir)
+        _download_archive(destination)
 
     def is_built(self, recipe_dir: str | Path, **_kwargs) -> bool:
         """Check whether every split manifest already exists."""
@@ -310,7 +349,7 @@ class EmotiontalkBuilder(DatasetBuilder):
             subprocess.CalledProcessError: If a resample fails.
         """
         recipe_root = Path(recipe_dir).resolve()
-        source_root = resolve_source_root(recipe_root, source_dir)
+        source = resolve_source(recipe_root, source_dir)
         data_root = resolve_data_root(recipe_root)
 
         ffmpeg = shutil.which("ffmpeg")
@@ -323,33 +362,45 @@ class EmotiontalkBuilder(DatasetBuilder):
         wav_dir.mkdir(parents=True, exist_ok=True)
         sampling_rate = str(_CFG["sampling_rate"])
 
-        def convert(entry: dict[str, str]) -> Path:
+        def convert(entry: dict) -> Path:
             wav = wav_dir / f"{entry['utt_id']}.wav"
-            if not wav.is_file():
-                part = wav.with_suffix(wav.suffix + ".part")
-                subprocess.run(
-                    [
-                        ffmpeg,
-                        "-i",
-                        entry["source"],
-                        "-ac",
-                        "1",
-                        "-ar",
-                        sampling_rate,
-                        "-f",
-                        "wav",
-                        "-y",
-                        "-hide_banner",
-                        "-loglevel",
-                        "error",
-                        str(part),
-                    ],
-                    check=True,
-                )
-                part.replace(wav)
+            if wav.is_file():
+                return wav
+            if "archive" in entry:
+                # Read the member's bytes from the archive and pipe them in.
+                with open(entry["archive"], "rb") as fh:
+                    fh.seek(entry["offset"])
+                    data = fh.read(entry["size"])
+                if len(data) != entry["size"]:
+                    raise ValueError(f"Truncated archive: {entry['archive']}")
+                source_arg, stdin = "pipe:0", data
+            else:
+                source_arg, stdin = entry["source"], None
+            part = wav.with_suffix(wav.suffix + ".part")
+            subprocess.run(
+                [
+                    ffmpeg,
+                    "-i",
+                    source_arg,
+                    "-ac",
+                    "1",
+                    "-ar",
+                    sampling_rate,
+                    "-f",
+                    "wav",
+                    "-y",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    str(part),
+                ],
+                input=stdin,
+                check=True,
+            )
+            part.replace(wav)
             return wav
 
-        entries = read_entries(source_root)
+        entries = read_entries(source)
         with ThreadPoolExecutor(int(_CFG["convert_workers"])) as pool:
             wavs = list(pool.map(convert, entries))
 
