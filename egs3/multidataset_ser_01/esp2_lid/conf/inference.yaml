@@ -1,0 +1,57 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+#   python run.py --stages infer measure \
+#       --training_config conf/training.yaml \
+#       --inference_config conf/inference.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# `exp_tag` / `exp_dir` come from the training config but `data_dir` does
+# not, so it is set here with the same expression as in training.yaml.
+data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,../cls/data}
+inference_dir: ${exp_dir}/inference
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# The evaluation sets of `../cls/conf/inference.yaml`: one per evaluation
+# corpus (`eval_corpora` in `../cls/dataset/config.yaml`), unfiltered.
+dataset:
+  test:
+    - {name: aesdd,              data_src_args: {split: aesdd}}
+    - {name: brytserc,           data_src_args: {split: brytserc}}
+    - {name: cafe,               data_src_args: {split: cafe}}
+    - {name: cbesd,              data_src_args: {split: cbesd}}
+    - {name: cremad,             data_src_args: {split: cremad}}
+    - {name: dailytalk,          data_src_args: {split: dailytalk}}
+    - {name: dusha,              data_src_args: {split: dusha}}
+    - {name: emospeech_keywords, data_src_args: {split: emospeech_keywords}}
+    - {name: emotiontalk,        data_src_args: {split: emotiontalk}}
+    - {name: emovdb,             data_src_args: {split: emovdb}}
+    - {name: jnv,                data_src_args: {split: jnv}}
+    - {name: jvnv,               data_src_args: {split: jvnv}}
+    - {name: legov2,             data_src_args: {split: legov2}}
+    - {name: mcaespps,           data_src_args: {split: mcaespps}}
+    - {name: meld,               data_src_args: {split: meld}}
+    - {name: multidialog,        data_src_args: {split: multidialog}}
+    - {name: nemo,               data_src_args: {split: nemo}}
+    - {name: nonverbaltts,       data_src_args: {split: nonverbaltts}}
+    - {name: pavoque,            data_src_args: {split: pavoque}}
+    - {name: ravdess,            data_src_args: {split: ravdess}}
+    - {name: shemo,              data_src_args: {split: shemo}}
+    - {name: tess,               data_src_args: {split: tess}}
+    - {name: thaiser,            data_src_args: {split: thaiser}}
+    - {name: turevdb,            data_src_args: {split: turevdb}}
+    - {name: utemo,              data_src_args: {split: utemo}}
+    - {name: vivae,              data_src_args: {split: vivae}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# Writes `<test_name>/language.scp`, the predicted class of each utterance
+# (no per-class scores).
+model:
+  lid_train_config: ${exp_dir}/config.yaml
+  lid_model_file: ${exp_dir}/valid.accuracy.ave_1best.pth
+  lang2utt: ${stats_dir}/train/lang2utt
+  dtype: float32

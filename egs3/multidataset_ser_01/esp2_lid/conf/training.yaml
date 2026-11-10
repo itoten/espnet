@@ -1,0 +1,215 @@
+##########################################################
+#                    TRAINING SETTING                    #
+##########################################################
+# Log-mel features and an ECAPA-TDNN trained from scratch (no pre-trained
+# model), with the `esp2_lid` system: the seven emotions take the place of
+# the languages.
+#
+# The data is that of `egs3/multidataset_ser_01/cls`: the same merged
+# manifests and the same `remove_long_short` output. Run that recipe's data
+# preparation first; this recipe does not repeat it.
+#   (in ../cls) python run.py --stages create_dataset remove_long_short \
+#       prepare_labels --training_config conf/training_wavlm_large.yaml
+#   python run.py --stages collect_stats --training_config conf/training.yaml
+#   python run.py --stages train --training_config conf/training.yaml
+#   python run.py --stages infer measure \
+#       --training_config conf/training.yaml \
+#       --inference_config conf/inference.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# `collect_stats` reads every training and validation file once to write
+# their lengths and the per-class lists the sampler needs (`lang2utt`,
+# `category2utt` under `exp/stats/`). Classes are numbered in alphabetical
+# order of their names (`lang2utt`), not by `../cls`'s `token_list`.
+
+##########################################################
+#                  SYSTEM AND PATH SETTING               #
+##########################################################
+task: espnet3.systems.esp2_lid.task.LIDTask
+
+num_device: ${oc.decode:${oc.env:NUM_DEVICE,1}}
+num_nodes: ${oc.decode:${oc.env:NUM_NODES,1}}
+
+# Where `../cls` writes the merged manifests. Must be the same expression as
+# in `../cls/conf/training.yaml`, resolved from that recipe's directory.
+data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,../cls/data}
+exp_tag: train_ecapa_tdnn
+
+# `create_dataset` is `../cls`'s; if run from here it works on that recipe.
+create_dataset:
+  recipe_dir: ${recipe_dir}/../cls
+  only: ${oc.env:MULTIDATASET_SER_01_ONLY,null}
+
+# Workers for `collect_stats`. Set MULTIDATASET_SER_01_WORKERS to the number
+# of CPU cores to use; 1 by default.
+parallel:
+  env: local
+  n_workers: ${oc.decode:${oc.env:MULTIDATASET_SER_01_WORKERS,1}}
+  allow_overwrite_lock: false
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# `train` and `valid` read `../cls`'s `manifest_filtered` (0.5 to 30 s).
+dataset:
+  train:
+    - data_src_args:
+        split: train
+  valid:
+    - data_src_args:
+        split: valid
+  preprocessor:
+    _target_: espnet2.train.preprocessor.LIDPreprocessor
+    lang2utt: ${stats_dir}/train/lang2utt
+    # Whole utterances, as `../cls` uses them. Set `true` (with
+    # `target_duration`) to train on fixed-length crops instead.
+    fix_duration: false
+    target_duration: 3.0
+    sample_rate: 16000
+    noise_apply_prob: 0.0
+    rir_apply_prob: 0.0
+
+##########################################################
+#                      MODEL SETTING                     #
+##########################################################
+# Sizes are those of ESPnet2's VoxCeleb ECAPA-TDNN (C = 1024, 192-dim
+# embedding); provisional for this data.
+model:
+  # The seven classes (`labels` in `../cls/dataset/config.yaml`).
+  lang_num: 7
+
+  # 80 log-mel bins, 25 ms window, 10 ms shift, mean-normalised per utterance.
+  frontend: melspec_torch
+  frontend_conf:
+    preemp: true
+    n_fft: 512
+    log: true
+    win_length: 400
+    hop_length: 160
+    n_mels: 80
+    normalize: mn
+
+  encoder: ecapa_tdnn
+  encoder_conf:
+    model_scale: 8
+    ndim: 1024
+    output_size: 1536
+
+  pooling: chn_attn_stat
+
+  projector: rawnet3
+  projector_conf:
+    output_size: 192
+
+  # Additive angular margin softmax with 3 sub-centres per class.
+  # `k_top: 0` turns the inter-top-k penalty off: with seven classes,
+  # `k_top` must stay below 6 or the loss fails (`selected index k out of
+  # range`).
+  loss: aamsoftmax_sc_topk
+  loss_conf:
+    margin: 0.2
+    scale: 30
+    K: 3
+    mp: 0.06
+    k_top: 0
+
+  # Log-mel features need no statistics: `collect_stats` only writes the
+  # lengths and class lists.
+  model_conf:
+    extract_feats_in_collect_stats: false
+
+##########################################################
+#            OPTIMIZER & SCHEDULER SETTING               #
+##########################################################
+# Provisional, not tuned. The system needs a scheduler. TristageLR (the
+# TEMPLATE's) warms up, holds and decays over `max_steps` optimizer updates.
+# The training audio is about 443 h, so with `batch_bins` below an epoch is
+# about 8,000 batches (the sampler logs the exact number at the start of
+# training); 240,000 is 30 epochs. Keep `max_steps` in step with
+# `batch_bins`, `accumulate_grad_batches` and the number of GPUs.
+optimizer:
+  _target_: torch.optim.Adam
+  lr: 1.0e-3
+  weight_decay: 2.0e-5
+  betas: [0.9, 0.98]
+
+scheduler:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: 240000
+  warmup_ratio: 0.1
+  hold_ratio: 0.3
+  decay_ratio: 0.6
+  init_lr_scale: 0.01
+  final_lr_scale: 0.01
+scheduler_interval: step
+
+# The checkpoint with the best validation accuracy is kept
+# (`valid.accuracy.ave_1best.pth`) and is the one `conf/inference.yaml` scores.
+best_model_criterion:
+  - - valid/accuracy
+    - 1
+    - max
+
+seed: 0
+
+##########################################################
+#                   DATALOADER SETTING                   #
+##########################################################
+dataloader:
+  train:
+    iter_factory:
+      seed: ${seed}
+      num_workers: 8
+      # `catpow` draws each batch's utterances class by class, with a class's
+      # share set by its total duration raised to `upsampling_factor`
+      # (1: as in the data, 0: every class equally). Without
+      # `num_iters_per_epoch`, an epoch covers the training audio
+      # `dataset_scaling_factor` times. `batch_bins` counts waveform samples
+      # (16,000 a second) per batch, padding included.
+      batches:
+        type: catpow
+        shape_files:
+          - ${stats_dir}/train/speech_shape
+        batch_size: 32
+        batch_bins: 3200000
+        # A batch of one utterance fails in the BatchNorm layers.
+        min_batch_size: 2
+        max_batch_size: 64
+        upsampling_factor: 0.5
+        dataset_scaling_factor: 1.0
+        drop_last: true
+        category2utt_file: ${stats_dir}/train/category2utt
+  valid:
+    iter_factory:
+      seed: ${seed}
+      num_workers: 8
+      # Every validation utterance exactly once (`catpow` would draw them at
+      # random, with repeats and omissions).
+      batches:
+        type: sorted
+        shape_files:
+          - ${stats_dir}/valid/speech_shape
+        batch_size: 32
+        batch_bins: 3200000
+
+##########################################################
+#                    TRAINER SETTING                     #
+##########################################################
+# Validation runs after every epoch and stops training when the validation
+# accuracy has not improved for `patience` epochs. The number of GPUs is
+# NUM_DEVICE (1 by default).
+trainer:
+  devices: ${num_device}
+  num_nodes: ${num_nodes}
+  accumulate_grad_batches: 1
+  gradient_clip_val: 5.0
+  max_epochs: 50
+  callbacks:
+    - _target_: lightning.pytorch.callbacks.EarlyStopping
+      monitor: valid/accuracy
+      mode: max
+      patience: 5
+
+# Set `RESUME_CKPT=<exp_dir>/last.ckpt` to continue an interrupted run.
+fit:
+  ckpt_path: ${oc.env:RESUME_CKPT,null}
