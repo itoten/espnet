@@ -11,7 +11,8 @@ Everything about the data is in `../cls/readme.md`. This recipe reads what
 that recipe prepares and prepares nothing itself:
 
 - training and validation: `manifest_filtered/{train,valid}.tsv` (0.5 to 30 s),
-- evaluation: `manifest/<corpus>.tsv` for each of the 26 evaluation corpora,
+- evaluation: `manifest_filtered/<corpus>.tsv` for each of the 26 evaluation
+  corpora (0.5 to 30 s as well),
 - the label list: `token_list`,
 
 all under `$MULTIDATASET_SER_01_OUTPUT` (default `../cls/data`). The dataset

@@ -48,20 +48,74 @@ parallel:
 ##########################################################
 #              LONG/SHORT FILTERING SETTING              #
 ##########################################################
-# Applied to training and validation only; the evaluation sets stay
-# unfiltered. 0.5 s keeps every clip above the 11 frames the encoders' time
-# masking needs (`mask_time_length: 10` at 20 ms per frame), about 0.22 s at
-# 16 kHz.
+# Applied to training, validation and every evaluation set alike (the
+# evaluation corpora of `dataset/config.yaml`; keep the two lists in step).
+# 0.5 s keeps every clip above the 11 frames the encoders' time masking needs
+# (`mask_time_length: 10` at 20 ms per frame), about 0.22 s at 16 kHz, and
+# above the 25 ms a WavLM input needs at all; some evaluation corpora hold
+# clips of a few milliseconds and others of several minutes.
 remove_long_short:
   min_wav_duration: 0.5
   max_wav_duration: 30
   splits:
     - train
     - valid
+    - aesdd
+    - brytserc
+    - cafe
+    - cbesd
+    - cremad
+    - dailytalk
+    - dusha
+    - emospeech_keywords
+    - emotiontalk
+    - emovdb
+    - jnv
+    - jvnv
+    - legov2
+    - mcaespps
+    - meld
+    - multidialog
+    - nemo
+    - nonverbaltts
+    - pavoque
+    - ravdess
+    - shemo
+    - tess
+    - thaiser
+    - turevdb
+    - utemo
+    - vivae
   save_path: ${data_dir}/manifest_filtered
   manifest_paths:
     train: ${data_dir}/manifest/train.tsv
     valid: ${data_dir}/manifest/valid.tsv
+    aesdd: ${data_dir}/manifest/aesdd.tsv
+    brytserc: ${data_dir}/manifest/brytserc.tsv
+    cafe: ${data_dir}/manifest/cafe.tsv
+    cbesd: ${data_dir}/manifest/cbesd.tsv
+    cremad: ${data_dir}/manifest/cremad.tsv
+    dailytalk: ${data_dir}/manifest/dailytalk.tsv
+    dusha: ${data_dir}/manifest/dusha.tsv
+    emospeech_keywords: ${data_dir}/manifest/emospeech_keywords.tsv
+    emotiontalk: ${data_dir}/manifest/emotiontalk.tsv
+    emovdb: ${data_dir}/manifest/emovdb.tsv
+    jnv: ${data_dir}/manifest/jnv.tsv
+    jvnv: ${data_dir}/manifest/jvnv.tsv
+    legov2: ${data_dir}/manifest/legov2.tsv
+    mcaespps: ${data_dir}/manifest/mcaespps.tsv
+    meld: ${data_dir}/manifest/meld.tsv
+    multidialog: ${data_dir}/manifest/multidialog.tsv
+    nemo: ${data_dir}/manifest/nemo.tsv
+    nonverbaltts: ${data_dir}/manifest/nonverbaltts.tsv
+    pavoque: ${data_dir}/manifest/pavoque.tsv
+    ravdess: ${data_dir}/manifest/ravdess.tsv
+    shemo: ${data_dir}/manifest/shemo.tsv
+    tess: ${data_dir}/manifest/tess.tsv
+    thaiser: ${data_dir}/manifest/thaiser.tsv
+    turevdb: ${data_dir}/manifest/turevdb.tsv
+    utemo: ${data_dir}/manifest/utemo.tsv
+    vivae: ${data_dir}/manifest/vivae.tsv
 
 ##########################################################
 #                  LABEL INVENTORY SETTING               #

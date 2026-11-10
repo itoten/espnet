@@ -33,6 +33,10 @@ out while its site is down.
   every corpus must have exactly one role.
 - **Every split of a corpus is used.** Each corpus recipe's `train`, `valid`
   and `test` manifests are read unfiltered and pooled.
+- **Duration.** `remove_long_short` keeps the utterances of 0.5 to 30 s, in
+  training, validation and every evaluation set alike
+  (`manifest_filtered/`). Some evaluation corpora hold clips of a few
+  milliseconds, which WavLM cannot take, and others of several minutes.
 - **Labels.** Only seven classes are used, in training and evaluation alike:
   neutral, happy, sad, angry, fear, surprise and disgust (`labels`). A row
   with any other label (calm, boredom, RASA's text styles, ...) is left out of

@@ -15,7 +15,7 @@ inference_dir: ${exp_dir}/inference
 #                    DATASET DEFINITION                  #
 ##########################################################
 # The evaluation sets of `../cls/conf/inference.yaml`: one per evaluation
-# corpus (`eval_corpora` in `../cls/dataset/config.yaml`), unfiltered.
+# corpus (`eval_corpora` in `../cls/dataset/config.yaml`), 0.5 to 30 s.
 dataset:
   test:
     - {name: aesdd,              data_src_args: {split: aesdd}}

@@ -242,8 +242,13 @@ builder:
     valid: manifest/valid.tsv
 
 dataset:
-  # Train and valid read the `remove_long_short` output; every evaluation set
-  # stays unfiltered so it is scored in full.
+  # Every split reads the `remove_long_short` output (0.5 to 30 s, see
+  # `conf/training.yaml`): train and valid from these paths, each evaluation
+  # corpus from `<eval_manifest_dir>/<corpus>.tsv`. The evaluation sets are
+  # filtered too because the models cannot take every length: a WavLM input
+  # needs at least 400 samples (25 ms), and some corpora (MELD, MultiDialog)
+  # hold clips far shorter than that and others of several minutes.
   split_manifest_paths:
     train: manifest_filtered/train.tsv
     valid: manifest_filtered/valid.tsv
+  eval_manifest_dir: manifest_filtered

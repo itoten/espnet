@@ -52,7 +52,8 @@ parallel:
 ##########################################################
 #                    DATASET DEFINITION                  #
 ##########################################################
-# `train` and `valid` read `../cls`'s `manifest_filtered` (0.5 to 30 s).
+# `train` and `valid` read `../cls`'s `manifest_filtered` (0.5 to 30 s), as do
+# the evaluation sets.
 dataset:
   train:
     - data_src_args:

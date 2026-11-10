@@ -18,7 +18,7 @@ inference_dir: ${exp_dir}/inference
 ##########################################################
 # One test set per evaluation corpus (`eval_corpora` in `dataset/config.yaml`),
 # each with the rows of every split of that corpus whose label is one of the
-# seven classes.
+# seven classes and whose duration is 0.5 to 30 s (`remove_long_short`).
 dataset:
   test:
     - {name: aesdd,              data_src_args: {split: aesdd}}

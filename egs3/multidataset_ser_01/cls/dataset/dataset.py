@@ -24,13 +24,20 @@ _CONFIG_RESOURCE = resources.files(__package__).joinpath("config.yaml")
 with resources.as_file(_CONFIG_RESOURCE) as _CONFIG_PATH:
     _CONFIG = load_config_with_defaults(str(_CONFIG_PATH), resolve=False)
 
-# `train`/`valid` read the `remove_long_short` output; each evaluation corpus
-# reads its unfiltered manifest, under its own name.
+# Every split reads the `remove_long_short` output: `train`/`valid` from
+# `split_manifest_paths`, each evaluation corpus, under its own name, from the
+# file of the same name as its unfiltered manifest in `eval_manifest_dir`.
 _SPLIT_MANIFEST_PATHS: dict[str, str] = {
     str(split): str(relpath)
     for split, relpath in _CONFIG["dataset"]["split_manifest_paths"].items()
 }
-_SPLIT_MANIFEST_PATHS.update({name: eval_manifest_path(name) for name in EVAL_CORPORA})
+_EVAL_MANIFEST_DIR = str(_CONFIG["dataset"]["eval_manifest_dir"])
+_SPLIT_MANIFEST_PATHS.update(
+    {
+        name: f"{_EVAL_MANIFEST_DIR}/{Path(eval_manifest_path(name)).name}"
+        for name in EVAL_CORPORA
+    }
+)
 
 
 @dataclass(frozen=True)
