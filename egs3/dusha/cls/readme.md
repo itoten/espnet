@@ -72,25 +72,30 @@ not checked (the paper's table lists 164,387 crowd utterances including an
 `other` class, the files 160,366). These files list 146,715 train and 13,651 test utterances (160,366,
 202.5 hours); 9 of them are left out as same-sound utterances with conflicting
 labels (see "Duplicates"). The rest of `crowd.tar` (utterances that are in neither file) is not
-extracted. Durations range from 0.86 to 29.88 seconds (median 4.34), so
+used. Durations range from 0.86 to 29.88 seconds (median 4.34), so
 `remove_long_short` drops nothing. Every recording is already 16 kHz mono 16-bit
-WAV, so `build()` references the files where they lie and converts nothing. A file
-in any other format would be converted into `$DUSHA_OUTPUT/wav/`.
+WAV, so `build()` copies each one from `crowd.tar` into `$DUSHA_OUTPUT/wav/` unchanged
+(from an extracted tree, it references the files where they lie). A file in any
+other format would be converted with ffmpeg.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
-- `DUSHA` — the directory holding the extracted `crowd_train/`, `crowd_test/` and `paper_setups/`, or where to download it to
-- `DUSHA_OUTPUT` — where the manifests are written
+- `DUSHA` — the directory holding `crowd.tar` and the label files (or the extracted `crowd_train/`, `crowd_test/` and `paper_setups/`), or where to download them to
+- `DUSHA_OUTPUT` — where the recordings and the manifests are written
 
 ## Download
 
 `prepare_source` downloads `paper_setups.tgz` (79 MB) and `crowd.tar` (29.97 GB,
 about 28.6 GiB) from the release's CDN, checks each by byte count (no checksum is
-published), and extracts only the listed WAVs and the two annotation files
-(`raw_crowd_train.tsv`, `raw_crowd_test.tsv`). The archive is deleted afterwards
-(`remove_archive`). Make sure the disk has about 30 GB free during the download and
-23 GB afterwards. An interrupted download (`crowd.tar.part`) is resumed.
+published), and writes only the two setup files and the two annotation files
+(`raw_crowd_train.tsv`, `raw_crowd_test.tsv`) next to the archive. `crowd.tar` is
+kept as downloaded and not extracted: it is not compressed, so `build()` reads each
+listed recording at its offset in the archive and writes it into `$DUSHA_OUTPUT/wav/`.
+This keeps the source to six files instead of about 160,000. The source then takes
+about 30 GB and the output about 23 GB. An interrupted download (`crowd.tar.part`) is
+resumed. A directory that holds the listed WAVs already extracted (and no `crowd.tar`)
+is read as before, with the recordings referenced in place.
 
 **Expired certificate (since 2026-11-04).** The CDN's TLS certificate (Let's Encrypt)
 expired on 2026-11-04 and has not been renewed (checked 2026-11-10), so the download
@@ -169,8 +174,10 @@ Macro-F1 rather than accuracy.
 
 ## Time needed
 
-Measured on this machine (CPU only, `CUDA_VISIBLE_DEVICES=""`, 16 threads). The
-download depends on the network.
+Measured on this machine (CPU only, `CUDA_VISIBLE_DEVICES=""`, 16 threads), with
+the earlier version of the recipe that extracted the WAVs from `crowd.tar`; the
+current one reads them from the archive in `create_dataset` instead, which has not
+been timed yet. The download depends on the network.
 
 | step | time |
 |---|---|
