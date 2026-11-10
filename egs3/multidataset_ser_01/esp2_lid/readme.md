@@ -2,7 +2,7 @@
 
 The `esp2_lid` system (ESPnet2's language identification task) on the data of
 `egs3/multidataset_ser_01/cls`, with the seven emotions in place of
-languages: 80-bin log-mel features, an ECAPA-TDNN encoder, channel- and
+languages: 80-bin log-mel features, SpecAugment, an ECAPA-TDNN encoder, channel- and
 context-dependent attentive statistics pooling, a 192-dim embedding, and an
 additive angular margin softmax with sub-centres. No pre-trained model is
 used.
@@ -35,9 +35,12 @@ In `conf/training.yaml`; provisional and not tuned:
   (0.5); up to 200 s of audio and 64 utterances per batch. An epoch covers
   the training audio about once. Validation uses every validation utterance
   once (`sorted`).
-- Adam at lr 1e-3 with TristageLR over 39,160 updates (40 epochs of the
-  443 h of training audio on 8 GPUs; recompute `max_steps` when the batch
-  size, the number of GPUs or `max_epochs` changes). The best checkpoint by
+- SpecAugment as in `../esp2_cls` (2 frequency and 2 time masks).
+- AdamW (weight decay 0.01) with a peak lr of 1e-3 and TristageLR (warm-up
+  over the first 10 % of the updates, hold for 40 %, decay over the last
+  50 %) over 39,160 updates (40 epochs of the 443 h of training audio on 8
+  GPUs; recompute `max_steps` when the batch size, the number of GPUs or
+  `max_epochs` changes). The best checkpoint by
   validation accuracy is kept (`valid.accuracy.ave_1best.pth`) and the
   weights of every epoch under `exp/<tag>/epochs/`; training stops after 10
   epochs without improvement (at most 40).

@@ -21,13 +21,14 @@ module is `../cls`'s, so the two recipes see the same rows.
 
 In `conf/training.yaml`: a Transformer encoder of 12 blocks, 256 dims and 4
 heads, after a convolutional front layer that subsamples the 100 frames per
-second by 4 (`conv2d`); Adam with a peak lr of 1e-3 and TristageLR (warm-up
-over the first 10 % of the updates, hold for 40 %, decay over the last 50 %;
-`max_steps` is set for 8 GPUs), batch size 32 per GPU, features normalised
-with the training set's mean and variance (`collect_stats`), the best
-checkpoint by validation accuracy kept (`valid.acc.ave_1best.pth`) and the
-weights of every epoch under `exp/<tag>/epochs/`, training stopped after 10
-epochs without improvement (at most 40). These values are not tuned yet.
+second by 4 (`conv2d`); AdamW (weight decay 0.01) with a peak lr of 1e-3 and
+TristageLR (warm-up over the first 10 % of the updates, hold for 40 %, decay
+over the last 50 %; `max_steps` is set for 8 GPUs), batch size 32 per GPU,
+features normalised with the training set's mean and variance
+(`collect_stats`), the best checkpoint by validation accuracy kept
+(`valid.acc.ave_1best.pth`) and the weights of every epoch under
+`exp/<tag>/epochs/`, training stopped after 10 epochs without improvement (at
+most 40). These values are not tuned yet.
 
 ## Running
 

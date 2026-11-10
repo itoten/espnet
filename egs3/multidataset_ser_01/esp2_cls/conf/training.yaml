@@ -114,10 +114,13 @@ model:
 #                  OPTIMIZATION SETTING                  #
 ##########################################################
 # Not tuned yet. Peak lr 1e-3 for about 256 utterances a step (8 GPUs).
+# AdamW (decoupled weight decay) as in `../cls`; beta2 0.98 as usual for a
+# Transformer trained from scratch.
 optimizer:
-  _target_: torch.optim.Adam
+  _target_: torch.optim.AdamW
   lr: 1.0e-3
-  weight_decay: 1.0e-6
+  weight_decay: 0.01
+  betas: [0.9, 0.98]
 
 # Warm up from 1 % of `lr` over the first 10 % of the updates, hold for 40 %,
 # then decay to 5 % of `lr` over the last 50 % (the same shape as `../cls`).

@@ -91,6 +91,18 @@ model:
     n_mels: 80
     normalize: mn
 
+  # The same SpecAugment as `../esp2_cls` (training only): 2 frequency masks
+  # of up to 27 bins and 2 time masks of up to 5 % of the utterance.
+  specaug: specaug
+  specaug_conf:
+    apply_time_warp: false
+    apply_freq_mask: true
+    freq_mask_width_range: [0, 27]
+    num_freq_mask: 2
+    apply_time_mask: true
+    time_mask_width_ratio_range: [0.0, 0.05]
+    num_time_mask: 2
+
   encoder: ecapa_tdnn
   encoder_conf:
     model_scale: 8
@@ -131,20 +143,22 @@ model:
 # number at the start of training); 39,160 is 40 epochs on 8 GPUs. Keep
 # `max_steps` in step with `batch_bins`, `accumulate_grad_batches`, the
 # number of GPUs and `max_epochs`.
+# AdamW (decoupled weight decay) as in `../cls` and `../esp2_cls`.
 optimizer:
-  _target_: torch.optim.Adam
+  _target_: torch.optim.AdamW
   lr: 1.0e-3
-  weight_decay: 2.0e-5
+  weight_decay: 0.01
   betas: [0.9, 0.98]
 
 scheduler:
   _target_: espnet2.schedulers.tristage_lr.TristageLR
   max_steps: 39160
+  # The same shape as `../cls` and `../esp2_cls`.
   warmup_ratio: 0.1
-  hold_ratio: 0.3
-  decay_ratio: 0.6
+  hold_ratio: 0.4
+  decay_ratio: 0.5
   init_lr_scale: 0.01
-  final_lr_scale: 0.01
+  final_lr_scale: 0.05
 scheduler_interval: step
 
 # The checkpoint with the best validation accuracy is kept
@@ -200,7 +214,7 @@ dataloader:
 #                    TRAINER SETTING                     #
 ##########################################################
 # Validation runs after every epoch. `patience` is wide enough that training
-# is not stopped before the lr decay (the last 24 epochs). The number of GPUs
+# is not stopped before the lr decay (the last 20 epochs). The number of GPUs
 # is NUM_DEVICE (1 by default; DDP when more).
 trainer:
   devices: ${num_device}
