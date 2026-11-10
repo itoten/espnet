@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 import json
 import logging
 import os
@@ -70,18 +71,29 @@ def _read_setup(root: Path, split: str) -> list[tuple[str, str]]:
     return rows
 
 
+def _complete_archive(candidate: Path) -> Path | None:
+    """Return ``candidate/crowd.tar`` if it has its full size, else None."""
+    archive = candidate / "crowd.tar"
+    if archive.is_file() and archive.stat().st_size == int(_CFG["crowd_bytes"]):
+        return archive
+    return None
+
+
 def resolve_source_root(
     recipe_root: Path, source_dir: str | Path | None = None
 ) -> Path:
-    """Return the first candidate holding the setup files and all their WAVs.
+    """Return the first candidate holding the label files and all the audio.
+
+    The audio is either the complete ``crowd.tar``, which is read in place, or
+    an extracted WAV for every utterance the setup files list.
 
     Args:
         recipe_root: Resolved recipe directory.
         source_dir: Explicit location, tried first when given.
 
     Returns:
-        Path: Corpus root with both setup files, both markup files and a WAV
-        for every utterance the setup files list.
+        Path: Corpus root with both setup files, both markup files and the
+        audio.
 
     Raises:
         FileNotFoundError: If no candidate is complete.
@@ -90,7 +102,7 @@ def resolve_source_root(
     for candidate in iter_source_candidates(recipe_root, source_dir):
         files = [*_SETUP_FILES.values(), *_MARKUP_FILES.values()]
         if candidate.is_dir() and all((candidate / f).is_file() for f in files):
-            if all(
+            if _complete_archive(candidate) is not None or all(
                 _wav_path(candidate, split, hash_id).is_file()
                 for split in _SETUP_FILES
                 for hash_id, _ in _read_setup(candidate, split)
@@ -100,8 +112,9 @@ def resolve_source_root(
     raise FileNotFoundError(
         "Complete Dusha data not found. Checked:\n  "
         + "\n  ".join(checked)
-        + f"\nSet ${_CFG['source_env_var']} to a directory holding the "
-        "extracted Dusha files, or let `prepare_source` download them."
+        + f"\nSet ${_CFG['source_env_var']} to a directory holding `crowd.tar` "
+        "and the label files (or the extracted WAVs), or let `prepare_source` "
+        "download them."
     )
 
 
@@ -225,24 +238,15 @@ def _extract_setups(archive: Path, destination: Path) -> None:
                 shutil.copyfileobj(member, dst)
 
 
-def _extract_crowd(archive: Path, destination: Path) -> None:
-    """Extract the markup files and the listed WAVs from ``crowd.tar``.
+def _extract_markup(archive: Path, destination: Path) -> None:
+    """Write the two markup files of ``crowd.tar`` into ``destination``.
 
-    Only the utterances named in the two setup files are written; the rest of
-    the archive (low-agreement utterances, ``.jsonl`` copies of the markup) is
-    skipped. Target paths are built here from the hash ids, not taken from the
-    archive.
+    The recordings stay in the archive and are read from it by `build()`.
+    Target paths are built here, not taken from the archive.
     """
-    wanted = {
-        f"{_CFG['wav_dirs'][split]}/{hash_id}.wav": _wav_path(
-            destination, split, hash_id
-        )
-        for split in _SETUP_FILES
-        for hash_id, _ in _read_setup(destination, split)
-    }
-    wanted.update({str(path): destination / path for path in _MARKUP_FILES.values()})
+    wanted = {str(path): destination / path for path in _MARKUP_FILES.values()}
     seen = 0
-    with tarfile.open(archive, "r|") as tar:
+    with tarfile.open(archive) as tar:
         for member in tar:
             target = wanted.get(member.name)
             if target is None or not member.isfile():
@@ -252,35 +256,52 @@ def _extract_crowd(archive: Path, destination: Path) -> None:
                 shutil.copyfileobj(src, dst)
             seen += 1
     if seen != len(wanted):
-        raise ValueError(f"{archive.name}: found {seen} of {len(wanted)} members")
+        raise ValueError(f"{archive.name}: found {seen} of {len(wanted)} markup files")
+
+
+def _index_archive(archive: Path) -> dict[str, tuple[int, int]]:
+    """Map each WAV member name of ``crowd.tar`` to its ``(offset, size)``.
+
+    The archive is not compressed, so a member's bytes can be read later at
+    its offset without extracting anything.
+    """
+    index = {}
+    with tarfile.open(archive) as tar:
+        for member in tar:
+            if member.isfile() and member.name.endswith(".wav"):
+                index[member.name] = (member.offset_data, member.size)
+    return index
 
 
 def _download_source(destination: Path) -> None:
-    """Fetch the setup files and the crowd archive, then unpack them.
+    """Fetch the setup files and the crowd archive.
+
+    ``crowd.tar`` is kept as it is; only its two markup files are written next
+    to it.
 
     Args:
-        destination: Directory to unpack into.
+        destination: Directory to download into.
 
     Raises:
         urllib.error.URLError: If a download fails.
         ValueError: If a download has the wrong size or the archive lacks files.
     """
     destination.mkdir(parents=True, exist_ok=True)
-    setups = _download_checked(
-        str(_CFG["setups_url"]),
-        destination / "paper_setups.tgz",
-        int(_CFG["setups_bytes"]),
-    )
-    _extract_setups(setups, destination)
-    setups.unlink()
-    crowd = _download_checked(
+    if not all((destination / f).is_file() for f in _SETUP_FILES.values()):
+        setups = _download_checked(
+            str(_CFG["setups_url"]),
+            destination / "paper_setups.tgz",
+            int(_CFG["setups_bytes"]),
+        )
+        _extract_setups(setups, destination)
+        setups.unlink()
+    crowd = _complete_archive(destination) or _download_checked(
         str(_CFG["crowd_url"]),
         destination / "crowd.tar",
         int(_CFG["crowd_bytes"]),
     )
-    _extract_crowd(crowd, destination)
-    if _CFG.get("remove_archive", False):
-        crowd.unlink(missing_ok=True)
+    if not all((destination / f).is_file() for f in _MARKUP_FILES.values()):
+        _extract_markup(crowd, destination)
 
 
 def _read_source_ids(path: Path) -> dict[str, str]:
@@ -327,17 +348,22 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
     """Collect the utterances of the two official setup files.
 
     Args:
-        source_root: Corpus root holding the setup files, markup and WAVs.
+        source_root: Corpus root holding the setup files, markup and audio
+            (``crowd.tar`` or the extracted WAVs).
 
     Returns:
-        list[dict[str, str]]: Keys ``utt_id``, ``source``, ``source_id``,
-        ``split`` (``train`` or ``test``, as published) and ``label``.
+        list[dict]: Keys ``utt_id``, ``source_id``, ``split`` (``train`` or
+        ``test``, as published), ``label`` and the audio: ``archive``,
+        ``offset`` and ``size`` when read from ``crowd.tar``, else ``source``
+        (a WAV path).
 
     Raises:
         ValueError: If an emotion is not in ``emotion_map`` or an utterance
             appears twice.
         FileNotFoundError: If a WAV is missing.
     """
+    archive = _complete_archive(source_root)
+    index = _index_archive(archive) if archive is not None else None
     entries = []
     seen: set[str] = set()
     for split in _SETUP_FILES:
@@ -348,18 +374,25 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
             if hash_id in seen:
                 raise ValueError(f"Duplicate utterance: {hash_id}")
             seen.add(hash_id)
-            wav = _wav_path(source_root, split, hash_id)
-            if not wav.is_file():
-                raise FileNotFoundError(wav)
-            entries.append(
-                {
-                    "utt_id": f"dusha-{hash_id}",
-                    "source": str(wav),
-                    "source_id": source_ids[hash_id],
-                    "split": split,
-                    "label": _EMOTION_MAP[emotion],
-                }
-            )
+            entry = {
+                "utt_id": f"dusha-{hash_id}",
+                "source_id": source_ids[hash_id],
+                "split": split,
+                "label": _EMOTION_MAP[emotion],
+            }
+            if index is not None:
+                name = f"{_CFG['wav_dirs'][split]}/{hash_id}.wav"
+                if name not in index:
+                    raise FileNotFoundError(f"{name} is missing from {archive}")
+                entry.update(
+                    archive=str(archive), offset=index[name][0], size=index[name][1]
+                )
+            else:
+                wav = _wav_path(source_root, split, hash_id)
+                if not wav.is_file():
+                    raise FileNotFoundError(wav)
+                entry["source"] = str(wav)
+            entries.append(entry)
     conflicting = {str(i) for i in _CFG["conflicting_ids"]}
     missing = conflicting - {e["utt_id"] for e in entries}
     if missing:
@@ -413,10 +446,10 @@ def assign_splits(entries: list[dict[str, str]]) -> dict[str, str]:
     return assignment
 
 
-def _is_target_format(path: Path) -> bool:
-    """Tell whether ``path`` is already 16 kHz mono 16-bit PCM WAV."""
+def _is_target_format(path) -> bool:
+    """Tell whether ``path`` (a path or a file object) is 16 kHz mono 16-bit WAV."""
     try:
-        with wave.open(str(path), "rb") as wav:
+        with wave.open(path if hasattr(path, "read") else str(path), "rb") as wav:
             return (
                 wav.getframerate() == int(_CFG["sampling_rate"])
                 and wav.getnchannels() == 1
@@ -429,10 +462,13 @@ def _is_target_format(path: Path) -> bool:
 class DushaBuilder(DatasetBuilder):
     """Prepare Dusha for the classification recipe.
 
-    `build()` keeps the published train/test partition of the crowd domain and
-    carves the validation set out of train (see :func:`assign_splits`). A
-    recording already in the target format is referenced where it lies; any
-    other is converted with ffmpeg into the output directory.
+    `prepare_source` downloads ``crowd.tar`` and keeps it as it is (only the
+    label files are written next to it). `build()` keeps the published
+    train/test partition of the crowd domain and carves the validation set out
+    of train (see :func:`assign_splits`). It reads each listed recording from
+    ``crowd.tar`` and writes it into the output directory (converted with
+    ffmpeg if it is not 16 kHz mono 16-bit). With an extracted tree instead of
+    the archive, a recording in the target format is referenced where it lies.
     """
 
     def is_source_prepared(
@@ -454,7 +490,7 @@ class DushaBuilder(DatasetBuilder):
         source_dir: str | Path | None = None,
         **_kwargs,
     ) -> None:
-        """Download and unpack the corpus unless it is already available.
+        """Download the corpus unless it is already available.
 
         Args:
             recipe_dir: Recipe directory, used to resolve relative locations.
@@ -510,16 +546,36 @@ class DushaBuilder(DatasetBuilder):
         entries = read_entries(source_root)
         assignment = assign_splits(entries)
 
-        def locate(entry: dict[str, str]) -> Path:
-            source = Path(entry["source"])
-            if _is_target_format(source):
-                return source
+        def locate(entry: dict) -> Path:
+            wav = wav_dir / f"{entry['utt_id']}.wav"
+            data = None
+            if "archive" in entry:
+                # Read from crowd.tar: the recording is written to the output
+                # directory, as it is if it already has the target format.
+                if wav.is_file():
+                    return wav
+                with open(entry["archive"], "rb") as fh:
+                    fh.seek(entry["offset"])
+                    data = fh.read(entry["size"])
+                if len(data) != entry["size"]:
+                    raise ValueError(f"Truncated archive: {entry['archive']}")
+                if _is_target_format(io.BytesIO(data)):
+                    wav_dir.mkdir(parents=True, exist_ok=True)
+                    part = wav.with_suffix(wav.suffix + ".part")
+                    part.write_bytes(data)
+                    part.replace(wav)
+                    return wav
+                source_arg = "pipe:0"
+            else:
+                source = Path(entry["source"])
+                if _is_target_format(source):
+                    return source
+                source_arg = str(source)
             ffmpeg = shutil.which("ffmpeg")
             if ffmpeg is None:
                 raise FileNotFoundError(
-                    f"ffmpeg is required to convert {source} to 16 kHz mono"
+                    f"ffmpeg is required to convert {entry['utt_id']} to 16 kHz mono"
                 )
-            wav = wav_dir / f"{entry['utt_id']}.wav"
             if not wav.is_file():
                 wav_dir.mkdir(parents=True, exist_ok=True)
                 part = wav.with_suffix(wav.suffix + ".part")
@@ -527,7 +583,7 @@ class DushaBuilder(DatasetBuilder):
                     [
                         ffmpeg,
                         "-i",
-                        str(source),
+                        source_arg,
                         "-ac",
                         "1",
                         "-ar",
@@ -540,6 +596,7 @@ class DushaBuilder(DatasetBuilder):
                         "error",
                         str(part),
                     ],
+                    input=data,
                     check=True,
                 )
                 part.replace(wav)
@@ -547,8 +604,13 @@ class DushaBuilder(DatasetBuilder):
 
         with ThreadPoolExecutor(max_workers=int(_CFG["num_workers"])) as pool:
             wavs = list(pool.map(locate, entries))
-        n_converted = sum(1 for wav in wavs if wav.is_relative_to(wav_dir))
-        logger.info("%d of %d recordings needed conversion", n_converted, len(wavs))
+        n_written = sum(1 for wav in wavs if wav.is_relative_to(wav_dir))
+        logger.info(
+            "%d of %d recordings written to %s (the others are referenced in place)",
+            n_written,
+            len(wavs),
+            wav_dir,
+        )
 
         rows: dict[str, list[tuple[str, str, str]]] = {
             split: [] for split in _CFG["manifest_paths"]

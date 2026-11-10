@@ -1,12 +1,16 @@
 builder:
   # Source layout ---------------------------------------------------------
-  # Files unpacked from the Dusha release (github.com/salute-developers/golos,
-  # `dusha/`). Only the crowd domain has audio; the podcast domain is not used.
-  #   crowd_train/wavs/<hash_id>.wav, crowd_test/wavs/<hash_id>.wav
+  # Files of the Dusha release (github.com/salute-developers/golos, `dusha/`).
+  # Only the crowd domain has audio; the podcast domain is not used.
+  #   crowd.tar, kept as downloaded; the recordings are read from it in place:
+  #     crowd_train/wavs/<hash_id>.wav, crowd_test/wavs/<hash_id>.wav
+  #     (a directory holding these WAVs extracted, without crowd.tar, works too)
   #   crowd_train/raw_crowd_train.tsv, crowd_test/raw_crowd_test.tsv
-  #     (one row per annotation; the last column, source_id, groups utterances)
+  #     (written from crowd.tar; one row per annotation; the last column,
+  #     source_id, groups utterances)
   #   paper_setups/crowd_large.jsonl, paper_setups/test/crowd_test.jsonl
-  #     (the release's aggregated labels: train and test utterance ids)
+  #     (from paper_setups.tgz; the release's aggregated labels: train and
+  #     test utterance ids)
   source_env_var: DUSHA
   dataset_path: download
   wav_dirs:
@@ -25,7 +29,6 @@ builder:
   crowd_bytes: 29968865280
   setups_url: https://cdn.chatwm.opensmodel.sberdevices.ru/dusha/paper_setups.tgz
   setups_bytes: 79022080
-  remove_archive: true
   # The CDN's certificate expired on 2026-11-04. `true` accepts an expired
   # certificate but still verifies its issuer chain and host name (only the
   # validity dates are not checked); `$DUSHA_ALLOW_EXPIRED_CERTIFICATE=1` does
@@ -80,9 +83,10 @@ builder:
     test: manifest/test.tsv
 
   # Build outputs ---------------------------------------------------------
-  # The release is 16 kHz mono 16-bit, which `build()` references in place; a
-  # recording in any other format is converted into `wav_subdir`.
-  # `num_workers` threads check the recordings at a time.
+  # The release is 16 kHz mono 16-bit. `build()` writes each recording read
+  # from crowd.tar into `wav_subdir` (about 23 GB, 160,357 files), converting
+  # one in any other format; from an extracted tree it references a recording
+  # in place. `num_workers` threads handle the recordings at a time.
   output_env_var: DUSHA_OUTPUT
   data_path: data
   wav_subdir: wav
