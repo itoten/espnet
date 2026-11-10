@@ -1,0 +1,59 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Settings shared by every encoder. Run with a per-encoder config,
+# `conf/inference_<encoder>.yaml`, which adds the frontend:
+#   python run.py --stages infer measure \
+#       --training_config conf/training_wavlm_large.yaml \
+#       --inference_config conf/inference_wavlm_large.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# `exp_tag` / `exp_dir` come from the training config but `data_dir` does
+# not, so it is set here with the same expression as in training.yaml.
+data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,./data}
+inference_dir: ${exp_dir}/inference
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# One test set per evaluation corpus (`eval_corpora` in `dataset/config.yaml`),
+# each with every row of every split of that corpus.
+dataset:
+  test:
+    - {name: aesdd,              data_src_args: {split: aesdd}}
+    - {name: brytserc,           data_src_args: {split: brytserc}}
+    - {name: cafe,               data_src_args: {split: cafe}}
+    - {name: emospeech_keywords, data_src_args: {split: emospeech_keywords}}
+    - {name: emotiontalk,        data_src_args: {split: emotiontalk}}
+    - {name: emovdb,             data_src_args: {split: emovdb}}
+    - {name: legov2,             data_src_args: {split: legov2}}
+    - {name: mcaespps,           data_src_args: {split: mcaespps}}
+    - {name: multidialog,        data_src_args: {split: multidialog}}
+    - {name: nemo,               data_src_args: {split: nemo}}
+    - {name: nonverbaltts,       data_src_args: {split: nonverbaltts}}
+    - {name: pavoque,            data_src_args: {split: pavoque}}
+    - {name: ravdess,            data_src_args: {split: ravdess}}
+    - {name: shemo,              data_src_args: {split: shemo}}
+    - {name: tess,               data_src_args: {split: tess}}
+    - {name: turevdb,            data_src_args: {split: turevdb}}
+    - {name: utemo,              data_src_args: {split: utemo}}
+    - {name: vivae,              data_src_args: {split: vivae}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# `network` must match `model` in training.yaml (without `class_weights`).
+model:
+  _target_: espnet3.systems.cls.src.inference_model.ClsInferenceModel
+  network:
+    _target_: espnet3.systems.cls.src.model.ClsModel
+    frontend: ${frontend}
+    num_classes: 7
+    head_size: 1024
+    head_layers: 1
+    dropout: 0.5
+  model_file: ${exp_dir}/valid.acc.ave_1best.pth
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output

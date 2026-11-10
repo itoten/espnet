@@ -5,19 +5,69 @@ ser_dataset_db keeps (`local/dataset_filtering/output/multidataset_ser_01/`,
 generated 2026-11-09 from DB commit 3ff353c). They are listed in
 `dataset/config.yaml`; one of them is on hold (see below), so 71 are prepared.
 
-Only `create_dataset` can run yet. It downloads and converts every corpus with
-that corpus's own `egs3/<corpus>/cls` recipe, the way `egs3/multicorpus_ood20/cls`
-does. Which corpora are used for training and which for evaluation, and how
-their labels are unified, are still being decided (ser_dataset_db
-`docs/discussions/0003-license-classes.md` and `0004-label-mapping.md`); the
-merged manifests, training and evaluation are added after that.
+The `cls` system (a pre-trained speech encoder, attentive statistics pooling
+and a fully connected head) is trained on the corpora whose license allows
+commercial use and scored on all the others, with WavLM Large as the encoder.
+Every corpus is downloaded and converted by its own `egs3/<corpus>/cls`
+recipe, the way `egs3/multicorpus_ood20/cls` does.
+
+## Training and evaluation data
+
+| Role | Corpora | Rows |
+|---|---|---:|
+| Training and validation | the 53 corpora of license class `open` (one more, enterface05, is on hold) | about 507,000 (7 labels) |
+| Evaluation, one test set per corpus | the 18 others: aesdd, brytserc, cafe, emospeech_keywords, emotiontalk, emovdb, legov2, mcaespps, multidialog, nemo, nonverbaltts, pavoque, ravdess, shemo, tess, turevdb, utemo, vivae | about 263,000 |
+
+- **Roles.** The license classes are those of ser_dataset_db `local/license/`
+  (open / nc / unclear; ser_dataset_db discussion 0003). `open` means the
+  license allows commercial use; share-alike licenses are counted as open for
+  now. The lists are `train_corpora` and `eval_corpora` in
+  `dataset/config.yaml`; every corpus must have exactly one role.
+- **Every split of a corpus is used.** Each corpus recipe's `train`, `valid`
+  and `test` manifests are read unfiltered and pooled.
+- **Labels.** The model learns seven classes: neutral, happy, sad, angry, fear,
+  surprise and disgust (`train_labels`). A training row with any other label
+  (calm, boredom, RASA's text styles, ...) is left out; the build log counts
+  them per corpus and label. Evaluation rows are never left out: a label the
+  model has no class for is still inferred, and `conf/metrics.yaml` scores it
+  as a class no prediction matches (`unknown_reference: score`). `label_map`
+  only fixes spellings (RASA's `anger` becomes `angry`).
+- **Validation.** Taken out of the training corpora as `validation.method`
+  says:
+
+  | `method` | Validation rows |
+  |---|---|
+  | `random_per_corpus` (default) | `ratio` (0.05) of each training corpus's rows, chosen uniformly at random with `seed` (0), regardless of speakers; at least one row per corpus. The choice depends only on the seed and the corpus's own rows |
+  | `corpus_valid_split` | each corpus recipe's own `valid` split (how each recipe splits differs: by speaker, at random, ...) |
+
+  Another method is a function in `dataset/builder.py` registered in
+  `VALIDATION_METHODS`, with its own block under `validation`.
+
+`create_dataset` writes `manifest/train.tsv`, `manifest/valid.tsv` and
+`manifest/<eval corpus>.tsv` under `$MULTIDATASET_SER_01_OUTPUT`, and the
+settings they were built with to `manifest/build_settings.json`. If the
+roles, labels or validation settings change, the next `create_dataset`
+rewrites the manifests.
+
+## Model and training
+
+The settings are those of `egs3/multicorpus_ood20/cls` for WavLM Large
+(`conf/frontend/wavlm_large.yaml`: `microsoft/wavlm-large`, waveform
+standardised with the training set's statistics), with seven classes and
+validation: AdamW at lr 1e-5, batch size 8 per GPU, after every epoch the
+validation accuracy is measured, the best checkpoint
+(`valid.acc.ave_1best.pth`) is kept and scored, and training stops after 3
+epochs without improvement (at most 10). These values are provisional and not
+tuned for this amount of data.
 
 ## What `create_dataset` does
 
 For each corpus in turn, it calls the corpus recipe's `DatasetBuilder`:
 `prepare_source` downloads the corpus and `build` writes the 16 kHz audio and
 manifests. A corpus already prepared is skipped, so the stage can be run again
-after a failure.
+after a failure. When every corpus is ready, this recipe's own merged
+manifests are written (see above); with `MULTIDATASET_SER_01_ONLY` set they
+are not.
 
 - **One corpus at a time**, so that no server receives many downloads at once.
 - **Retries.** A network error that can pass (connection reset, timeout, HTTP
@@ -41,14 +91,13 @@ variables named after it (see each `egs3/<corpus>/cls/readme.md`):
 - `<CORPUS>_OUTPUT` — where the converted audio and manifests are written
   (e.g. `RAVDESS_OUTPUT`); default `data/` under that corpus's recipe
 
-The variable name is the corpus name in upper case. Nothing is copied into this
-recipe: the merged manifests to come will point at the files under each
-`<CORPUS>_OUTPUT`.
+The variable name is the corpus name in upper case. No audio is copied into
+this recipe: the merged manifests point at the files the corpus recipes wrote.
 
 One more variable belongs to this recipe:
 
-- `MULTIDATASET_SER_01_OUTPUT` — where this recipe writes its stage log
-  (`create_dataset.log`) and, later, its merged manifests; default `data/`
+- `MULTIDATASET_SER_01_OUTPUT` — where this recipe writes its stage logs, its
+  merged manifests, the label list and the class weights; default `data/`
   under this recipe
 
 ## Requirements
@@ -145,13 +194,26 @@ with `openssl s_client -connect zenodo.org:443` (with and without
 
 ## Running
 
+Run each line as its own command. Under multi-GPU DDP, Lightning re-runs the
+whole command once per GPU, so data preparation or inference chained onto
+`train` would run several times at once.
+
 ```bash
-python run.py --stages create_dataset --training_config conf/training.yaml
+python run.py --stages create_dataset remove_long_short prepare_labels collect_stats \
+    --training_config conf/training_wavlm_large.yaml
+python run.py --stages train --training_config conf/training_wavlm_large.yaml
+python run.py --stages infer measure \
+    --training_config conf/training_wavlm_large.yaml \
+    --inference_config conf/inference_wavlm_large.yaml \
+    --metrics_config conf/metrics.yaml
 ```
 
-To prepare only some corpora, name them in `MULTIDATASET_SER_01_ONLY`:
+Results go to `exp/train_wavlm_large/inference/`.
+
+To prepare only some corpora, name them in `MULTIDATASET_SER_01_ONLY` (the
+merged manifests are then not written):
 
 ```bash
 MULTIDATASET_SER_01_ONLY="ravdess emodb" \
-    python run.py --stages create_dataset --training_config conf/training.yaml
+    python run.py --stages create_dataset --training_config conf/training_wavlm_large.yaml
 ```

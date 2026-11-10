@@ -99,3 +99,149 @@ builder:
   retry:
     attempts: 4
     wait_seconds: 60
+
+  # Roles -----------------------------------------------------------------
+  # Training uses the corpora of license class `open` (the license allows
+  # commercial use; share-alike licenses are included for now), evaluation
+  # every other corpus. The classes are those of ser_dataset_db
+  # `local/license/` (open / nc / unclear, discussion 0003), with MultiDialog
+  # at its DB license of 2026-11-10 (CC BY-NC 4.0, nc). Every corpus of
+  # `corpora` must have exactly one role; `create_dataset` stops otherwise.
+  # Each corpus is used in full: every split its own recipe writes (`train`,
+  # `valid`, `test`) is read from that recipe's unfiltered `manifest/`.
+  train_corpora:
+    - albemo
+    - banglaser
+    - banspemo
+    - bari_emospeech
+    - baser
+    - berst
+    - cbesd
+    - cremad
+    - csemotions
+    - dailytalk
+    - dusha
+    - eesc
+    - emns
+    - emodb
+    - emogator
+    - emotional_ema
+    - emouerj
+    - emozionalmente
+    # - enterface05             # on hold, see `corpora`
+    - eseravd
+    - hikia
+    - indianenglish
+    - indowavesentiment
+    - inesco
+    - javanese_ser_2black0
+    - jlcorpus
+    - jnv
+    - jvnv
+    - kannada
+    - kazemotts
+    - maserc
+    - mav
+    - meld
+    - mesd
+    - mess
+    - oreau
+    - polishemo
+    - quechua
+    - rasa
+    - recanvo
+    - resd
+    - saraiki_ser
+    - ses_ed
+    - ses_sd
+    - sitb_osed
+    - subesco
+    - talromur3
+    - telugu_emotion_kaggle
+    - thaiser
+    - thorsten
+    - ua_ser
+    - uftbesd
+    - usc_emo_mri
+    - ysed
+
+  # Each becomes its own test set, named after the corpus, with all of the
+  # corpus's splits merged.
+  eval_corpora:
+    - aesdd
+    - brytserc
+    - cafe
+    - emospeech_keywords
+    - emotiontalk
+    - emovdb
+    - legov2
+    - mcaespps
+    - multidialog
+    - nemo
+    - nonverbaltts
+    - pavoque
+    - ravdess
+    - shemo
+    - tess
+    - turevdb
+    - utemo
+    - vivae
+
+  # Labels ----------------------------------------------------------------
+  # `label_map` only fixes spellings (stage 1 of ser_dataset_db discussion
+  # 0004); it is applied to training and evaluation rows alike. The corpus
+  # recipes already write normalised names, except RASA's `anger`.
+  label_map:
+    anger: angry
+  # The classes the model learns. A training row with any other label is
+  # left out (the build log counts them per corpus and label). Evaluation
+  # rows are never left out for their label; a label the model has no class
+  # for is still inferred and is handled when the results are scored.
+  train_labels:
+    - neutral
+    - happy
+    - sad
+    - angry
+    - fear
+    - surprise
+    - disgust
+
+  # Validation ------------------------------------------------------------
+  # How the validation set is taken out of the training corpora. `method`
+  # names one of the entries below; each method reads only its own block.
+  #   random_per_corpus: from each training corpus, `ratio` of its rows
+  #     (after the label filter), chosen uniformly at random with no regard
+  #     to speakers or the corpus's own splits; the rest is training.
+  #     The choice depends only on `seed` and the corpus's own rows, so
+  #     adding or removing another corpus does not change it. At least one
+  #     row is taken from every corpus.
+  #   corpus_valid_split: each corpus recipe's own `valid` split is the
+  #     validation set, its `train` and `test` splits are training. How the
+  #     recipes split (by speaker, at random, ...) differs between corpora.
+  # Changing these settings makes the next `create_dataset` rewrite the
+  # manifests (`manifest/build_settings.json` records what they were built
+  # with).
+  validation:
+    method: random_per_corpus
+    random_per_corpus:
+      ratio: 0.05
+      seed: 0
+    corpus_valid_split: {}
+
+  # Outputs ---------------------------------------------------------------
+  # The merged manifests are written under `$MULTIDATASET_SER_01_OUTPUT`
+  # (default `data/` under this recipe): `manifest/train.tsv`,
+  # `manifest/valid.tsv` and `manifest/<eval corpus>.tsv`. The WAV files stay
+  # wherever each corpus's own `<CORPUS>_OUTPUT` points.
+  output_env_var: MULTIDATASET_SER_01_OUTPUT
+  data_path: data
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  # Train and valid read the `remove_long_short` output; every evaluation set
+  # stays unfiltered so it is scored in full.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
