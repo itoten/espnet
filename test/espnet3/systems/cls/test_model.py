@@ -5,7 +5,7 @@ import pytest
 import torch
 from torch import nn
 
-from espnet3.systems.cls.model import (
+from espnet3.systems.cls.src.model import (
     ClassificationHead,
     ClsModel,
     WaveformNormalize,

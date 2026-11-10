@@ -13,7 +13,7 @@ from transformers import (
 from espnet2.legacy.nets.pytorch_backend.transformer.subsampling import (
     Conv2dSubsampling8,
 )
-from espnet3.systems.cls.frontend import (
+from espnet3.systems.cls.src.frontend import (
     OwsmFrontend,
     W2vBertFrontend,
     Wav2Vec2Frontend,

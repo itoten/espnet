@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Sequence
 
 from espnet3.components.metrics.base_metric import BaseMetric
+from espnet3.contract import Field
 from espnet3.systems.cls.metrics.scoring_utils import (
     check_unknown_reference,
     drop_unknown_rows,
@@ -16,14 +16,11 @@ from espnet3.systems.cls.metrics.scoring_utils import (
 
 
 class UA(BaseMetric):
-    """Compute unweighted accuracy (UA) for a classification dataset.
+    """Compute unweighted accuracy (UA), the macro average of per-class recall.
 
-    UA is the macro average of the per-class recall, so every class counts
-    equally regardless of how many examples it has. The speech emotion
-    recognition literature also calls it unweighted average recall (UAR), and
-    scikit-learn calls it balanced accuracy. On imbalanced label distributions
-    it is the more informative companion to
-    :class:`espnet3.systems.cls.metrics.wa.WA`.
+    Every class counts equally regardless of how many examples it has; the
+    emotion recognition literature also calls it unweighted average recall
+    (UAR).
 
     Declare it in ``conf/metrics.yaml``:
 
@@ -31,73 +28,62 @@ class UA(BaseMetric):
 
         - metric:
             _target_: espnet3.systems.cls.metrics.ua.UA
-            ref_key: ref
-            hyp_key: hyp
             token_list: data/token_list  # optional; fixes the class set
+          inputs:
+            ref: ref
+            hyp: hyp
     """
+
+    inputs = (Field("ref", "text"), Field("hyp", "text"))
+    outputs = (Field("UA", "number"),)
 
     def __init__(
         self,
-        ref_key: str = "ref",
-        hyp_key: str = "hyp",
         token_list: Optional[str] = None,
         unknown_reference: str = "error",
     ) -> None:
         """Initialize the UA metric.
 
         Args:
-            ref_key: Key name for reference label entries.
-            hyp_key: Key name for hypothesis label entries.
             token_list: Optional path to the recipe's token list. It fixes the
                 class set so unseen labels are caught; without it the classes
-                are taken from the reference file.
+                are taken from the references.
             unknown_reference: What to do with a reference label that is not
                 in ``token_list``: ``"error"`` (default), ``"score"`` (count
                 it as a class no prediction can match) or ``"skip"`` (leave
                 those utterances out).
         """
-        self.ref_key = ref_key
-        self.hyp_key = hyp_key
         self.token_list = token_list
         self.unknown_reference = check_unknown_reference(unknown_reference)
+        super().__init__()
+        self.add_state("refs", [], "cat")
+        self.add_state("hyps", [], "cat")
 
-    def __call__(
-        self,
-        data: Dict[str, Path],
-        test_name: str,
-        inference_dir: Path,
-    ) -> Dict[str, float]:
-        """Compute macro-averaged recall.
+    def update(self, *, ref: Sequence[str], hyp: Sequence[str]) -> None:
+        """Keep the labels of one batch; the score needs every utterance.
 
         Args:
-            data (Dict[str, Path]): Mapping of metric input aliases to SCP
-                paths. Expects ``data[self.ref_key]`` and ``data[self.hyp_key]``
-                to be aligned by utterance ID.
-            test_name (str): Test set name. Unused by this metric.
-            inference_dir (Path): Inference output root. Unused by this metric.
+            ref: Reference labels, one per utterance.
+            hyp: Predicted labels, aligned with ``ref``.
+        """
+        self.refs.extend(ref)
+        self.hyps.extend(hyp)
+
+    def compute(self) -> Dict[str, float]:
+        """Return the macro-averaged score of every utterance added so far.
 
         Returns:
-            Dict[str, float]: ``{"UA": <percentage>}``
+            Dict[str, float]: ``{"UA": <percentage>}``, rounded to 2 places.
 
         Raises:
             RuntimeError: If ``scikit-learn`` is not installed.
             ValueError: If an utterance carries multiple labels, or if a
-                reference label is missing from ``token_list``.
-
-        Example:
-            >>> metric({"ref": Path("test/ref.scp"), "hyp": Path("test/hyp.scp")},
-            ...        "test", Path("infer"))
-            {'UA': 41.23}
+                reference label is missing from ``token_list`` while
+                ``unknown_reference`` is ``"error"``.
         """
         sklearn_metrics = require_sklearn()
-        refs = []
-        hyps = []
-        for _, row in self.iter_inputs(data, self.ref_key, self.hyp_key):
-            refs.append(row[self.ref_key])
-            hyps.append(row[self.hyp_key])
-
-        references = single_labels(refs)
-        hypotheses = single_labels(hyps)
+        references = single_labels(self.refs)
+        hypotheses = single_labels(self.hyps)
         if self.token_list is not None:
             references, (hypotheses,) = drop_unknown_rows(
                 references, [hypotheses], self.token_list, self.unknown_reference

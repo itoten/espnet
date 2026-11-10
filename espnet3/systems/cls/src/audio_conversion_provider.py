@@ -15,7 +15,7 @@ class AudioConversionProvider(EnvironmentProvider):
     """Provider for converting source clips to the recipe's audio format.
 
     Builds the job list and the ``ffmpeg`` invocation shared by
-    :class:`espnet3.systems.cls.audio_conversion_runner.AudioConversionRunner`
+    :class:`espnet3.systems.cls.src.audio_conversion_runner.AudioConversionRunner`
     workers. Nothing expensive is loaded here: a worker only needs the path to
     ``ffmpeg`` and the target format.
 

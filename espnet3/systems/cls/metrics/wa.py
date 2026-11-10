@@ -2,19 +2,17 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Dict
+from typing import Dict, Sequence
 
 from espnet3.components.metrics.base_metric import BaseMetric
+from espnet3.contract import Field
 
 
 class WA(BaseMetric):
-    """Compute weighted accuracy (WA) for a classification dataset.
+    """Compute weighted accuracy (WA), the share of correct predictions.
 
-    WA is the fraction of utterances whose predicted label equals the
-    reference label. It is the same quantity espnet2's ``cls_score.py``
-    reports as ``mean_acc``; the "mean" there averages one shared accuracy
-    value across classes and is a no-op.
+    Every utterance counts once, so frequent classes dominate; read it next to
+    :class:`espnet3.systems.cls.metrics.ua.UA`.
 
     Declare it in ``conf/metrics.yaml``:
 
@@ -22,52 +20,49 @@ class WA(BaseMetric):
 
         - metric:
             _target_: espnet3.systems.cls.metrics.wa.WA
-            ref_key: ref        # -> `<test_name>/ref.scp`
-            hyp_key: hyp        # -> `<test_name>/hyp.scp`
+          inputs:
+            ref: ref
+            hyp: hyp
     """
 
-    def __init__(self, ref_key: str = "ref", hyp_key: str = "hyp") -> None:
-        """Initialize the WA metric.
+    inputs = (Field("ref", "text"), Field("hyp", "text"))
+    outputs = (Field("WA", "number"),)
+
+    def __init__(self) -> None:
+        """Initialize the counters."""
+        super().__init__()
+        self.add_state("total", 0, "sum")
+        self.add_state("correct", 0, "sum")
+
+    def update(self, *, ref: Sequence[str], hyp: Sequence[str]) -> None:
+        """Count the correct predictions of one batch.
 
         Args:
-            ref_key: Key name for reference label entries.
-            hyp_key: Key name for hypothesis label entries.
+            ref: Reference labels, one per utterance.
+            hyp: Predicted labels, aligned with ``ref``.
+
+        Examples:
+            >>> metric = WA()
+            >>> metric.update(ref=["joy", "anger"], hyp=["joy", "joy"])
         """
-        self.ref_key = ref_key
-        self.hyp_key = hyp_key
+        self.total += len(ref)
+        self.correct += sum(int(r == h) for r, h in zip(ref, hyp))
 
-    def __call__(
-        self,
-        data: Dict[str, Path],
-        test_name: str,
-        inference_dir: Path,
-    ) -> Dict[str, float]:
-        """Compute weighted accuracy.
-
-        Args:
-            data (Dict[str, Path]): Mapping of metric input aliases to SCP
-                paths. Expects ``data[self.ref_key]`` and ``data[self.hyp_key]``
-                to be aligned by utterance ID.
-            test_name (str): Test set name. Unused by this metric.
-            inference_dir (Path): Inference output root. Unused by this metric.
+    def compute(self) -> Dict[str, float]:
+        """Return the accuracy over every utterance added so far.
 
         Returns:
-            Dict[str, float]: ``{"WA": <percentage>}``
+            Dict[str, float]: ``{"WA": <percentage>}``, rounded to 2 places.
 
         Raises:
-            ValueError: If the reference SCP is empty.
-            AssertionError: If the SCP files are not aligned by utterance ID.
+            ValueError: If no utterance was added.
 
-        Example:
-            >>> metric({"ref": Path("test/ref.scp"), "hyp": Path("test/hyp.scp")},
-            ...        "test", Path("infer"))
-            {'WA': 50.77}
+        Examples:
+            >>> metric = WA()
+            >>> metric.update(ref=["joy", "anger"], hyp=["joy", "joy"])
+            >>> metric.compute()
+            {'WA': 50.0}
         """
-        total = 0
-        correct = 0
-        for _, row in self.iter_inputs(data, self.ref_key, self.hyp_key):
-            total += 1
-            correct += int(row[self.ref_key] == row[self.hyp_key])
-        if total == 0:
-            raise ValueError(f"No utterances to score in {data[self.ref_key]}")
-        return {"WA": round(correct / total * 100, 2)}
+        if self.total == 0:
+            raise ValueError("No utterances to score")
+        return {"WA": round(self.correct / self.total * 100, 2)}

@@ -4,8 +4,8 @@ import pytest
 import torch
 from torch import nn
 
-from espnet3.systems.cls.inference_model import ClsInferenceModel
-from espnet3.systems.cls.model import ClsModel
+from espnet3.systems.cls.src.inference_model import ClsInferenceModel
+from espnet3.systems.cls.src.model import ClsModel
 
 # ===============================================================
 # Test Case Summary

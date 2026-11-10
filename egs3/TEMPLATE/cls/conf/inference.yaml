@@ -46,7 +46,7 @@ parallel:
 # `token_list`. `output_fn` maps one model output to the fields written as SCP
 # files.
 model:
-  _target_: espnet3.systems.cls.inference_model.ClsInferenceModel
+  _target_: espnet3.systems.cls.src.inference_model.ClsInferenceModel
 input_key: speech
 output_fn:
 

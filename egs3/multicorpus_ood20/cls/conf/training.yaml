@@ -78,7 +78,7 @@ dataset:
 #                      MODEL SETTING                     #
 ##########################################################
 model:
-  _target_: espnet3.systems.cls.model.ClsModel
+  _target_: espnet3.systems.cls.src.model.ClsModel
   # Set by `conf/training_<encoder>.yaml` from `conf/frontend/<encoder>.yaml`.
   frontend: ${frontend}
   # Every label in `dataset/config.yaml`'s `label_map` target set. Must match

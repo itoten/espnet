@@ -33,11 +33,11 @@ class ClsInferenceModel:
         .. code-block:: yaml
 
             model:
-              _target_: espnet3.systems.cls.inference_model.ClsInferenceModel
+              _target_: espnet3.systems.cls.src.inference_model.ClsInferenceModel
               network:
-                _target_: espnet3.systems.cls.model.ClsModel
+                _target_: espnet3.systems.cls.src.model.ClsModel
                 frontend:
-                  _target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+                  _target_: espnet3.systems.cls.src.frontend.Wav2Vec2Frontend
                   encoder:
                     _target_: transformers.AutoModel.from_pretrained
                     pretrained_model_name_or_path: microsoft/wavlm-large

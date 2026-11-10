@@ -9,13 +9,14 @@ from typing import Any
 
 import numpy as np
 import soundfile as sf
-from torch.utils.data import Dataset as TorchDataset
 
 from egs3.multicorpus_ood20.cls.dataset.builder import (
     MulticorpusBuilder,
     build_eval_sources,
     resolve_data_root,
 )
+from espnet3.components.data.base_dataset import BaseDataset
+from espnet3.contract import Field
 from espnet3.utils.config_utils import load_config_with_defaults
 
 _CONFIG_RESOURCE = resources.files(__package__).joinpath("config.yaml")
@@ -67,7 +68,7 @@ def _read_manifest(manifest_path: Path) -> list[ManifestEntry]:
     return entries
 
 
-class MulticorpusDataset(TorchDataset):
+class MulticorpusDataset(BaseDataset):
     """Merged ood20 dataset that returns ``{"speech", "label"}`` samples.
 
     Args:
@@ -80,6 +81,8 @@ class MulticorpusDataset(TorchDataset):
         ValueError: If ``split`` is unknown.
         FileNotFoundError: If the manifest for ``split`` does not exist.
     """
+
+    fields = (Field("speech", "audio"), Field("label", "text"))
 
     def __init__(self, split: str, recipe_dir: str | Path | None = None) -> None:
         self.split = str(split)

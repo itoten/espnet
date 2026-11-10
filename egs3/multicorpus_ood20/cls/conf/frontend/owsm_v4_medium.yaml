@@ -4,9 +4,9 @@
 # training and inference; drop it to encode each clip at its own length.
 # Nothing is frozen. The fixed CNN is specific to the wav2vec 2.0 family, whose
 # input is a raw waveform; this encoder has no waveform CNN.
-_target_: espnet3.systems.cls.frontend.OwsmFrontend
+_target_: espnet3.systems.cls.src.frontend.OwsmFrontend
 s2t_model:
-  _target_: espnet3.systems.cls.frontend.load_s2t_model
+  _target_: espnet3.systems.cls.src.frontend.load_s2t_model
   model_tag: espnet/owsm_v4_medium_1B
 layer_drop_rate: 0.1
 pad_seconds: 30

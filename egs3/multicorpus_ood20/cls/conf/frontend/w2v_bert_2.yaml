@@ -1,7 +1,7 @@
 # w2v-BERT 2.0: self-supervised, 143+ languages (4.5M h), on log-mel
 # filterbanks from its own feature extractor. Masking is off by default in
 # this checkpoint and is switched on with the shared values.
-_target_: espnet3.systems.cls.frontend.W2vBertFrontend
+_target_: espnet3.systems.cls.src.frontend.W2vBertFrontend
 encoder:
   _target_: transformers.AutoModel.from_pretrained
   pretrained_model_name_or_path: facebook/w2v-bert-2.0

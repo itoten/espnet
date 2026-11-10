@@ -41,23 +41,26 @@ dataset:
 metrics:
   - metric:
       _target_: espnet3.systems.cls.metrics.wa.WA
-      ref_key: ref        # reference label key -> `<test_name>/ref.scp`
-      hyp_key: hyp        # hypothesis label key -> `<test_name>/hyp.scp`
+    inputs:
+      ref: ref   # `<test_name>/ref.scp`, written by infer
+      hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
       _target_: espnet3.systems.cls.metrics.ua.UA
-      ref_key: ref
-      hyp_key: hyp
       token_list: ${data_dir}/token_list  # optional; fixes the class set
+    inputs:
+      ref: ref   # `<test_name>/ref.scp`, written by infer
+      hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
       _target_: espnet3.systems.cls.metrics.macro_f1.MacroF1
-      ref_key: ref
-      hyp_key: hyp
       token_list: ${data_dir}/token_list  # optional; fixes the class set
 
-  # mAP and AUC rank per-class probabilities, so `score` must be declared in
-  # `inputs`; the `ref_key`/`hyp_key` fallback cannot express a third input.
+  # mAP and AUC rank per-class probabilities, so they read `score` instead
+  # of `hyp`.
+    inputs:
+      ref: ref   # `<test_name>/ref.scp`, written by infer
+      hyp: hyp   # `<test_name>/hyp.scp`
   - metric:
       _target_: espnet3.systems.cls.metrics.mean_ap.MAP
       token_list: ${data_dir}/token_list  # required; sets the column order

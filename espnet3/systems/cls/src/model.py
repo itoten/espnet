@@ -11,7 +11,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from espnet3.systems.cls.pooling import AttentiveStatisticsPooling
+from espnet3.systems.cls.src.pooling import AttentiveStatisticsPooling
 
 __all__ = ["ClassificationHead", "WaveformNormalize", "ClsModel"]
 
@@ -141,12 +141,12 @@ class ClsModel(nn.Module):
     produces class logits. With a fine-tuned WavLM Large frontend this is the
     baseline of the Interspeech 2025 Speech Emotion Recognition in
     Naturalistic Conditions challenge. Only the frontend changes between
-    encoders; see ``espnet3.systems.cls.frontend``.
+    encoders; see ``espnet3.systems.cls.src.frontend``.
 
     Args:
         frontend: Module mapping ``(speech, speech_lengths)`` to
             ``(frames, frame_lengths)`` with an ``output_size()`` method, such
-            as :class:`~espnet3.systems.cls.frontend.Wav2Vec2Frontend`.
+            as :class:`~espnet3.systems.cls.src.frontend.Wav2Vec2Frontend`.
         num_classes: Number of classes.
         head_size: Width of each hidden block in the head.
         head_layers: Hidden block count in the head.
@@ -161,9 +161,9 @@ class ClsModel(nn.Module):
         .. code-block:: yaml
 
             model:
-              _target_: espnet3.systems.cls.model.ClsModel
+              _target_: espnet3.systems.cls.src.model.ClsModel
               frontend:
-                _target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+                _target_: espnet3.systems.cls.src.frontend.Wav2Vec2Frontend
                 encoder:
                   _target_: transformers.AutoModel.from_pretrained
                   pretrained_model_name_or_path: microsoft/wavlm-large

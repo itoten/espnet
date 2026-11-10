@@ -7,13 +7,15 @@ duration-based utterance filtering and label list creation.
 import logging
 from collections import Counter
 from pathlib import Path
+from typing import ClassVar
 
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
 
+from espnet3.contract.stages import StageSpec
 from espnet3.parallel.parallel import set_parallel
 from espnet3.systems.base.system import BaseSystem
-from espnet3.systems.cls.remove_long_short_provider import RemoveLongShortProvider
-from espnet3.systems.cls.remove_long_short_runner import RemoveLongShortRunner
+from espnet3.systems.cls.src.remove_long_short_provider import RemoveLongShortProvider
+from espnet3.systems.cls.src.remove_long_short_runner import RemoveLongShortRunner
 
 logger = logging.getLogger(__name__)
 
@@ -21,56 +23,35 @@ logger = logging.getLogger(__name__)
 class ClsSystem(BaseSystem):
     """Classification-specific system.
 
-    This system adds:
-      - Removing utterances outside a duration range
-      - Building the label list consumed as ``token_list``
+    This system adds ``remove_long_short``, which removes utterances outside
+    a duration range, and ``prepare_labels``, which builds the label list
+    consumed as ``token_list``. Both run between ``create_dataset`` and
+    ``collect_stats``; their logs go under each stage's ``save_path``.
 
-    Additional stage-log mappings:
-
-    .. list-table::
-       :header-rows: 1
-
-       * - Stage
-         - Path reference
-       * - ``remove_long_short``
-         - ``training_config.remove_long_short.save_path``
-       * - ``prepare_labels``
-         - ``training_config.prepare_labels.save_path``
+    Examples:
+        >>> [s.name for s in ClsSystem.stages[:4]]
+        ['create_dataset', 'remove_long_short', 'prepare_labels', 'collect_stats']
     """
 
-    def __init__(
-        self,
-        training_config: DictConfig | None = None,
-        inference_config: DictConfig | None = None,
-        metrics_config: DictConfig | None = None,
-        publication_config: DictConfig | None = None,
-        stage_log_mapping: dict | None = None,
-        demo_config: DictConfig | None = None,
-    ) -> None:
-        """Initialize the classification system with optional stage configs.
-
-        Args:
-            training_config: Training configuration.
-            inference_config: Inference configuration.
-            metrics_config: Measurement configuration.
-            publication_config: Publication configuration for model packing
-                and upload stages.
-            stage_log_mapping: Optional per-stage log directory overrides.
-            demo_config: Demo configuration for demo packing and upload
-                stages.
-        """
-        super().__init__(
-            training_config=training_config,
-            inference_config=inference_config,
-            metrics_config=metrics_config,
-            publication_config=publication_config,
-            stage_log_mapping={
-                "remove_long_short": "training_config.remove_long_short.save_path",
-                "prepare_labels": "training_config.prepare_labels.save_path",
-                **(stage_log_mapping or {}),
-            },
-            demo_config=demo_config,
-        )
+    stages: ClassVar[tuple[StageSpec, ...]] = (
+        StageSpec(name="create_dataset", config="training", log_dir="data_dir"),
+        StageSpec(
+            name="remove_long_short",
+            config="training",
+            log_dir="remove_long_short.save_path",
+        ),
+        StageSpec(
+            name="prepare_labels", config="training", log_dir="prepare_labels.save_path"
+        ),
+        StageSpec(name="collect_stats", config="training", log_dir="stats_dir"),
+        StageSpec(name="train", config="training", log_dir="exp_dir"),
+        StageSpec(name="infer", config="inference", log_dir="inference_dir"),
+        StageSpec(name="measure", config="metrics", log_dir="inference_dir"),
+        StageSpec(name="pack_model", config=("training", "publication")),
+        StageSpec(name="upload_model", config="publication"),
+        StageSpec(name="pack_demo", config="demo", log_dir="pack.out_dir"),
+        StageSpec(name="upload_demo", config="demo", log_dir="pack.out_dir"),
+    )
 
     def collect_stats(self, *args, **kwargs):
         """Collect statistics without the waveform normalizer.

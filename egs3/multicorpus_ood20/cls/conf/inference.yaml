@@ -34,9 +34,9 @@ dataset:
 # `network` must match `model` in training.yaml (without `class_weights`).
 # `last.ckpt` holds the model after the last epoch.
 model:
-  _target_: espnet3.systems.cls.inference_model.ClsInferenceModel
+  _target_: espnet3.systems.cls.src.inference_model.ClsInferenceModel
   network:
-    _target_: espnet3.systems.cls.model.ClsModel
+    _target_: espnet3.systems.cls.src.model.ClsModel
     frontend: ${frontend}
     num_classes: 20
     head_size: 1024

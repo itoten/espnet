@@ -17,22 +17,25 @@ data_dir: ${oc.env:MULTICORPUS_OOD20_OUTPUT,./data}
 metrics:
   - metric:
       _target_: espnet3.systems.cls.metrics.wa.WA
-      ref_key: ref
-      hyp_key: hyp
+    inputs:
+      ref: ref   # `<test_name>/ref.scp`, written by infer
+      hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
       _target_: espnet3.systems.cls.metrics.ua.UA
-      ref_key: ref
-      hyp_key: hyp
       token_list: ${data_dir}/token_list
       unknown_reference: score
+    inputs:
+      ref: ref   # `<test_name>/ref.scp`, written by infer
+      hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
       _target_: espnet3.systems.cls.metrics.macro_f1.MacroF1
-      ref_key: ref
-      hyp_key: hyp
       token_list: ${data_dir}/token_list
       unknown_reference: score
+    inputs:
+      ref: ref   # `<test_name>/ref.scp`, written by infer
+      hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
       _target_: espnet3.systems.cls.metrics.mean_ap.MAP

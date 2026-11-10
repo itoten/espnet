@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from torch.utils.data import Dataset as TorchDataset
+from espnet3.components.data.base_dataset import BaseDataset
+from espnet3.contract import Field
 
 
-class MultidatasetSer01Dataset(TorchDataset):
+class MultidatasetSer01Dataset(BaseDataset):
     """Placeholder until the merged manifests exist.
 
     Which corpus is used for training and which for evaluation, and how their
@@ -18,8 +19,14 @@ class MultidatasetSer01Dataset(TorchDataset):
         NotImplementedError: Always.
     """
 
+    fields = (Field("speech", "audio"), Field("label", "text"))
+
     def __init__(self, split: str, recipe_dir: str | Path | None = None) -> None:
         raise NotImplementedError(
             "multidataset_ser_01 has no training or evaluation manifests yet; "
             "only the create_dataset stage can run."
         )
+
+    def __getitem__(self, index):
+        """Not reached: ``__init__`` always raises."""
+        raise NotImplementedError

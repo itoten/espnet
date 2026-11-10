@@ -62,7 +62,7 @@ class Wav2Vec2Frontend(AbsFrontend):
         .. code-block:: yaml
 
             frontend:
-              _target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+              _target_: espnet3.systems.cls.src.frontend.Wav2Vec2Frontend
               encoder:
                 _target_: transformers.AutoModel.from_pretrained
                 pretrained_model_name_or_path: microsoft/wavlm-large
@@ -144,7 +144,7 @@ class W2vBertFrontend(AbsFrontend):
         .. code-block:: yaml
 
             frontend:
-              _target_: espnet3.systems.cls.frontend.W2vBertFrontend
+              _target_: espnet3.systems.cls.src.frontend.W2vBertFrontend
               encoder:
                 _target_: transformers.AutoModel.from_pretrained
                 pretrained_model_name_or_path: facebook/w2v-bert-2.0
@@ -216,7 +216,7 @@ class WhisperFrontend(AbsFrontend):
         .. code-block:: yaml
 
             frontend:
-              _target_: espnet3.systems.cls.frontend.WhisperFrontend
+              _target_: espnet3.systems.cls.src.frontend.WhisperFrontend
               whisper:
                 _target_: transformers.WhisperModel.from_pretrained
                 pretrained_model_name_or_path: openai/whisper-medium
@@ -328,9 +328,9 @@ class OwsmFrontend(AbsFrontend):
         .. code-block:: yaml
 
             frontend:
-              _target_: espnet3.systems.cls.frontend.OwsmFrontend
+              _target_: espnet3.systems.cls.src.frontend.OwsmFrontend
               s2t_model:
-                _target_: espnet3.systems.cls.frontend.load_s2t_model
+                _target_: espnet3.systems.cls.src.frontend.load_s2t_model
                 model_tag: espnet/owsm_v4_medium_1B
     """
 

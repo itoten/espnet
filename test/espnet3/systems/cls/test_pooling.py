@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from espnet3.systems.cls.pooling import AttentiveStatisticsPooling
+from espnet3.systems.cls.src.pooling import AttentiveStatisticsPooling
 
 # ===============================================================
 # Test Case Summary

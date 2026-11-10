@@ -65,14 +65,14 @@ dataset:
 #                      MODEL SETTING                     #
 ##########################################################
 model:
-  _target_: espnet3.systems.cls.model.ClsModel
+  _target_: espnet3.systems.cls.src.model.ClsModel
   frontend:
-    _target_: espnet3.systems.cls.frontend.Wav2Vec2Frontend
+    _target_: espnet3.systems.cls.src.frontend.Wav2Vec2Frontend
     encoder:
       _target_: transformers.AutoModel.from_pretrained
       pretrained_model_name_or_path: microsoft/wavlm-large
     normalize:
-      _target_: espnet3.systems.cls.model.WaveformNormalize
+      _target_: espnet3.systems.cls.src.model.WaveformNormalize
       stats_file: ${stats_dir}/train/feats_stats.npz
   # BASER's native label set (5 classes). `token_list` ends
   # with `<unk>`, not a class.
