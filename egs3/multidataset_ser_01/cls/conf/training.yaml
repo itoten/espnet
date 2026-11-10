@@ -93,7 +93,7 @@ model:
   _target_: espnet3.systems.cls.src.model.ClsModel
   # Set by `conf/training_<encoder>.yaml` from `conf/frontend/<encoder>.yaml`.
   frontend: ${frontend}
-  # `train_labels` in `dataset/config.yaml`. Must match the line count of
+  # `labels` in `dataset/config.yaml`. Must match the line count of
   # `token_list` minus its final `<unk>`.
   num_classes: 7
   head_size: 1024
@@ -140,8 +140,8 @@ dataloader:
 ##########################################################
 #                     TRAINER SETTING                    #
 ##########################################################
-# Provisional, not tuned: about 480,000 training utterances, so one epoch is
-# about 60,000 batches per GPU at batch size 8. Validation runs after every
+# Provisional, not tuned: about 265,000 training utterances, so one epoch is
+# about 33,000 batches per GPU at batch size 8. Validation runs after every
 # epoch and stops training when the validation accuracy has not improved for
 # `patience` epochs.
 trainer:

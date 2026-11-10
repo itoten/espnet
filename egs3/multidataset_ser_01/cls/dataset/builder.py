@@ -9,8 +9,8 @@ failed.
 
 ``build`` then merges the corpora's own manifests (every split, unfiltered)
 into this recipe's: one training and one validation manifest from the
-training corpora, keeping only the labels in ``train_labels``, and one
-manifest per evaluation corpus with every row. How the validation rows are
+training corpora, and one manifest per evaluation corpus, all keeping only
+the rows whose label is in ``labels``. How the validation rows are
 taken out of the training corpora is chosen by ``validation.method`` in
 ``dataset/config.yaml``; see :data:`VALIDATION_METHODS`.
 """
@@ -55,7 +55,7 @@ _CFG = _load_builder_config()
 CORPORA: list[str] = [str(name) for name in _CFG["corpora"]]
 TRAIN_CORPORA: list[str] = [str(name) for name in _CFG["train_corpora"]]
 EVAL_CORPORA: list[str] = [str(name) for name in _CFG["eval_corpora"]]
-TRAIN_LABELS: list[str] = [str(label) for label in _CFG["train_labels"]]
+LABELS: list[str] = [str(label) for label in _CFG["labels"]]
 _LABEL_MAP: dict[str, str] = {str(k): str(v) for k, v in _CFG["label_map"].items()}
 # The splits every corpus recipe writes to its own `manifest/`.
 CORPUS_SPLITS = ("train", "valid", "test")
@@ -413,7 +413,7 @@ def build_settings() -> dict:
     return {
         "train_corpora": TRAIN_CORPORA,
         "eval_corpora": EVAL_CORPORA,
-        "train_labels": TRAIN_LABELS,
+        "labels": LABELS,
         "label_map": _LABEL_MAP,
         "validation": {
             "method": method,
@@ -463,24 +463,23 @@ def build_manifests(data_root: Path) -> None:
     """
     check_roles()
     settings = build_settings()
-    keep = set(TRAIN_LABELS)
-
-    train_rows: dict[str, dict[str, list[Row]]] = {}
+    keep = set(LABELS)
     dropped: Counter = Counter()
-    for name in TRAIN_CORPORA:
-        corpus_rows = read_corpus_rows(name)
-        train_rows[name] = {}
-        for split, rows in corpus_rows.items():
-            kept = []
+
+    def filtered(name: str) -> dict[str, list[Row]]:
+        """Read one corpus, map its labels and keep only those in ``labels``."""
+        result: dict[str, list[Row]] = {}
+        for split, rows in read_corpus_rows(name).items():
+            result[split] = []
             for utt_id, wav_path, label in rows:
                 label = map_label(label)
                 if label in keep:
-                    kept.append((utt_id, wav_path, label))
+                    result[split].append((utt_id, wav_path, label))
                 else:
                     dropped[(name, label)] += 1
-            train_rows[name][split] = kept
-    for (name, label), n in sorted(dropped.items()):
-        logger.info("train: %s: left out %d '%s' (not in train_labels)", name, n, label)
+        return result
+
+    train_rows = {name: filtered(name) for name in TRAIN_CORPORA}
 
     method = settings["validation"]["method"]
     train, valid = VALIDATION_METHODS[method](
@@ -493,13 +492,16 @@ def build_manifests(data_root: Path) -> None:
         write_manifest(_lines(rows), data_root / str(_CFG["manifest_paths"][split]))
 
     for name in EVAL_CORPORA:
-        rows = [
-            (u, w, map_label(l))
-            for split_rows in read_corpus_rows(name).values()
-            for u, w, l in split_rows
-        ]
+        rows = [row for split_rows in filtered(name).values() for row in split_rows]
+        if not rows:
+            raise ValueError(f"{name}: no row has a label in `labels`")
         _check_unique_and_present(rows, name)
+        counts = Counter(label for _, _, label in rows)
+        logger.info("%s: %d rows, %s", name, len(rows), dict(sorted(counts.items())))
         write_manifest(_lines(rows), data_root / eval_manifest_path(name))
+
+    for (name, label), n in sorted(dropped.items()):
+        logger.info("%s: left out %d '%s' (not in labels)", name, n, label)
 
     settings_path = data_root / _SETTINGS_FILE
     settings_path.write_text(json.dumps(settings, indent=1, sort_keys=True) + "\n")

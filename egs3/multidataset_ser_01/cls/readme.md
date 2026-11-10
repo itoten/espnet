@@ -15,23 +15,30 @@ recipe, the way `egs3/multicorpus_ood20/cls` does.
 
 | Role | Corpora | Rows |
 |---|---|---:|
-| Training and validation | the 53 corpora of license class `open` (one more, enterface05, is on hold) | about 507,000 (7 labels) |
-| Evaluation, one test set per corpus | the 18 others: aesdd, brytserc, cafe, emospeech_keywords, emotiontalk, emovdb, legov2, mcaespps, multidialog, nemo, nonverbaltts, pavoque, ravdess, shemo, tess, turevdb, utemo, vivae | about 263,000 |
+| Training and validation | 45 corpora whose license allows commercial use with no share-alike condition | about 278,000 |
+| Evaluation, one test set per corpus | the 26 others: aesdd, brytserc, cafe, cbesd, cremad, dailytalk, dusha, emospeech_keywords, emotiontalk, emovdb, jnv, jvnv, legov2, mcaespps, meld, multidialog, nemo, nonverbaltts, pavoque, ravdess, shemo, tess, thaiser, turevdb, utemo, vivae | about 483,000 |
 
-- **Roles.** The license classes are those of ser_dataset_db `local/license/`
-  (open / nc / unclear; ser_dataset_db discussion 0003). `open` means the
-  license allows commercial use; share-alike licenses are counted as open for
-  now. The lists are `train_corpora` and `eval_corpora` in
-  `dataset/config.yaml`; every corpus must have exactly one role.
+Rows are those with one of the seven labels below. eNTERFACE'05 (MIT) is left
+out while its site is down.
+
+- **Roles.** Training uses the corpora whose license allows commercial use and
+  puts no condition on what is made from them (CC0, CC BY, MIT, Apache,
+  ODC-By), so that the trained model can be released under any license.
+  Every other corpus is used for evaluation only: non-commercial and
+  research-only licenses, and those with a share-alike condition, which are
+  treated the same way (CC BY-SA: cbesd, dailytalk, jnv, jvnv, thaiser;
+  Dusha's own license, a modified CC BY-SA; GPL-3.0: meld; ODbL: cremad).
+  The licenses are those recorded in ser_dataset_db (discussion 0003). The
+  lists are `train_corpora` and `eval_corpora` in `dataset/config.yaml`;
+  every corpus must have exactly one role.
 - **Every split of a corpus is used.** Each corpus recipe's `train`, `valid`
   and `test` manifests are read unfiltered and pooled.
-- **Labels.** The model learns seven classes: neutral, happy, sad, angry, fear,
-  surprise and disgust (`train_labels`). A training row with any other label
-  (calm, boredom, RASA's text styles, ...) is left out; the build log counts
-  them per corpus and label. Evaluation rows are never left out: a label the
-  model has no class for is still inferred, and `conf/metrics.yaml` scores it
-  as a class no prediction matches (`unknown_reference: score`). `label_map`
-  only fixes spellings (RASA's `anger` becomes `angry`).
+- **Labels.** Only seven classes are used, in training and evaluation alike:
+  neutral, happy, sad, angry, fear, surprise and disgust (`labels`). A row
+  with any other label (calm, boredom, RASA's text styles, ...) is left out of
+  every manifest; the build log counts them per corpus and label. An
+  evaluation corpus that lacks some of the seven is scored over the ones it
+  has. `label_map` only fixes spellings (RASA's `anger` becomes `angry`).
 - **Validation.** Taken out of the training corpora as `validation.method`
   says:
 
@@ -158,8 +165,8 @@ validity dates; the issuer chain and the host name are still verified. Details a
 
 ## Corpora on hold (as of 2026-11-10)
 
-This one is commented out in `dataset/config.yaml`. Put it back once its server
-works again.
+This one is commented out in `dataset/config.yaml`. Once its server works
+again, put it back in `corpora` and add it to `train_corpora` (MIT).
 
 | Corpus | Why |
 |---|---|

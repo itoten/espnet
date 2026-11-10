@@ -7,11 +7,11 @@
 # inference config. UA and MacroF1 average over the classes present in each
 # set's reference labels.
 #
-# Evaluation sets are not filtered by label, so a reference can name a class
-# the model does not have (e.g. contempt). With `score`, UA and MacroF1 count
-# it as a class no prediction matches (recall and F1 of 0). mAP and AUC have
-# no score column for it, so it is not averaged in, and its utterances count
-# as negatives for every class. Use `skip` to leave those utterances out.
+# The evaluation sets keep only the seven classes the model has
+# (`labels` in `dataset/config.yaml`), so no reference is unknown and
+# `unknown_reference` does not come into play. A set that lacks some of the
+# seven (e.g. legov2 has only angry and neutral) is averaged over the classes
+# it has.
 data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,./data}
 
 metrics:

@@ -101,14 +101,17 @@ builder:
     wait_seconds: 60
 
   # Roles -----------------------------------------------------------------
-  # Training uses the corpora of license class `open` (the license allows
-  # commercial use; share-alike licenses are included for now), evaluation
-  # every other corpus. The classes are those of ser_dataset_db
-  # `local/license/` (open / nc / unclear, discussion 0003), with MultiDialog
-  # at its DB license of 2026-11-10 (CC BY-NC 4.0, nc). Every corpus of
-  # `corpora` must have exactly one role; `create_dataset` stops otherwise.
-  # Each corpus is used in full: every split its own recipe writes (`train`,
-  # `valid`, `test`) is read from that recipe's unfiltered `manifest/`.
+  # Training uses the corpora whose license allows commercial use and puts no
+  # condition on what is made from them (CC0, CC BY, MIT, Apache, ODC-By);
+  # evaluation uses every other corpus. Licenses with a share-alike condition
+  # are treated like non-commercial ones (maintainer's decision, 2026-11-10):
+  # CC BY-SA (cbesd, dailytalk, jnv, jvnv, thaiser), Dusha's own license (a
+  # modified CC BY-SA), GPL-3.0 (meld) and ODbL (cremad). The licenses are
+  # those of ser_dataset_db (discussion 0003), with MultiDialog at its DB
+  # license of 2026-11-10 (CC BY-NC 4.0). Every corpus of `corpora` must
+  # have exactly one role; `create_dataset` stops otherwise. Each corpus is
+  # used in full: every split its own recipe writes (`train`, `valid`,
+  # `test`) is read from that recipe's unfiltered `manifest/`.
   train_corpora:
     - albemo
     - banglaser
@@ -116,11 +119,7 @@ builder:
     - bari_emospeech
     - baser
     - berst
-    - cbesd
-    - cremad
     - csemotions
-    - dailytalk
-    - dusha
     - eesc
     - emns
     - emodb
@@ -128,7 +127,6 @@ builder:
     - emotional_ema
     - emouerj
     - emozionalmente
-    # - enterface05             # on hold, see `corpora`
     - eseravd
     - hikia
     - indianenglish
@@ -136,13 +134,10 @@ builder:
     - inesco
     - javanese_ser_2black0
     - jlcorpus
-    - jnv
-    - jvnv
     - kannada
     - kazemotts
     - maserc
     - mav
-    - meld
     - mesd
     - mess
     - oreau
@@ -158,7 +153,6 @@ builder:
     - subesco
     - talromur3
     - telugu_emotion_kaggle
-    - thaiser
     - thorsten
     - ua_ser
     - uftbesd
@@ -166,16 +160,24 @@ builder:
     - ysed
 
   # Each becomes its own test set, named after the corpus, with all of the
-  # corpus's splits merged.
+  # corpus's splits merged. eNTERFACE'05 (MIT) is left out while its site is
+  # down (see `corpora`).
   eval_corpora:
     - aesdd
     - brytserc
     - cafe
+    - cbesd
+    - cremad
+    - dailytalk
+    - dusha
     - emospeech_keywords
     - emotiontalk
     - emovdb
+    - jnv
+    - jvnv
     - legov2
     - mcaespps
+    - meld
     - multidialog
     - nemo
     - nonverbaltts
@@ -183,6 +185,7 @@ builder:
     - ravdess
     - shemo
     - tess
+    - thaiser
     - turevdb
     - utemo
     - vivae
@@ -193,11 +196,10 @@ builder:
   # recipes already write normalised names, except RASA's `anger`.
   label_map:
     anger: angry
-  # The classes the model learns. A training row with any other label is
-  # left out (the build log counts them per corpus and label). Evaluation
-  # rows are never left out for their label; a label the model has no class
-  # for is still inferred and is handled when the results are scored.
-  train_labels:
+  # The classes the model learns, and the only labels used anywhere: a row
+  # with any other label is left out of training, validation and every
+  # evaluation set alike (the build log counts them per corpus and label).
+  labels:
     - neutral
     - happy
     - sad

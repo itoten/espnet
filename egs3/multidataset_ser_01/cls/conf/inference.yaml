@@ -17,17 +17,25 @@ inference_dir: ${exp_dir}/inference
 #                    DATASET DEFINITION                  #
 ##########################################################
 # One test set per evaluation corpus (`eval_corpora` in `dataset/config.yaml`),
-# each with every row of every split of that corpus.
+# each with the rows of every split of that corpus whose label is one of the
+# seven classes.
 dataset:
   test:
     - {name: aesdd,              data_src_args: {split: aesdd}}
     - {name: brytserc,           data_src_args: {split: brytserc}}
     - {name: cafe,               data_src_args: {split: cafe}}
+    - {name: cbesd,              data_src_args: {split: cbesd}}
+    - {name: cremad,             data_src_args: {split: cremad}}
+    - {name: dailytalk,          data_src_args: {split: dailytalk}}
+    - {name: dusha,              data_src_args: {split: dusha}}
     - {name: emospeech_keywords, data_src_args: {split: emospeech_keywords}}
     - {name: emotiontalk,        data_src_args: {split: emotiontalk}}
     - {name: emovdb,             data_src_args: {split: emovdb}}
+    - {name: jnv,                data_src_args: {split: jnv}}
+    - {name: jvnv,               data_src_args: {split: jvnv}}
     - {name: legov2,             data_src_args: {split: legov2}}
     - {name: mcaespps,           data_src_args: {split: mcaespps}}
+    - {name: meld,               data_src_args: {split: meld}}
     - {name: multidialog,        data_src_args: {split: multidialog}}
     - {name: nemo,               data_src_args: {split: nemo}}
     - {name: nonverbaltts,       data_src_args: {split: nonverbaltts}}
@@ -35,6 +43,7 @@ dataset:
     - {name: ravdess,            data_src_args: {split: ravdess}}
     - {name: shemo,              data_src_args: {split: shemo}}
     - {name: tess,               data_src_args: {split: tess}}
+    - {name: thaiser,            data_src_args: {split: thaiser}}
     - {name: turevdb,            data_src_args: {split: turevdb}}
     - {name: utemo,              data_src_args: {split: utemo}}
     - {name: vivae,              data_src_args: {split: vivae}}
