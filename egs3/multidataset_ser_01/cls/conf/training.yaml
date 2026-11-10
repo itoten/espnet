@@ -129,9 +129,13 @@ seed: 0
 ##########################################################
 #                   DATALOADER SETTING                   #
 ##########################################################
+# `batch_size` is per GPU: each GPU takes whole batches of its own, so a step
+# on 8 GPUs (one rt_HF node) sees 64 utterances. `num_workers` processes per
+# GPU read the audio files.
 dataloader:
   train:
     iter_factory:
+      num_workers: 8
       batches:
         type: folded
         batch_size: 8
@@ -140,6 +144,7 @@ dataloader:
         sort_batch: descending
   valid:
     iter_factory:
+      num_workers: 8
       batches:
         fold_lengths: [160000]
         sort_in_batch: descending
@@ -148,10 +153,11 @@ dataloader:
 ##########################################################
 #                     TRAINER SETTING                    #
 ##########################################################
-# Provisional, not tuned: about 265,000 training utterances, so one epoch is
-# about 33,000 batches per GPU at batch size 8. Validation runs after every
-# epoch and stops training when the validation accuracy has not improved for
-# `patience` epochs.
+# Provisional, not tuned: about 264,000 training utterances, so one epoch is
+# about 4,100 steps on 8 GPUs (64 utterances a step; about 33,000 on one
+# GPU). Validation runs after every epoch and stops training when the
+# validation accuracy has not improved for `patience` epochs. The number of
+# GPUs is NUM_DEVICE (1 by default; DDP when more).
 trainer:
   devices: ${num_device}
   num_nodes: ${num_nodes}
