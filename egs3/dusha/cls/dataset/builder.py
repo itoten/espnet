@@ -6,8 +6,11 @@ import json
 import logging
 import os
 import shutil
+import ssl
 import subprocess
 import tarfile
+import urllib.error
+import urllib.request
 import wave
 from concurrent.futures import ThreadPoolExecutor
 from importlib import resources
@@ -17,7 +20,6 @@ from typing import Iterator
 
 from espnet3.components.data.dataset_builder import DatasetBuilder
 from espnet3.utils.config_utils import load_config_with_defaults
-from espnet3.utils.download_utils import download_url
 
 logger = logging.getLogger(__name__)
 
@@ -118,17 +120,85 @@ def resolve_data_root(recipe_root: Path) -> Path:
     return recipe_root / _CFG["data_path"]
 
 
+_ALLOW_EXPIRED_ENV = "DUSHA_ALLOW_EXPIRED_CERTIFICATE"
+# OpenSSL's X509_V_FLAG_NO_CHECK_TIME (not exported by the ssl module).
+_X509_V_FLAG_NO_CHECK_TIME = 0x200000
+
+
+def _allow_expired_certificate() -> bool:
+    env_value = os.environ.get(_ALLOW_EXPIRED_ENV, "").strip().lower()
+    if env_value:
+        return env_value in ("1", "true", "yes")
+    return bool(_CFG.get("allow_expired_certificate", False))
+
+
+def _ssl_context() -> ssl.SSLContext:
+    """Return the TLS context for the CDN.
+
+    The certificate chain and the host name are always verified. With
+    ``allow_expired_certificate`` (or ``$DUSHA_ALLOW_EXPIRED_CERTIFICATE=1``)
+    only the validity dates are not checked, so a certificate that has expired
+    is accepted while a certificate for another host or from an untrusted
+    issuer is still refused.
+    """
+    context = ssl.create_default_context()
+    if _allow_expired_certificate():
+        context.verify_flags |= _X509_V_FLAG_NO_CHECK_TIME
+    return context
+
+
 def _download_checked(url: str, destination: Path, size: int) -> Path:
     """Download ``url`` to ``destination`` and check its size.
 
-    No checksum is published (the CDN's ETag is a multipart hash), so the
-    byte count is the only completeness check.
+    A partial download (``<name>.part``) is resumed. No checksum is published
+    (the CDN's ETag is a multipart hash), so the byte count is the only
+    completeness check.
 
     Raises:
+        ssl.SSLCertVerificationError: If the certificate is refused; an
+            expired one names the setting that accepts it.
         ValueError: If the downloaded file has the wrong size.
     """
     part = destination.with_suffix(destination.suffix + ".part")
-    download_url(url, part, logger=logger)
+    have = part.stat().st_size if part.is_file() else 0
+    if have > size:
+        part.unlink()
+        have = 0
+    if have < size:
+        if _allow_expired_certificate():
+            logger.warning(
+                "Not checking the validity dates of the server certificate "
+                "(chain and host name are still verified): %s",
+                url,
+            )
+        request = urllib.request.Request(
+            url, headers={"Range": f"bytes={have}-"} if have else {}
+        )
+        logger.info("Downloading %s from byte %d of %d", destination.name, have, size)
+        try:
+            response = urllib.request.urlopen(request, timeout=120, context=_ssl_context())
+        except urllib.error.URLError as err:
+            reason = getattr(err, "reason", None)
+            if isinstance(reason, ssl.SSLCertVerificationError) and (
+                "expired" in str(reason)
+            ):
+                raise ssl.SSLCertVerificationError(
+                    f"The certificate of {url} has expired. To accept it while "
+                    "still checking its issuer and host name, set "
+                    f"`allow_expired_certificate: true` in dataset/config.yaml "
+                    f"or ${_ALLOW_EXPIRED_ENV}=1 (see readme.md)."
+                ) from err
+            raise
+        with response, part.open("ab" if have else "wb") as fh:
+            if have and response.status != 206:
+                raise ValueError(f"{url}: the server ignored the resume request")
+            step, next_report = size // 20, have + size // 20
+            while chunk := response.read(1 << 20):
+                fh.write(chunk)
+                have += len(chunk)
+                if have >= next_report:
+                    logger.info("%s: %d%%", destination.name, have * 100 // size)
+                    next_report += step
     if part.stat().st_size != size:
         raise ValueError(
             f"{destination.name}: got {part.stat().st_size} bytes, expected {size}"

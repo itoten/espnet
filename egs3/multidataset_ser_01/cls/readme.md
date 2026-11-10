@@ -2,8 +2,8 @@
 
 Experiment `multidataset_ser_01` uses the 72 corpora that the dataset filter of
 ser_dataset_db keeps (`local/dataset_filtering/output/multidataset_ser_01/`,
-generated 2026-11-09 from DB commit 25de395). They are listed in
-`dataset/config.yaml`; two of them are on hold (see below), so 70 are prepared.
+generated 2026-11-09 from DB commit 3ff353c). They are listed in
+`dataset/config.yaml`; one of them is on hold (see below), so 71 are prepared.
 
 Only `create_dataset` can run yet. It downloads and converts every corpus with
 that corpus's own `egs3/<corpus>/cls` recipe, the way `egs3/multicorpus_ood20/cls`
@@ -28,7 +28,7 @@ after a failure.
   corpora that are ready and, for each one that is not, its error; it then
   fails, so the run shows that something is missing.
 
-Downloading all 70 takes hours and needs no GPU; run it where long network
+Downloading all 71 takes hours and needs no GPU; run it where long network
 transfers and CPU-heavy audio conversion are allowed.
 
 ## Where the data goes
@@ -98,15 +98,23 @@ account:
 If the agreement or the token is missing, the recipe fails with
 "Access to ... was refused" and names the page to agree on.
 
-## Corpora on hold (as of 2026-11-09)
+### dusha: expired certificate
 
-These two are commented out in `dataset/config.yaml`. Put them back once their
-servers work again.
+The certificate of dusha's CDN expired on 2026-11-04 and had not been renewed on
+2026-11-10. Until it is, set `DUSHA_ALLOW_EXPIRED_CERTIFICATE=1` when running
+`create_dataset`; otherwise dusha fails with "certificate has expired" (the other
+corpora are not affected). The setting skips only the check of the certificate's
+validity dates; the issuer chain and the host name are still verified. Details are in
+`egs3/dusha/cls/readme.md`.
+
+## Corpora on hold (as of 2026-11-10)
+
+This one is commented out in `dataset/config.yaml`. Put it back once its server
+works again.
 
 | Corpus | Why |
 |---|---|
-| enterface05 | https://enterface.net/enterface05/emotion.html answered no request on 2026-11-09, from three different networks; it was reachable on 2026-11-01. The server also sends a wrong certificate chain (its certificate is issued by Let's Encrypt YR2, but it sends a GEANT/HARICA chain), which is why `egs3/enterface05/cls` asks for a browser download; the chain does verify once the missing certificates are fetched from the addresses in the certificates (`http://yr2.i.lencr.org/`, then `http://yr.i.lencr.org/`, which is cross-signed by ISRG Root X1). When the site is back, download `project2_database.zip` in a browser and put it in `$ENTERFACE05` |
-| dusha | The CDN's certificate expired on 2026-11-04. Wait for the server to renew it; the recipe then works unchanged. The certificate check is not disabled: no checksum is published, so the 30 GB download could not be verified otherwise |
+| enterface05 | https://enterface.net/enterface05/emotion.html answered no request on 2026-11-09, from three different networks; it was reachable on 2026-11-01. On 2026-11-10 the server accepted the TLS connection but sent no page within 90 s. The server also sends a wrong certificate chain (its certificate is issued by Let's Encrypt YR2, but it sends a GEANT/HARICA chain), which is why `egs3/enterface05/cls` asks for a browser download; the chain does verify once the missing certificates are fetched from the addresses in the certificates (`http://yr2.i.lencr.org/`, then `http://yr.i.lencr.org/`, which is cross-signed by ISRG Root X1). When the site is back, download `project2_database.zip` in a browser and put it in `$ENTERFACE05` |
 
 ## Troubleshooting
 

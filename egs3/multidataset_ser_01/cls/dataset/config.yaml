@@ -3,12 +3,12 @@ builder:
   # The 72 corpora kept for experiment multidataset_ser_01 by the dataset
   # filter of ser_dataset_db (`local/dataset_filtering/output/
   # multidataset_ser_01/result.csv`, status `kept` or `kept_unverified`;
-  # generated 2026-11-09 from DB commit 25de395). Each is downloaded and
+  # generated 2026-11-09 from DB commit 3ff353c). Each is downloaded and
   # converted by its own `egs3/<corpus>/cls` recipe, into the places its
   # `<CORPUS>` and `<CORPUS>_OUTPUT` environment variables give, exactly as
   # running that recipe alone would. `kept_unverified` means the DB does not
-  # say whether the labels are automatic or the speech synthetic. Two of the 72
-  # are commented out while their servers are down (see the readme), so 70 are
+  # say whether the labels are automatic or the speech synthetic. One of the 72
+  # is commented out while its server is down (see the readme), so 71 are
   # prepared.
   corpora:
     - aesdd
@@ -24,9 +24,9 @@ builder:
     - cremad
     - csemotions
     - dailytalk
-    # On hold: the CDN's certificate expired on 2026-11-04. Put back once the
-    # server renews it (the check is not disabled: no checksum is published).
-    # - dusha
+    # The CDN's certificate expired on 2026-11-04: set
+    # DUSHA_ALLOW_EXPIRED_CERTIFICATE=1 until it is renewed (see the readme).
+    - dusha
     - eesc
     - emns
     - emodb

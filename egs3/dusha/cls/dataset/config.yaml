@@ -26,6 +26,11 @@ builder:
   setups_url: https://cdn.chatwm.opensmodel.sberdevices.ru/dusha/paper_setups.tgz
   setups_bytes: 79022080
   remove_archive: true
+  # The CDN's certificate expired on 2026-11-04. `true` accepts an expired
+  # certificate but still verifies its issuer chain and host name (only the
+  # validity dates are not checked); `$DUSHA_ALLOW_EXPIRED_CERTIFICATE=1` does
+  # the same without editing this file. See readme.md.
+  allow_expired_certificate: false
 
   # Labels ----------------------------------------------------------------
   # The release's emotion word to manifest label. `positive` is the release's

@@ -90,7 +90,18 @@ about 28.6 GiB) from the release's CDN, checks each by byte count (no checksum i
 published), and extracts only the listed WAVs and the two annotation files
 (`raw_crowd_train.tsv`, `raw_crowd_test.tsv`). The archive is deleted afterwards
 (`remove_archive`). Make sure the disk has about 30 GB free during the download and
-23 GB afterwards.
+23 GB afterwards. An interrupted download (`crowd.tar.part`) is resumed.
+
+**Expired certificate (since 2026-11-04).** The CDN's TLS certificate (Let's Encrypt)
+expired on 2026-11-04 and has not been renewed (checked 2026-11-10), so the download
+stops with "certificate has expired". To download anyway, set
+`allow_expired_certificate: true` in `dataset/config.yaml`, or
+`DUSHA_ALLOW_EXPIRED_CERTIFICATE=1` in the environment. This skips only the check of
+the certificate's validity dates: the issuer chain and the host name are still
+verified, so a certificate for another host or from an untrusted issuer is refused
+(checked against `self-signed.badssl.com` and `untrusted-root.badssl.com`). Only the
+download is affected; the log warns each time the setting is used. Once the CDN has a
+valid certificate again, leave the setting off.
 
 The release is under the "Public license with attribution and conditions
 reserved". It reworks CC BY-SA 4.0 and is not a Creative Commons license. It has no
