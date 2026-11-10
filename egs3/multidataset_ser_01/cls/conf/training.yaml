@@ -112,10 +112,33 @@ model:
 ##########################################################
 #                  OPTIMIZATION SETTING                  #
 ##########################################################
-# The same optimizer as egs3/multicorpus_ood20/cls. Not tuned for this data.
+# Not tuned yet. A first run at a constant lr of 1e-5 with 64 utterances a
+# step was still improving after 10 epochs; the batch below is about four
+# times larger, so the peak lr is raised to 3e-5 (between the square-root and
+# the linear scaling of 1e-5).
 optimizer:
   _target_: torch.optim.AdamW
-  lr: 1.0e-5
+  lr: 3.0e-5
+  weight_decay: 0.01
+
+# Warm up from 1 % of `lr` over the first 10 % of the updates, hold for 40 %,
+# then decay to 5 % of `lr` over the last 50 %. `max_steps` counts optimizer
+# updates over the whole run: 30 epochs of 1,082 updates, the number on 8 GPUs
+# with the `batch_bins` below (one GPU makes 8 times as many). Recompute it
+# when the batch, the GPU count or `max_epochs` changes.
+# Written under its own key and referenced from `scheduler`: a `scheduler`
+# block here would be merged into the TEMPLATE's ConstantLR block, whose
+# `factor` and `total_iters` TristageLR does not take.
+lr_schedule:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: 32460
+  warmup_ratio: 0.1
+  hold_ratio: 0.4
+  decay_ratio: 0.5
+  init_lr_scale: 0.01
+  final_lr_scale: 0.05
+scheduler: ${lr_schedule}
+scheduler_interval: step
 
 # The checkpoint with the best validation accuracy is kept
 # (`valid.acc.ave_1best.pth`) and is the one `conf/inference.yaml` scores.
@@ -129,17 +152,19 @@ seed: 0
 ##########################################################
 #                   DATALOADER SETTING                   #
 ##########################################################
-# `batch_size` is per GPU: each GPU takes whole batches of its own, so a step
-# on 8 GPUs (one rt_HF node) sees 64 utterances. `num_workers` processes per
-# GPU read the audio files.
+# Batches are per GPU: each GPU takes whole batches of its own. A training
+# batch holds up to `batch_bins` waveform samples, padding included (2,880,000
+# is 3 minutes at 16 kHz): about 30 utterances on average (5 to a few hundred,
+# from long to short), so a step on 8 GPUs sees about 240. Lower `batch_bins`
+# if a GPU runs out of memory. `num_workers` processes per GPU read the audio
+# files.
 dataloader:
   train:
     iter_factory:
       num_workers: 8
       batches:
-        type: folded
-        batch_size: 8
-        fold_lengths: [160000]
+        type: numel
+        batch_bins: 2880000
         sort_in_batch: descending
         sort_batch: descending
   valid:
@@ -153,23 +178,37 @@ dataloader:
 ##########################################################
 #                     TRAINER SETTING                    #
 ##########################################################
-# Provisional, not tuned: about 264,000 training utterances, so one epoch is
-# about 4,100 steps on 8 GPUs (64 utterances a step; about 33,000 on one
-# GPU). Validation runs after every epoch and stops training when the
-# validation accuracy has not improved for `patience` epochs. The number of
-# GPUs is NUM_DEVICE (1 by default; DDP when more).
+# Not tuned yet. About 264,000 training utterances: one epoch is 1,082 steps
+# on 8 GPUs. Validation runs after every epoch. `patience` is wide enough that
+# training is not stopped before the lr decay (the last 15 epochs), which
+# usually brings the last gain. The number of GPUs is NUM_DEVICE (1 by
+# default; DDP when more).
 trainer:
   devices: ${num_device}
   num_nodes: ${num_nodes}
   gradient_clip_val: 5.0
-  max_epochs: 10
-  # Effective batch is `batch_size` x devices x `accumulate_grad_batches`.
+  max_epochs: 30
+  # bf16 autocast: faster and lighter than fp32 on H100/H200-class GPUs.
+  precision: bf16-mixed
   accumulate_grad_batches: 1
   callbacks:
     - _target_: lightning.pytorch.callbacks.EarlyStopping
       monitor: valid/acc
       mode: max
-      patience: 3
+      patience: 10
+    # Also keep the weights of every epoch under `<exp_dir>/epochs/` (about
+    # 1.3 GB each), to score the evaluation sets epoch by epoch. `mode` only
+    # keeps this callback apart from ESPnet3's own `last.ckpt` checkpointer,
+    # which Lightning would otherwise reject as a duplicate; nothing is
+    # monitored. Remove the entry to save the space.
+    - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+      dirpath: ${exp_dir}/epochs
+      filename: epoch{epoch}
+      auto_insert_metric_name: false
+      save_top_k: -1
+      every_n_epochs: 1
+      save_weights_only: true
+      mode: max
 
 # Set `RESUME_CKPT=<exp_dir>/last.ckpt` to continue an interrupted run.
 fit:

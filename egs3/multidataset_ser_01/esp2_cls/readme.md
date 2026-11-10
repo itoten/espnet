@@ -21,11 +21,13 @@ module is `../cls`'s, so the two recipes see the same rows.
 
 In `conf/training.yaml`: a Transformer encoder of 12 blocks, 256 dims and 4
 heads, after a convolutional front layer that subsamples the 100 frames per
-second by 4 (`conv2d`); Adam at lr 1e-3 with WarmupLR (8,000 steps),
-batch size 32 per GPU, features normalised with the training set's mean and
-variance (`collect_stats`), the best checkpoint by validation accuracy kept
-(`valid.acc.ave_1best.pth`), training stopped after 5 epochs without
-improvement (at most 50). These values are provisional and not tuned.
+second by 4 (`conv2d`); Adam with a peak lr of 1e-3 and TristageLR (warm-up
+over the first 10 % of the updates, hold for 40 %, decay over the last 50 %;
+`max_steps` is set for 8 GPUs), batch size 32 per GPU, features normalised
+with the training set's mean and variance (`collect_stats`), the best
+checkpoint by validation accuracy kept (`valid.acc.ave_1best.pth`) and the
+weights of every epoch under `exp/<tag>/epochs/`, training stopped after 10
+epochs without improvement (at most 40). These values are not tuned yet.
 
 ## Running
 
@@ -54,3 +56,5 @@ Environment variables:
 - `MULTIDATASET_SER_01_WORKERS`: worker processes for `collect_stats`.
 - `RESUME_CKPT`: a checkpoint (e.g. `exp/train_transformer/last.ckpt`) to
   resume training from.
+- `MULTIDATASET_SER_01_EXP_TAG`: the directory under `exp/` to write to
+  (`train_transformer` by default); give the same value to `infer measure`.

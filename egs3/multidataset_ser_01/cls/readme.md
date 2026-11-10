@@ -61,11 +61,15 @@ rewrites the manifests.
 The settings are those of `egs3/multicorpus_ood20/cls` for WavLM Large
 (`conf/frontend/wavlm_large.yaml`: `microsoft/wavlm-large`, waveform
 standardised with the training set's statistics), with seven classes and
-validation: AdamW at lr 1e-5, batch size 8 per GPU, after every epoch the
-validation accuracy is measured, the best checkpoint
-(`valid.acc.ave_1best.pth`) is kept and scored, and training stops after 3
-epochs without improvement (at most 10). These values are provisional and not
-tuned for this amount of data.
+validation. Training (`conf/training.yaml`): AdamW with a peak lr of 3e-5 and
+TristageLR (warm-up over the first 10 % of the updates, hold for 40 %, decay
+over the last 50 %), batches of up to 3 minutes of audio per GPU (`numel`,
+about 30 utterances), bf16 mixed precision, at most 30 epochs. After every
+epoch the validation accuracy is measured; the best checkpoint
+(`valid.acc.ave_1best.pth`) is kept and scored, the weights of every epoch are
+kept under `exp/<tag>/epochs/`, and training stops after 10 epochs without
+improvement. The scheduler's `max_steps` is set for 8 GPUs; recompute it for
+another GPU count or batch size. These values are not tuned yet.
 
 ## What `create_dataset` does
 
@@ -215,7 +219,9 @@ python run.py --stages infer measure \
     --metrics_config conf/metrics.yaml
 ```
 
-Results go to `exp/train_wavlm_large/inference/`.
+Results go to `exp/train_wavlm_large/inference/`. Set
+`MULTIDATASET_SER_01_EXP_TAG` to use another directory under `exp/` (for
+`train` and for `infer measure` alike).
 
 To prepare only some corpora, name them in `MULTIDATASET_SER_01_ONLY` (the
 merged manifests are then not written):

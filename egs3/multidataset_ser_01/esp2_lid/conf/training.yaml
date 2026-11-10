@@ -33,7 +33,9 @@ num_nodes: ${oc.decode:${oc.env:NUM_NODES,1}}
 # Where `../cls` writes the merged manifests. Must be the same expression as
 # in `../cls/conf/training.yaml`, resolved from that recipe's directory.
 data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,../cls/data}
-exp_tag: train_ecapa_tdnn
+# Set MULTIDATASET_SER_01_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_01_EXP_TAG,train_ecapa_tdnn}
 
 # `create_dataset` is `../cls`'s; if run from here it works on that recipe.
 create_dataset:
@@ -121,12 +123,14 @@ model:
 ##########################################################
 #            OPTIMIZER & SCHEDULER SETTING               #
 ##########################################################
-# Provisional, not tuned. The system needs a scheduler. TristageLR (the
-# TEMPLATE's) warms up, holds and decays over `max_steps` optimizer updates.
-# The training audio is about 443 h, so with `batch_bins` below an epoch is
-# about 8,000 batches (the sampler logs the exact number at the start of
-# training); 240,000 is 30 epochs. Keep `max_steps` in step with
-# `batch_bins`, `accumulate_grad_batches` and the number of GPUs.
+# Not tuned yet; lr and batch are close to ESPnet2's VoxCeleb ECAPA-TDNN
+# (Adam 1e-3, about 1,500 s of audio a step). The system needs a scheduler.
+# TristageLR (the TEMPLATE's) warms up, holds and decays over `max_steps`
+# optimizer updates. The training audio is about 443 h, so with `batch_bins`
+# below an epoch is 7,834 batches, 979 per GPU on 8 GPUs (the sampler logs the
+# number at the start of training); 39,160 is 40 epochs on 8 GPUs. Keep
+# `max_steps` in step with `batch_bins`, `accumulate_grad_batches`, the
+# number of GPUs and `max_epochs`.
 optimizer:
   _target_: torch.optim.Adam
   lr: 1.0e-3
@@ -135,7 +139,7 @@ optimizer:
 
 scheduler:
   _target_: espnet2.schedulers.tristage_lr.TristageLR
-  max_steps: 240000
+  max_steps: 39160
   warmup_ratio: 0.1
   hold_ratio: 0.3
   decay_ratio: 0.6
@@ -195,20 +199,35 @@ dataloader:
 ##########################################################
 #                    TRAINER SETTING                     #
 ##########################################################
-# Validation runs after every epoch and stops training when the validation
-# accuracy has not improved for `patience` epochs. The number of GPUs is
-# NUM_DEVICE (1 by default).
+# Validation runs after every epoch. `patience` is wide enough that training
+# is not stopped before the lr decay (the last 24 epochs). The number of GPUs
+# is NUM_DEVICE (1 by default; DDP when more).
 trainer:
   devices: ${num_device}
   num_nodes: ${num_nodes}
   accumulate_grad_batches: 1
   gradient_clip_val: 5.0
-  max_epochs: 50
+  max_epochs: 40
+  # ESPnet2's LID recipes train with `unused_parameters: true`; keep DDP from
+  # failing if some parameter gets no gradient in a step.
+  strategy: ddp_find_unused_parameters_true
   callbacks:
     - _target_: lightning.pytorch.callbacks.EarlyStopping
       monitor: valid/accuracy
       mode: max
-      patience: 5
+      patience: 10
+    # Also keep the weights of every epoch under `<exp_dir>/epochs/`, to score
+    # the evaluation sets epoch by epoch. `mode` only keeps this callback apart
+    # from ESPnet3's own `last.ckpt` checkpointer, which Lightning would
+    # otherwise reject as a duplicate; nothing is monitored.
+    - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+      dirpath: ${exp_dir}/epochs
+      filename: epoch{epoch}
+      auto_insert_metric_name: false
+      save_top_k: -1
+      every_n_epochs: 1
+      save_weights_only: true
+      mode: max
 
 # Set `RESUME_CKPT=<exp_dir>/last.ckpt` to continue an interrupted run.
 fit:

@@ -35,11 +35,12 @@ In `conf/training.yaml`; provisional and not tuned:
   (0.5); up to 200 s of audio and 64 utterances per batch. An epoch covers
   the training audio about once. Validation uses every validation utterance
   once (`sorted`).
-- Adam at lr 1e-3 with TristageLR over 240,000 updates (about 30 epochs of
-  the 443 h of training audio; recompute `max_steps` when the batch size or
-  the number of GPUs changes). The best checkpoint by
-  validation accuracy is kept (`valid.accuracy.ave_1best.pth`); training
-  stops after 5 epochs without improvement (at most 50).
+- Adam at lr 1e-3 with TristageLR over 39,160 updates (40 epochs of the
+  443 h of training audio on 8 GPUs; recompute `max_steps` when the batch
+  size, the number of GPUs or `max_epochs` changes). The best checkpoint by
+  validation accuracy is kept (`valid.accuracy.ave_1best.pth`) and the
+  weights of every epoch under `exp/<tag>/epochs/`; training stops after 10
+  epochs without improvement (at most 40).
 
 Inference writes the predicted class only, with no per-class scores, so the
 metrics are accuracy (WA) and a classification report whose macro-averaged
@@ -64,7 +65,9 @@ python run.py --stages infer measure \
 
 Environment variables:
 
-- `NUM_DEVICE`: GPUs to train on (1 by default; only one GPU has been tried).
+- `NUM_DEVICE`: GPUs to train on (1 by default; the scheduler is set for 8).
 - `MULTIDATASET_SER_01_WORKERS`: worker processes for `collect_stats`.
 - `RESUME_CKPT`: a checkpoint (e.g. `exp/train_ecapa_tdnn/last.ckpt`) to
   resume training from.
+- `MULTIDATASET_SER_01_EXP_TAG`: the directory under `exp/` to write to
+  (`train_ecapa_tdnn` by default); give the same value to `infer measure`.

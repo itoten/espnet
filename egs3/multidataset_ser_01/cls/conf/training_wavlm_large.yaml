@@ -5,4 +5,6 @@ defaults:
   - frontend: wavlm_large
   - _self_
 
-exp_tag: train_wavlm_large
+# Set MULTIDATASET_SER_01_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_01_EXP_TAG,train_wavlm_large}

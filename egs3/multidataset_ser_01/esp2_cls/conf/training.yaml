@@ -31,7 +31,9 @@ task: espnet3.systems.esp2_cls.task.CLSTask
 # same expression as in `../cls/conf/training.yaml`, resolved from that
 # recipe's directory.
 data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,../cls/data}
-exp_tag: train_transformer
+# Set MULTIDATASET_SER_01_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_01_EXP_TAG,train_transformer}
 
 # `create_dataset` is `../cls`'s; if run from here it works on that recipe.
 create_dataset:
@@ -111,15 +113,31 @@ model:
 ##########################################################
 #                  OPTIMIZATION SETTING                  #
 ##########################################################
-# Provisional, not tuned.
+# Not tuned yet. Peak lr 1e-3 for about 256 utterances a step (8 GPUs).
 optimizer:
   _target_: torch.optim.Adam
   lr: 1.0e-3
   weight_decay: 1.0e-6
 
-scheduler:
-  _target_: espnet2.schedulers.warmup_lr.WarmupLR
-  warmup_steps: 8000
+# Warm up from 1 % of `lr` over the first 10 % of the updates, hold for 40 %,
+# then decay to 5 % of `lr` over the last 50 % (the same shape as `../cls`).
+# `max_steps` counts optimizer updates over the whole run: 40 epochs of 1,153
+# updates, the number on 8 GPUs with the batches below (one GPU makes 8 times
+# as many). Recompute it when the batch, the GPU count or `max_epochs`
+# changes.
+# Written under its own key and referenced from `scheduler`: a `scheduler`
+# block here would be merged into the TEMPLATE's WarmupLR block, whose
+# `warmup_steps` TristageLR does not take.
+lr_schedule:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: 46120
+  warmup_ratio: 0.1
+  hold_ratio: 0.4
+  decay_ratio: 0.5
+  init_lr_scale: 0.01
+  final_lr_scale: 0.05
+scheduler: ${lr_schedule}
+scheduler_interval: step
 
 # The checkpoint with the best validation accuracy is kept
 # (`valid.acc.ave_1best.pth`) and is the one `conf/inference.yaml` scores.
@@ -158,21 +176,34 @@ dataloader:
 ##########################################################
 #                     TRAINER SETTING                    #
 ##########################################################
-# Provisional, not tuned: about 264,000 training utterances, so one epoch is
-# about 8,300 steps on one GPU. Validation runs after every epoch and stops
-# training when the validation accuracy has not improved for `patience`
-# epochs. The number of GPUs is NUM_DEVICE (1 by default; DDP when more).
+# Not tuned yet. About 264,000 training utterances: one epoch is 1,153 steps
+# on 8 GPUs (about 9,200 on one). Validation runs after every epoch.
+# `patience` is wide enough that training is not stopped before the lr decay
+# (the last 20 epochs). The number of GPUs is NUM_DEVICE (1 by default; DDP
+# when more).
 trainer:
   devices: ${num_device}
   num_nodes: ${num_nodes}
   gradient_clip_val: 5.0
-  max_epochs: 50
+  max_epochs: 40
   accumulate_grad_batches: 1
   callbacks:
     - _target_: lightning.pytorch.callbacks.EarlyStopping
       monitor: valid/acc
       mode: max
-      patience: 5
+      patience: 10
+    # Also keep the weights of every epoch under `<exp_dir>/epochs/`, to score
+    # the evaluation sets epoch by epoch. `mode` only keeps this callback apart
+    # from ESPnet3's own `last.ckpt` checkpointer, which Lightning would
+    # otherwise reject as a duplicate; nothing is monitored.
+    - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+      dirpath: ${exp_dir}/epochs
+      filename: epoch{epoch}
+      auto_insert_metric_name: false
+      save_top_k: -1
+      every_n_epochs: 1
+      save_weights_only: true
+      mode: max
 
 # Set `RESUME_CKPT=<exp_dir>/last.ckpt` to continue an interrupted run.
 fit:
