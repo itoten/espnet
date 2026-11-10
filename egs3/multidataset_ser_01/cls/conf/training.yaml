@@ -37,6 +37,14 @@ create_dataset:
   recipe_dir: ${recipe_dir}
   only: ${oc.env:MULTIDATASET_SER_01_ONLY,null}
 
+# Workers for the stages that read many audio files (`remove_long_short`
+# reads every header, `collect_stats` every waveform). Set
+# MULTIDATASET_SER_01_WORKERS to the number of CPU cores to use; 1 by default.
+parallel:
+  env: local
+  n_workers: ${oc.decode:${oc.env:MULTIDATASET_SER_01_WORKERS,1}}
+  allow_overwrite_lock: false
+
 ##########################################################
 #              LONG/SHORT FILTERING SETTING              #
 ##########################################################
