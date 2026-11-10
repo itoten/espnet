@@ -31,6 +31,17 @@ _CFG = _load_builder_config()
 _EMOTION_MAP = {str(k): str(v) for k, v in _CFG["emotion_map"].items()}
 
 
+def _extraction_unfinished(candidate: Path) -> bool:
+    """Tell whether an extraction into ``candidate`` was interrupted.
+
+    With ``remove_archive`` the archive is deleted only after it has been
+    extracted completely, so an archive still next to ``Audio`` means the
+    extraction stopped part-way (for example, the job was killed). Without
+    ``remove_archive`` this cannot be told and ``False`` is returned.
+    """
+    return bool(_CFG["remove_archive"]) and (candidate / _CFG["archive_name"]).is_file()
+
+
 def iter_source_candidates(
     recipe_root: Path, source_dir: str | Path | None = None
 ) -> Iterator[Path]:
@@ -64,14 +75,21 @@ def resolve_source_root(
         Path: Directory holding ``Audio/json`` and ``Audio/wav``.
 
     Raises:
-        FileNotFoundError: If no candidate holds both directories.
+        FileNotFoundError: If no candidate holds both directories, or the one
+            that does still holds the archive (see :func:`_extraction_unfinished`).
     """
     checked = []
     for candidate in iter_source_candidates(recipe_root, source_dir):
         if (candidate / _CFG["json_dir"]).is_dir() and (
             candidate / _CFG["wav_dir"]
         ).is_dir():
-            return candidate
+            if not _extraction_unfinished(candidate):
+                return candidate
+            logger.warning(
+                "%s still holds %s: the extraction did not finish",
+                candidate,
+                _CFG["archive_name"],
+            )
         checked.append(str(candidate))
     raise FileNotFoundError(
         "EmotionTalk audio not found. Checked:\n  "

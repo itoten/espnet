@@ -145,7 +145,8 @@ authors** (access is then granted immediately), and make your token available
 error that says so.
 
 `prepare_source` downloads `Audio.tar` (14.8 GB), extracts it (about 15 GB more) and
-deletes the archive. Measured: the download took about 7 minutes; `create_dataset`
+deletes the archive. A partial download is resumed. If `Audio.tar` is still there next
+to `Audio`, the extraction was interrupted, and the next run extracts it again. Measured: the download took about 7 minutes; `create_dataset`
 (converting 19,250 files with 16 parallel ffmpeg jobs) took about 2 minutes;
 `collect_stats` took about 34 seconds.
 
