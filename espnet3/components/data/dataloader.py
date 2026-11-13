@@ -3,6 +3,9 @@
 import copy
 import hashlib
 import logging
+import io
+import multiprocessing
+import pickle
 from functools import partial
 
 import torch
@@ -20,6 +23,79 @@ from espnet3.utils.logging_utils import _dump_attrs, build_qualified_name
 logger = logging.getLogger(__name__)
 _LOGGED_DISTRIBUTED_BATCHES: set[str] = set()
 _LOGGED_DATALOADER: set[str] = set()
+_START_METHODS = ("fork", "forkserver", "spawn")
+_FORKSERVER_PRELOAD_SET = False
+
+
+class _ModuleRecordingPickler(pickle._Pickler):
+    """Pickler that records the module of every class or function it saves."""
+
+    def __init__(self, file):
+        super().__init__(file, protocol=pickle.HIGHEST_PROTOCOL)
+        self.modules = set()
+
+    def save_global(self, obj, name=None):
+        module = getattr(obj, "__module__", None)
+        if module:
+            self.modules.add(module)
+        return super().save_global(obj, name)
+
+
+def _modules_to_preload(*objs):
+    """List the modules a worker imports to unpickle ``objs``.
+
+    Each worker started by ``forkserver`` unpickles the dataset and the
+    collate function, importing the modules their classes live in. Imported
+    in the server instead, they are shared by every worker forked from it.
+    ``__main__`` is listed too: every worker imports the main script, which
+    for a recipe's ``run.py`` pulls in the whole system.
+
+    Objects that cannot be pickled are skipped; the DataLoader reports them
+    when it starts its workers.
+    """
+    modules = {"__main__", "torch"}
+    for obj in objs:
+        pickler = _ModuleRecordingPickler(io.BytesIO())
+        try:
+            pickler.dump(obj)
+        except Exception:  # noqa: BLE001 - reported by the DataLoader instead
+            continue
+        modules |= pickler.modules
+    modules.discard("builtins")
+    return sorted(modules)
+
+
+def _build_pass(iter_factory, epoch, multiprocessing_context=None):
+    """Build one pass of an espnet2 iter factory.
+
+    espnet2's iter factories create their ``DataLoader`` themselves and take
+    no start method, so ``multiprocessing_context`` is set on the loader they
+    return, before it is iterated and its workers start.
+
+    Args:
+        iter_factory: An instantiated espnet2-style iter factory.
+        epoch (int): The 1-based epoch passed to ``build_iter``.
+        multiprocessing_context (str | None): Start method of the loader's
+            worker processes, or ``None`` for the default.
+
+    Returns:
+        The pass ``iter_factory.build_iter(epoch)`` returns.
+    """
+    loader = iter_factory.build_iter(epoch)
+    if multiprocessing_context is None:
+        return loader
+    if isinstance(loader, torch.utils.data.DataLoader):
+        if loader.num_workers > 0:
+            loader.multiprocessing_context = multiprocessing_context
+    else:
+        logger.warning(
+            "multiprocessing_context=%r is ignored: %s.build_iter returned %s, "
+            "not a DataLoader.",
+            multiprocessing_context,
+            type(iter_factory).__name__,
+            type(loader).__name__,
+        )
+    return loader
 
 
 def log_dataloader(logger: logging.Logger, loader, label: str) -> None:
@@ -190,6 +266,23 @@ class DataLoaderBuilder:
                     min_batch_size: 2
             ```
 
+            In both cases, `multiprocessing_context` under
+            `dataloader.<mode>` selects how the worker processes start
+            (`fork`, `forkserver` or `spawn`; the platform default if
+            omitted). Workers started by `fork` inherit the parent's CUDA
+            state; with CUDA in use (e.g. DDP over NCCL) a worker that frees
+            an inherited CUDA tensor aborts with "CUDA error: initialization
+            error". `forkserver` starts workers from a clean server process
+            instead. The server imports the main script, `torch` and the
+            modules of the dataset's and collate function's classes once, so
+            that the workers forked from it need not.
+            ```
+            dataloader:
+              train:
+                multiprocessing_context: forkserver
+                iter_factory: ...
+            ```
+
             Case 2: Standard PyTorch DataLoader is used
             Example config:
             ```
@@ -202,7 +295,8 @@ class DataLoaderBuilder:
             ```
 
         Raises:
-            ValueError: If batch_distribution is not per_gpu or global.
+            ValueError: If batch_distribution is not per_gpu or global, or
+                multiprocessing_context is not a start method.
             RuntimeError: If global batching cannot preserve the shared batch plan.
 
         Examples:
@@ -219,6 +313,23 @@ class DataLoaderBuilder:
                 "batch_distribution must be 'per_gpu' or 'global', "
                 f"got {batch_distribution!r}."
             )
+        multiprocessing_context = getattr(config, "multiprocessing_context", None)
+        if multiprocessing_context is not None:
+            if multiprocessing_context not in _START_METHODS:
+                raise ValueError(
+                    f"multiprocessing_context must be one of {_START_METHODS}, "
+                    f"got {multiprocessing_context!r}."
+                )
+            global _FORKSERVER_PRELOAD_SET
+            if multiprocessing_context == "forkserver" and not _FORKSERVER_PRELOAD_SET:
+                # Takes effect when the server starts (at the first loader
+                # that uses it), so it is set once per process; workers
+                # forked from the server then skip these imports. Without it
+                # every worker of every epoch imports them again.
+                multiprocessing.set_forkserver_preload(
+                    _modules_to_preload(self.dataset, self.collate_fn)
+                )
+                _FORKSERVER_PRELOAD_SET = True
         if hasattr(config, "multiple_iterator"):
             raise RuntimeError(
                 "ESPnet3 does not support multiple_iterator. "
@@ -268,7 +379,11 @@ class DataLoaderBuilder:
         if config.iter_factory is not None:
             factory_config = OmegaConf.to_container(config.iter_factory, resolve=True)
             return self._build_iter_factory(
-                factory_config, dataset, mode, batch_distribution
+                factory_config,
+                dataset,
+                mode,
+                batch_distribution,
+                multiprocessing_context=multiprocessing_context,
             )
         return self._build_standard_dataloader(config, dataset, mode)
 
@@ -307,7 +422,12 @@ class DataLoaderBuilder:
         return loader
 
     def _build_iter_factory(
-        self, factory_config, dataset=None, mode="train", batch_distribution="per_gpu"
+        self,
+        factory_config,
+        dataset=None,
+        mode="train",
+        batch_distribution="per_gpu",
+        multiprocessing_context=None,
     ):
         if dataset is None:
             dataset = self.dataset
@@ -432,7 +552,9 @@ class DataLoaderBuilder:
             _LOGGED_DISTRIBUTED_BATCHES.add(log_key)
 
         iter_factory = instantiate(factory_config, dataset, batches=batches)
-        loader = EpochSyncIterator(partial(iter_factory.build_iter, espnet2_epoch))
+        loader = EpochSyncIterator(
+            partial(_build_pass, iter_factory, espnet2_epoch, multiprocessing_context)
+        )
         log_dataloader(
             logger,
             loader,

@@ -1192,3 +1192,141 @@ def test_build_iter_factory_defaults_to_the_builder_dataset(monkeypatch):
     }
     loader = builder._build_iter_factory(factory_config)  # dataset=None path
     assert list(loader) == [[0], [1]]
+
+
+# --- Worker start method (multiprocessing_context) ---
+
+
+class DataLoaderIterFactory:
+    """Iter factory that returns a DataLoader, as espnet2's sequence and
+    category factories do."""
+
+    def __init__(self, dataset, batches, num_workers=0, **kwargs):
+        self.dataset = dataset
+        self.batches = list(batches)
+        self.num_workers = num_workers
+
+    def build_iter(self, epoch, shuffle=False):
+        return torch.utils.data.DataLoader(
+            self.dataset,
+            batch_sampler=self.batches,
+            num_workers=self.num_workers,
+            collate_fn=lambda items: items,
+        )
+
+
+def _make_mp_context_config(target, context, num_workers=2):
+    factory = {
+        "_target_": f"test.espnet3.components.data.test_dataloader_builder.{target}",
+        "batches": {"dummy": 1},
+    }
+    if target == "DataLoaderIterFactory":
+        factory["num_workers"] = num_workers
+    train = {"iter_factory": factory}
+    if context is not None:
+        train["multiprocessing_context"] = context
+    return OmegaConf.create({"dataloader": {"train": train}})
+
+
+@pytest.mark.parametrize("context", ["fork", "forkserver", "spawn"])
+def test_iter_factory_sets_worker_start_method(monkeypatch, context):
+    import espnet3.components.data.dataloader as dl
+
+    preloads = []
+    monkeypatch.setattr(dl, "build_batch_sampler", lambda **kw: [[0, 1], [2, 3]])
+    monkeypatch.setattr(dl, "_FORKSERVER_PRELOAD_SET", False)
+    monkeypatch.setattr(
+        dl.multiprocessing, "set_forkserver_preload", lambda mods: preloads.append(mods)
+    )
+    organizer = build_organizer(DUMMY_DATASET_TARGET)
+    builder = build_builder(
+        organizer.train,
+        _make_mp_context_config("DataLoaderIterFactory", context),
+        collate_fn=None,
+        num_device=1,
+        epoch=0,
+    )
+    loader = builder.build("train")._get_new_pass()
+    builder.build("train")  # a later epoch: the preload is set only once
+
+    assert isinstance(loader, torch.utils.data.DataLoader)
+    assert loader.multiprocessing_context.get_start_method() == context
+    if context == "forkserver":
+        assert len(preloads) == 1
+        assert {"__main__", "torch", DummyDataset.__module__} <= set(preloads[0])
+        assert "builtins" not in preloads[0]
+    else:
+        assert preloads == []
+
+
+def test_modules_to_preload_skips_unpicklable_objects():
+    from espnet3.components.data.dataloader import _modules_to_preload
+
+    modules = _modules_to_preload(lambda: None, DummyIterFactory(None, []))
+    assert modules == sorted({"__main__", "torch", DummyIterFactory.__module__})
+
+
+def test_iter_factory_keeps_default_start_method_without_setting(monkeypatch):
+    import espnet3.components.data.dataloader as dl
+
+    monkeypatch.setattr(dl, "build_batch_sampler", lambda **kw: [[0, 1], [2, 3]])
+    organizer = build_organizer(DUMMY_DATASET_TARGET)
+    builder = build_builder(
+        organizer.train,
+        _make_mp_context_config("DataLoaderIterFactory", None),
+        collate_fn=None,
+        num_device=1,
+        epoch=0,
+    )
+    assert builder.build("train")._get_new_pass().multiprocessing_context is None
+
+
+def test_iter_factory_start_method_needs_no_workers(monkeypatch):
+    """DataLoader rejects a start method without workers; leave it unset."""
+    import espnet3.components.data.dataloader as dl
+
+    monkeypatch.setattr(dl, "build_batch_sampler", lambda **kw: [[0, 1], [2, 3]])
+    organizer = build_organizer(DUMMY_DATASET_TARGET)
+    builder = build_builder(
+        organizer.train,
+        _make_mp_context_config("DataLoaderIterFactory", "spawn", num_workers=0),
+        collate_fn=None,
+        num_device=1,
+        epoch=0,
+    )
+    iterator = builder.build("train")
+    assert iterator._get_new_pass().multiprocessing_context is None
+    assert len(list(iterator)) == 2
+
+
+def test_iter_factory_start_method_ignored_for_non_dataloader(monkeypatch, caplog):
+    import espnet3.components.data.dataloader as dl
+
+    monkeypatch.setattr(dl, "build_batch_sampler", lambda **kw: [[0], [1]])
+    organizer = build_organizer(DUMMY_DATASET_TARGET)
+    builder = build_builder(
+        organizer.train,
+        _make_mp_context_config("GeneratorIterFactory", "spawn"),
+        collate_fn=None,
+        num_device=1,
+        epoch=0,
+    )
+    with caplog.at_level("WARNING", logger=dl.__name__):
+        assert list(builder.build("train")) == [[0], [1]]
+    assert "multiprocessing_context='spawn' is ignored" in caplog.text
+
+
+def test_invalid_start_method_is_rejected(monkeypatch):
+    import espnet3.components.data.dataloader as dl
+
+    monkeypatch.setattr(dl, "build_batch_sampler", lambda **kw: [[0], [1]])
+    organizer = build_organizer(DUMMY_DATASET_TARGET)
+    builder = build_builder(
+        organizer.train,
+        _make_mp_context_config("DataLoaderIterFactory", "threads"),
+        collate_fn=None,
+        num_device=1,
+        epoch=0,
+    )
+    with pytest.raises(ValueError, match="multiprocessing_context must be one of"):
+        builder.build("train")
