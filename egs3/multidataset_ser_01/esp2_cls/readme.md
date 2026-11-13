@@ -1,7 +1,7 @@
 # Multi-dataset SER with a log-mel Transformer trained from scratch (multidataset_ser_01/esp2_cls)
 
 The `esp2_cls` system (ESPnet2's classification task) on the data of
-`egs3/multidataset_ser_01/cls`: 80-bin log-mel features, SpecAugment, a
+`egs3/multidataset_ser_01/cls`: 80-bin log-mel features, a
 Transformer encoder trained from scratch, mean pooling and a
 linear layer to the seven classes. No pre-trained model is used.
 

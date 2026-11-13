@@ -81,15 +81,7 @@ model:
     win_length: 400
     hop_length: 160
     n_mels: 80
-  specaug: specaug
-  specaug_conf:
-    apply_time_warp: false
-    apply_freq_mask: true
-    freq_mask_width_range: [0, 27]
-    num_freq_mask: 2
-    apply_time_mask: true
-    time_mask_width_ratio_range: [0.0, 0.05]
-    num_time_mask: 2
+  # No SpecAugment.
   # Mean and variance of the training set's features, from `collect_stats`.
   normalize: global_mvn
   normalize_conf:
@@ -155,10 +147,18 @@ seed: 0
 ##########################################################
 #                   DATALOADER SETTING                   #
 ##########################################################
+# The data-loader workers start by `forkserver`, not `fork`. Forked workers
+# copy the trainer's memory, including garbage not yet collected; on 8 GPUs
+# (DDP) a worker collecting such garbage that held CUDA memory aborted with
+# "CUDA error: initialization error", and the other ranks waited until the
+# NCCL timeout. Workers from `forkserver` start from a process that never
+# used CUDA. The first loader of a run starts about 20 s later, the others a
+# few seconds.
 # `batch_size` is per GPU. `fold_lengths` counts feature frames (100 per
 # second), so a batch with an utterance longer than 10 s is made smaller.
 dataloader:
   train:
+    multiprocessing_context: forkserver
     iter_factory:
       num_workers: 8
       batches:
@@ -168,6 +168,7 @@ dataloader:
         sort_in_batch: descending
         sort_batch: descending
   valid:
+    multiprocessing_context: forkserver
     iter_factory:
       num_workers: 8
       batches:

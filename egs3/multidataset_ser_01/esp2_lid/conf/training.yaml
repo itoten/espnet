@@ -92,17 +92,7 @@ model:
     n_mels: 80
     normalize: mn
 
-  # The same SpecAugment as `../esp2_cls` (training only): 2 frequency masks
-  # of up to 27 bins and 2 time masks of up to 5 % of the utterance.
-  specaug: specaug
-  specaug_conf:
-    apply_time_warp: false
-    apply_freq_mask: true
-    freq_mask_width_range: [0, 27]
-    num_freq_mask: 2
-    apply_time_mask: true
-    time_mask_width_ratio_range: [0.0, 0.05]
-    num_time_mask: 2
+  # No SpecAugment, as in `../esp2_cls`.
 
   encoder: ecapa_tdnn
   encoder_conf:
@@ -174,8 +164,16 @@ seed: 0
 ##########################################################
 #                   DATALOADER SETTING                   #
 ##########################################################
+# The data-loader workers start by `forkserver`, not `fork`. Forked workers
+# copy the trainer's memory, including garbage not yet collected; on 8 GPUs
+# (DDP) a worker collecting such garbage that held CUDA memory aborted with
+# "CUDA error: initialization error", and the other ranks waited until the
+# NCCL timeout. Workers from `forkserver` start from a process that never
+# used CUDA. The first loader of a run starts about 20 s later, the others a
+# few seconds.
 dataloader:
   train:
+    multiprocessing_context: forkserver
     iter_factory:
       seed: ${seed}
       num_workers: 8
@@ -184,7 +182,10 @@ dataloader:
       # (1: as in the data, 0: every class equally). Without
       # `num_iters_per_epoch`, an epoch covers the training audio
       # `dataset_scaling_factor` times. `batch_bins` counts waveform samples
-      # (16,000 a second) per batch, padding included.
+      # (16,000 a second) per batch, padding not included: the utterances'
+      # own lengths are added up, and the batch is closed once the sum
+      # passes `batch_bins` (so it may pass it by one utterance) or it holds
+      # `max_batch_size` utterances.
       batches:
         type: catpow
         shape_files:
@@ -199,6 +200,7 @@ dataloader:
         drop_last: true
         category2utt_file: ${stats_dir}/train/category2utt
   valid:
+    multiprocessing_context: forkserver
     iter_factory:
       seed: ${seed}
       num_workers: 8

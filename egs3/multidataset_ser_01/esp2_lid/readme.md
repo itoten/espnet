@@ -2,7 +2,7 @@
 
 The `esp2_lid` system (ESPnet2's language identification task) on the data of
 `egs3/multidataset_ser_01/cls`, with the seven emotions in place of
-languages: 80-bin log-mel features, SpecAugment, an ECAPA-TDNN encoder, channel- and
+languages: 80-bin log-mel features, an ECAPA-TDNN encoder, channel- and
 context-dependent attentive statistics pooling, a 192-dim embedding, and an
 additive angular margin softmax with sub-centres. No pre-trained model is
 used.
@@ -33,10 +33,11 @@ In `conf/training.yaml`; provisional and not tuned:
   for `k_top` of 6 or more, and gives no benefit at that size.
 - Batches: the `catpow` sampler draws utterances class by class, with each
   class's share set by its total duration raised to `upsampling_factor`
-  (0.5); up to 200 s of audio and 64 utterances per batch. An epoch covers
+  (0.5); about 200 s of audio per batch (padding not counted), at most 64
+  utterances. An epoch covers
   the training audio about once. Validation uses every validation utterance
   once (`sorted`).
-- SpecAugment as in `../esp2_cls` (2 frequency and 2 time masks).
+- No SpecAugment.
 - AdamW (weight decay 0.01) with a peak lr of 1e-3 and TristageLR (warm-up
   over the first 10 % of the updates, hold for 40 %, decay over the last
   50 %) over 39,160 updates (40 epochs of the 443 h of training audio on 8
