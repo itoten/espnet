@@ -1,0 +1,104 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One folder `pNNN/` per speaker (NNN = 001..107) holding `emo_<emotion>_
+  # {sentences,freeform}.wav` among many other recordings. The source root
+  # may hold those folders already extracted, or the release's per-speaker
+  # archives `pNNN.zip` (directly under it or under `ARCHIVES/`); an archive
+  # is read in place and nothing is extracted. Only the `emo_*` recordings
+  # are used.
+  source_env_var: EARS
+  dataset_path: download
+  archive_subdir: ARCHIVES
+  speakers: ["p001", "p002", "p003", "p004", "p005", "p006", "p007", "p008",
+             "p009", "p010", "p011", "p012", "p013", "p014", "p015", "p016",
+             "p017", "p018", "p019", "p020", "p021", "p022", "p023", "p024",
+             "p025", "p026", "p027", "p028", "p029", "p030", "p031", "p032",
+             "p033", "p034", "p035", "p036", "p037", "p038", "p039", "p040",
+             "p041", "p042", "p043", "p044", "p045", "p046", "p047", "p048",
+             "p049", "p050", "p051", "p052", "p053", "p054", "p055", "p056",
+             "p057", "p058", "p059", "p060", "p061", "p062", "p063", "p064",
+             "p065", "p066", "p067", "p068", "p069", "p070", "p071", "p072",
+             "p073", "p074", "p075", "p076", "p077", "p078", "p079", "p080",
+             "p081", "p082", "p083", "p084", "p085", "p086", "p087", "p088",
+             "p089", "p090", "p091", "p092", "p093", "p094", "p095", "p096",
+             "p097", "p098", "p099", "p100", "p101", "p102", "p103", "p104",
+             "p105", "p106", "p107"]
+
+  # Download --------------------------------------------------------------
+  # GitHub release `dataset` of facebookresearch/ears_dataset, CC BY-NC 4.0.
+  # One archive per speaker (about 0.6 GB each, 66 GB in all). `prepare_source`
+  # fetches each archive, keeps only its `emo_*` recordings (about 12 GB in
+  # all, 32-bit float, 48 kHz) and deletes the archive.
+  base_url: https://github.com/facebookresearch/ears_dataset/releases/download/dataset
+  emotion_file_re: "^emo_(?P<emotion>[a-z]+)_(?P<task>sentences|freeform)\\.wav$"
+
+  # Labels ----------------------------------------------------------------
+  # The emotion in the file name is the label. Only two spelling mistakes of the
+  # release are corrected (ser_dataset_db stage 1: typos); nothing is merged
+  # and nothing is mapped to other classes here. `neutral` is one of the 23.
+  label_fix:
+    embarassment: embarrassment
+    extasy: ecstasy
+
+  # PROPOSAL ONLY - NOT READ BY ANY CODE AND NOT APPLIED. How the 23 labels
+  # could be read as the seven classes of multidataset_ser_01 (neutral, happy,
+  # sad, angry, fear, surprise, disgust). The PI has to approve it before
+  # EARS enters any benchmark; labels without a target are left out, as in
+  # multidataset_ser_01. Reasons and sources: readme.md, "Proposed mapping".
+  proposal:
+    tier1_same_word:        # the style name is the class name (or its noun form)
+      anger: angry
+      disgust: disgust
+      fear: fear
+      sadness: sad
+      neutral: neutral
+    tier2_needs_decision:   # a judgement about meaning, with no definition in
+      amazement: surprise   # the corpus documentation; ser_dataset_db
+      amusement: happy      # discussion 0004 (stage 2) has not decided how
+      ecstasy: happy        # to treat such pairs
+    never_mapped:           # no ser01 class matches; left out
+      - adoration
+      - confusion
+      - contentment
+      - cuteness
+      - desire
+      - disappointment
+      - distress
+      - embarrassment
+      - guilt
+      - interest
+      - pain
+      - pride
+      - realization
+      - relief
+      - serenity
+
+  # Split -----------------------------------------------------------------
+  # The speaker split of the corpus paper (Richter et al., Interspeech 2024,
+  # Sec. 3, written for its speech-enhancement benchmarks): p001-p099 train,
+  # p100-p101 validation, p102-p107 test. Each entry is the first and the last
+  # speaker of the range. No speaker is in two splits.
+  split_speakers:
+    train: ["p001", "p099"]
+    valid: ["p100", "p101"]
+    test: ["p102", "p107"]
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The recordings are 48 kHz mono 32-bit float; `build()` converts them to
+  # 16 kHz mono 16-bit PCM.
+  output_env_var: EARS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
