@@ -1,0 +1,45 @@
+# Training with the `hubert_large` frontend on 8 GPUs of one node
+# (NUM_DEVICE=8, DDP). `conf/training_hubert_large.yaml` with what several
+# GPUs need; everything else, the speed settings included, comes from there.
+#
+# Each GPU takes its own batches of 21 minutes of audio, so an update sees 8
+# times the audio of a single-GPU update (168 minutes) and an epoch has an
+# eighth of the updates (158). On 8 H200 a GPU kept 93 % of its single-GPU
+# speed with these batches (88 % with 12-minute batches, 64 % with 3-minute
+# ones), and 20 epochs took 40 minutes.
+defaults:
+  - training_hubert_large
+  - _self_
+
+exp_tag: ${oc.env:MULTIDATASET_SER_01_EXP_TAG,train_hubert_large_8gpu}
+
+# Not tuned. With an eighth of the updates the single-GPU lr (3e-5) is too
+# low: of 3e-5, 6e-5 and 1e-4 the highest scored best on the evaluation sets
+# (average UA 43.5, 44.5 and 46.2 %), still under the 49.4 % of the single-GPU
+# run. Set MULTIDATASET_SER_01_LR to try another value.
+optimizer:
+  lr: ${oc.decode:${oc.env:MULTIDATASET_SER_01_LR,1.0e-4}}
+
+# 158 updates an epoch (1,262 batches over 8 GPUs), 3,160 over 20 epochs.
+lr_schedule:
+  max_steps: 3160
+
+# LayerDrop skips layers at random, so some parameters get no gradient in a
+# step: DDP must be told to look for them.
+trainer:
+  strategy: ddp_find_unused_parameters_true
+
+# Workers forked from a process that holds CUDA state (DDP over NCCL) can
+# abort with "CUDA error: initialization error"; forkserver starts them from
+# a clean process. Starting them takes longer than forking, at every epoch,
+# so each GPU gets 4 readers instead of 8 (8 read about 8 times what a GPU
+# needs).
+dataloader:
+  train:
+    multiprocessing_context: forkserver
+    iter_factory:
+      num_workers: 4
+  valid:
+    multiprocessing_context: forkserver
+    iter_factory:
+      num_workers: 4

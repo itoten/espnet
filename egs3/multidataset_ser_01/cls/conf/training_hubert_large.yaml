@@ -3,8 +3,8 @@
 # `conf/training.yaml`.
 #
 # Set for speed on a single H200, measured over 300 batches each (one GPU
-# processed 2,720 seconds of audio a second, against 1,854 before the last
-# four items):
+# processed about 2,980 seconds of audio a second, against 1,854 before the
+# last five items):
 # - SDPA attention (`attn_implementation: sdpa` in the frontend).
 # - Each transformer layer compiled with `torch.compile`. Compiling groups of
 #   4 or all 24 layers as one piece was no faster.
@@ -14,8 +14,17 @@
 #   and 21 minutes the speed hardly changes (+3 % at 21); 21 minutes peaks at
 #   about 94 GB of the 141 GB of an H200. Use `batch_bins: 11520000` (12
 #   minutes) on a GPU with less memory.
+# - Batches cut to their shortest utterance in training (`max_train_crop`,
+#   +11 %): the batches are sorted by length and hold 0.15 % padding, but any
+#   padding at all needs an attention mask, which keeps SDPA off its fastest
+#   kernel. The 4 batches in 1,262 that would lose over 5 % are left padded.
 # The pooling of the classifier also had to be batched (code change in
 # `espnet3/systems/cls/src/pooling.py`, +19 %).
+#
+# 20 epochs, validated every second epoch: a first run of 30 epochs reached
+# its final validation accuracy (87.8 %) at epoch 19. The 20 epochs took 3.2
+# hours and scored about the same on the evaluation sets as the 30 (average
+# UA 49.4 % against 50.1 %, WA 52.9 % against 52.1 %).
 defaults:
   - training
   - frontend: hubert_large
@@ -28,6 +37,7 @@ exp_tag: ${oc.env:MULTIDATASET_SER_01_EXP_TAG,train_hubert_large}
 frontend:
   compile_layers: true
   compile_feature_encoder: true
+  max_train_crop: 0.05
 
 # Fused AdamW is not used: with `gradient_clip_val` set, Lightning's mixed
 # precision plugin refuses any optimizer that unscales gradients itself, even
@@ -45,8 +55,10 @@ dataloader:
 trainer:
   strategy: auto
   accumulate_grad_batches: 1
+  max_epochs: 20
+  check_val_every_n_epoch: 2
 
-# 1,262 batches (= updates) an epoch with the `batch_bins` above, 37,860 over
-# 30 epochs. Recompute when the batch, the GPU count or `max_epochs` changes.
+# 1,262 batches (= updates) an epoch with the `batch_bins` above, 25,240 over
+# 20 epochs. Recompute when the batch, the GPU count or `max_epochs` changes.
 lr_schedule:
-  max_steps: 37860
+  max_steps: 25240
