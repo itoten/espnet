@@ -1,0 +1,24 @@
+# Inference with the `hubert_large` frontend; must match `conf/training_hubert_large.yaml`.
+#
+# Batched for speed: the inference stage hands the model 512 utterances at a
+# time, which the model sorts by length and runs in sub-batches of at most
+# 12 minutes of audio under bf16 autocast (as in training); the runner reads
+# the audio of the next 512 with threads while the GPU works. On dailytalk
+# (23,772 utterances, one H200) this took 36 s instead of 369 s one utterance
+# at a time in fp32. bf16 changes the prediction of about 2.6 % of the
+# utterances against fp32, with the same accuracy (59.73 % against 59.86 %
+# for a partly trained model); set `autocast: null` for fp32 (110 s).
+defaults:
+  - inference
+  - frontend: hubert_large
+  - _self_
+
+batch_size: 512
+
+runner:
+  _target_: espnet3.systems.cls.src.inference_runner.PrefetchInferenceRunner
+  read_workers: 16
+
+model:
+  max_batch_samples: 11520000
+  autocast: bf16
