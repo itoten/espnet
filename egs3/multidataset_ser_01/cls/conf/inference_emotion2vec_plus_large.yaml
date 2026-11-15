@@ -1,0 +1,80 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Zero-shot baseline: emotion2vec+ large as released, with its own
+# classification head and no training on this recipe's data. Run standalone,
+# without a training config:
+#   python run.py --stages infer measure \
+#       --inference_config conf/inference_emotion2vec_plus_large.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# Needs FunASR (`pip install funasr`) and the token list and evaluation
+# manifests written by `create_dataset`, `remove_long_short` and
+# `prepare_labels` with `conf/training.yaml`.
+#
+# Not zero-shot on every evaluation corpus: emotion2vec+ was first fine-tuned
+# on the EmoBox corpora (https://github.com/emo-box/EmoBox), which include
+# aesdd, cafe, cremad, emovdb, meld, pavoque, ravdess, shemo, tess and
+# turevdb. Report those ten apart from the other sixteen.
+#
+# Kept apart from `inference.yaml`, whose `model` block (a trained `ClsModel`)
+# would be merged into this one rather than replaced.
+exp_tag: zeroshot_emotion2vec_plus_large
+data_dir: ${oc.env:MULTIDATASET_SER_01_OUTPUT,./data}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# The same test sets as `inference.yaml`; keep the two lists in step.
+dataset:
+  test:
+    - {name: aesdd,              data_src_args: {split: aesdd}}
+    - {name: brytserc,           data_src_args: {split: brytserc}}
+    - {name: cafe,               data_src_args: {split: cafe}}
+    - {name: cbesd,              data_src_args: {split: cbesd}}
+    - {name: cremad,             data_src_args: {split: cremad}}
+    - {name: dailytalk,          data_src_args: {split: dailytalk}}
+    - {name: dusha,              data_src_args: {split: dusha}}
+    - {name: emospeech_keywords, data_src_args: {split: emospeech_keywords}}
+    - {name: emotiontalk,        data_src_args: {split: emotiontalk}}
+    - {name: emovdb,             data_src_args: {split: emovdb}}
+    - {name: jnv,                data_src_args: {split: jnv}}
+    - {name: jvnv,               data_src_args: {split: jvnv}}
+    - {name: legov2,             data_src_args: {split: legov2}}
+    - {name: mcaespps,           data_src_args: {split: mcaespps}}
+    - {name: meld,               data_src_args: {split: meld}}
+    - {name: multidialog,        data_src_args: {split: multidialog}}
+    - {name: nemo,               data_src_args: {split: nemo}}
+    - {name: nonverbaltts,       data_src_args: {split: nonverbaltts}}
+    - {name: pavoque,            data_src_args: {split: pavoque}}
+    - {name: ravdess,            data_src_args: {split: ravdess}}
+    - {name: shemo,              data_src_args: {split: shemo}}
+    - {name: tess,               data_src_args: {split: tess}}
+    - {name: thaiser,            data_src_args: {split: thaiser}}
+    - {name: turevdb,            data_src_args: {split: turevdb}}
+    - {name: utemo,              data_src_args: {split: utemo}}
+    - {name: vivae,              data_src_args: {split: vivae}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# The nine emotion2vec+ labels are reduced to the seven classes: the
+# probabilities of the seven mapped below are renormalised, and those of
+# `other` and `<unk>` are discarded, so the prediction is always one of the
+# seven, as for a trained model.
+model:
+  _target_: espnet3.systems.cls.src.emotion2vec_inference_model.Emotion2vecInferenceModel
+  model_tag: emotion2vec/emotion2vec_plus_large
+  hub: hf
+  token_list: ${data_dir}/token_list
+  label_map:
+    angry: angry
+    disgusted: disgust
+    fearful: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprised: surprise
+
+input_key: speech
+output_fn: src.inference.build_output
