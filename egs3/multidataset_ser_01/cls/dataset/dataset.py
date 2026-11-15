@@ -108,6 +108,16 @@ class MultidatasetSer01Dataset(BaseDataset):
     def __len__(self) -> int:
         return len(self._entries)
 
+    @property
+    def labels(self) -> list[str]:
+        """Return the label of every row, in row order, without reading audio."""
+        return [entry.label for entry in self._entries]
+
+    @property
+    def utt_ids(self) -> list[str]:
+        """Return the utterance id of every row, in row order."""
+        return [entry.utt_id for entry in self._entries]
+
     def __getitem__(self, idx: int) -> dict[str, Any]:
         entry = self._entries[int(idx)]
         array, _sr = sf.read(str(entry.wav_path))

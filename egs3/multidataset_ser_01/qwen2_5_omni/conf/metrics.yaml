@@ -1,0 +1,22 @@
+##########################################################
+#                 METRIC SCORING SETTING                 #
+##########################################################
+# VoxEmo's hard-label metrics (UA, WA, Micro-F1, Macro-F1) for each prompt
+# and the prompt ensemble, and each prompt's parse failure rate. Run with
+# the inference config, which `run.py` copies `inference_dir` from; the test
+# sets are the subdirectories of `inference_dir`.
+#
+# `variants` and the `hyp_<prompt>` inputs must match `model.variants` in
+# `conf/inference.yaml`.
+metrics:
+  - metric:
+      _target_: egs3.multidataset_ser_01.qwen2_5_omni.src.metrics.VoxEmoScores
+      variants: [direct, t, a, t_a, t_a_r]
+    inputs:
+      ref: ref               # `<test_name>/ref.scp`, written by infer
+      hyp: hyp               # the prompt ensemble's label
+      hyp_direct: hyp_direct
+      hyp_t: hyp_t
+      hyp_a: hyp_a
+      hyp_t_a: hyp_t_a
+      hyp_t_a_r: hyp_t_a_r

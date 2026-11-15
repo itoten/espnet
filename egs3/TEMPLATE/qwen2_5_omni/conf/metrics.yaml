@@ -1,0 +1,19 @@
+##########################################################
+#                 METRIC SCORING SETTING                 #
+##########################################################
+# Quick usage:
+#   python run.py --stages measure \
+#       --inference_config conf/inference.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# Shared default merged under every Qwen2.5-Omni recipe's metrics config.
+# Passed together with the inference config, `run.py` copies `exp_tag`,
+# `exp_dir` and `inference_dir` from it.
+
+recipe_dir: .
+exp_tag:
+exp_dir: ${recipe_dir}/exp/${exp_tag}
+
+dataset:
+
+metrics:
