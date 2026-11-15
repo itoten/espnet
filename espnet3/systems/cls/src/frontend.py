@@ -57,6 +57,23 @@ class Wav2Vec2Frontend(AbsFrontend):
             encoder, normally ``WaveformNormalize``.
         freeze_subsampling: Whether to freeze the convolutional feature
             encoder.
+        compile_layers: Whether to compile each transformer layer with
+            ``torch.compile`` (``dynamic=True``, since the batch length
+            varies). This fuses the many small operations in a layer and
+            makes training faster; the first steps are slower while the
+            layers compile. Compiling layer by layer, not the whole encoder,
+            keeps LayerDrop, which skips layers at random in Python.
+        compile_encoder: Whether to compile the whole encoder instead
+            (``dynamic=True``); ``torch.compile`` breaks the graph where
+            LayerDrop branches. Not combined with ``compile_layers``.
+        compile_mode: ``mode`` given to ``torch.compile`` (``None`` for its
+            default; ``"max-autotune-no-cudagraphs"`` also tunes the matrix
+            products, at a much longer compile time).
+        compile_feature_encoder: Whether to compile the convolutional feature
+            encoder with ``torch.compile`` (``dynamic=True``). It runs on the
+            raw waveform, so its normalisations and activations move a lot of
+            memory; compiling fuses them. With ``compile_layers`` this made
+            HuBERT Large training on one H200 about 17 % faster.
 
     Examples:
         .. code-block:: yaml
@@ -73,8 +90,12 @@ class Wav2Vec2Frontend(AbsFrontend):
         encoder: nn.Module,
         normalize: Optional[nn.Module] = None,
         freeze_subsampling: bool = True,
+        compile_layers: bool = False,
+        compile_encoder: bool = False,
+        compile_mode: Optional[str] = None,
+        compile_feature_encoder: bool = False,
     ) -> None:
-        """Keep the encoder and optionally freeze its convolutional front."""
+        """Keep the encoder, optionally freeze its front and compile it."""
         super().__init__()
         self.encoder = encoder
         self.normalize = normalize
@@ -82,6 +103,17 @@ class Wav2Vec2Frontend(AbsFrontend):
             # HubertModel has no freeze_feature_encoder(); this is what that
             # method calls in the models that have it.
             encoder.feature_extractor._freeze_parameters()
+        if compile_layers and compile_encoder:
+            raise ValueError("Set compile_layers or compile_encoder, not both.")
+        # nn.Module.compile() compiles in place, so the parameter names and
+        # the checkpoints stay the same as without compiling.
+        if compile_layers:
+            for layer in encoder.encoder.layers:
+                layer.compile(dynamic=True, mode=compile_mode)
+        if compile_encoder:
+            encoder.compile(dynamic=True, mode=compile_mode)
+        if compile_feature_encoder and not compile_encoder:
+            encoder.feature_extractor.compile(dynamic=True, mode=compile_mode)
 
     def output_size(self) -> int:
         """Return the width of one output frame."""

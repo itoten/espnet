@@ -65,16 +65,21 @@ class AttentiveStatisticsPooling(nn.Module):
                 "produced these frames."
             )
 
-        pooled = []
-        for sequence, length in zip(frames, lengths.tolist()):
-            sequence = sequence[:length].unsqueeze(0)
-            scores = torch.tanh(self.sap_linear(sequence))
-            scores = torch.matmul(scores, self.attention).squeeze(dim=2)
-            weights = F.softmax(scores, dim=1).unsqueeze(-1)
-            mean = torch.sum(sequence * weights, dim=1)
-            # The variance is clamped because it is a difference of two sums
-            # that rounding can push below zero.
-            variance = torch.sum((sequence**2) * weights, dim=1) - mean**2
-            deviation = torch.sqrt(variance.clamp(min=1e-5))
-            pooled.append(torch.cat((mean, deviation), dim=1).squeeze(0))
-        return torch.stack(pooled)
+        # The whole padded batch at once: padded frames get a score of -inf,
+        # hence zero weight, which equals pooling each sequence over its own
+        # frames but takes a handful of GPU kernels instead of about ten per
+        # sequence.
+        valid = (
+            torch.arange(max_frames, device=frames.device)[None, :]
+            < lengths.to(frames.device)[:, None]
+        )
+        scores = torch.tanh(self.sap_linear(frames))
+        scores = torch.matmul(scores, self.attention).squeeze(dim=2)
+        scores = scores.masked_fill(~valid, float("-inf"))
+        weights = F.softmax(scores, dim=1).unsqueeze(-1)
+        mean = torch.sum(frames * weights, dim=1)
+        # The variance is clamped because it is a difference of two sums
+        # that rounding can push below zero.
+        variance = torch.sum((frames**2) * weights, dim=1) - mean**2
+        deviation = torch.sqrt(variance.clamp(min=1e-5))
+        return torch.cat((mean, deviation), dim=1)
