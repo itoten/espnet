@@ -1,6 +1,6 @@
-"""RAVDESS dataset module."""
+"""EARS dataset module."""
 
-from egs3.ravdess.cls.dataset.builder import RAVDESSBuilder as DatasetBuilder
-from egs3.ravdess.cls.dataset.dataset import RAVDESSDataset as Dataset
+from egs3.ears.cls.dataset.builder import EARSBuilder as DatasetBuilder
+from egs3.ears.cls.dataset.dataset import EARSDataset as Dataset
 
 __all__ = ["Dataset", "DatasetBuilder"]
