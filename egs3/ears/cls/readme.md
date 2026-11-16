@@ -1,100 +1,73 @@
-# RAVDESS speech emotion recognition (single-corpus baseline)
+# EARS speech emotion recognition (single-corpus baseline)
 
 Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
-head) on RAVDESS alone and scores it on RAVDESS's own test split, classifying
-each utterance into one of eight emotions.
+head) on the emotional recordings of EARS alone and scores it on the corpus's own
+held-out speakers, classifying each recording into one of 23 labels.
 
-[RAVDESS](https://zenodo.org/records/1188976) is English read speech from 24
-actors (odd-numbered male, even-numbered female). This recipe
-uses the speech, audio-only release: 1440 utterances in eight emotions,
-`neutral`, `calm`, `happy`, `sad`, `angry`, `fear`, `disgust`, `surprise`.
-`neutral` has half as many utterances as the others because it was recorded
-at one intensity only.
+[EARS](https://github.com/facebookresearch/ears_dataset) (Expressive Anechoic
+Recordings of Speech) is an anechoic, fullband (48 kHz) English speech corpus from
+107 speakers, made for speech enhancement and dereverberation benchmarks. Besides
+read speech in several styles, every speaker recorded the same material in a set of
+emotional styles. This recipe uses only those emotional recordings and none of the
+other parts of the release.
 
-The label comes from the file name,
-`<modality>-<vocal channel>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`,
-all two-digit codes; no annotation file is read. The recordings are 48 kHz and
-five of them are stereo, so `create_dataset` converts all of them to 16 kHz
-mono with ffmpeg.
+For each style a speaker has two recordings:
+
+- `emo_<style>_sentences.wav`: three sentences read in that style
+- `emo_<style>_freeform.wav`: an image described freely in that style
+
+The label is the style in the file name. The release spells two styles wrongly
+(`embarassment`, `extasy`); the recipe corrects them to `embarrassment` and
+`ecstasy` (`label_fix` in `dataset/config.yaml`). Nothing else is renamed or
+merged, so the recipe keeps all 23 labels (22 emotional styles and neutral).
+`dataset/config.yaml` also holds a proposal, not read by any code, of how some
+labels could be read as the seven basic emotion classes used by multi-corpus
+recipes.
+
+`create_dataset` converts the recordings (48 kHz, 32-bit float) to 16 kHz mono
+16-bit PCM with ffmpeg.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
 
-- `RAVDESS` — an existing `Actor_NN/` tree, or where to download it to
-- `RAVDESS_OUTPUT` — where the resampled audio and manifests are written
+- `EARS` — the directory holding the speaker folders `pNNN/` or the release's
+  per-speaker archives `pNNN.zip` (directly under it or under `ARCHIVES/`), or
+  where to download them to
+- `EARS_OUTPUT` — where the converted audio and manifests are written
 
-## The data
-
-> These counts and observations were made by the recipe author while building this recipe,
-> as a practical reference for users. They are not peer-reviewed measurements and should not be
-> cited as research results; cite the corpus documentation instead.
-
-Checked on 2026-11-01 against the RAVDESS Zenodo record 1188976, the audio-only speech file `Audio_Speech_Actors_01-24.zip` (208 MB; downloaded around 2026-10-15). The record also holds the song, video and audio-video parts, which were not obtained. All counts cover every sample in the release, before any filtering by this recipe.
-
-### Access
-
-Direct download from Zenodo, no sign-in.
-
-### Size of the release
-
-| samples | speakers | total hours |
-|---|---|---|
-| 1,440 | 24 | 1.48 |
-
-How these were counted: every `.wav` under the `Actor_NN` folders (48 kHz; 1,435 mono and 5 stereo; 2.94 to 5.27 s); hours from the file lengths. Speakers are the 24 actors (odd numbers male, even numbers female).
-
-### Files per label
-
-| emotion code in the file name | read as (record description) | samples | hours |
-|---|---|---|---|
-| 01 | neutral | 96 | 0.093 |
-| 02 | calm | 192 | 0.202 |
-| 03 | happy | 192 | 0.194 |
-| 04 | sad | 192 | 0.197 |
-| 05 | angry | 192 | 0.206 |
-| 06 | fearful | 192 | 0.191 |
-| 07 | disgust | 192 | 0.210 |
-| 08 | surprised | 192 | 0.186 |
-
-How these were counted: the third field of the file name `<modality>-<channel>-<emotion>-<intensity>-<statement>-<repetition>-<actor>.wav`. Neutral has half as many files because it was recorded at one intensity only. Hours per label are measured in the same way as the total hours above and summed over the rows of that label.
-
-### Issues in the release
-
-- `03-01-03-01-02-01-07` and `03-01-03-01-02-02-07` (both happy; repetitions 1 and 2 of one actor, statement and intensity) have byte-identical content.
-
+Archives are read in place; nothing is extracted.
 
 ## Download
 
-`prepare_source` downloads `Audio_Speech_Actors_01-24.zip` (208 MB) from
-[Zenodo](https://zenodo.org/records/1188976). The corpus is CC BY-NC-SA 4.0.
+`prepare_source` downloads the per-speaker archives `p001.zip` to `p107.zip` from
+the `dataset` release of the
+[GitHub repository](https://github.com/facebookresearch/ears_dataset/releases),
+keeps only the `emo_*` recordings of each and deletes the archive. The whole set of
+archives is large (tens of GB); if they are already present, nothing is downloaded.
+
+## The data
+
+TODO: filled after the first build (counts of the release).
 
 ## Splits
 
-The corpus publishes no partition. Utterances are split 70/10/20 at random
-within each label (`train_ratio`, `valid_ratio`, `test_ratio`, `split_seed` in
-`dataset/config.yaml`). Actors are not held out, so all three splits contain
-all 24 actors.
+The speaker split of the corpus paper (Richter et al., Interspeech 2024, Sec. 3,
+written for its speech-enhancement benchmarks) is used: p001 to p099 train, p100
+and p101 valid, p102 to p107 test (`split_speakers` in `dataset/config.yaml`). No
+speaker is in two splits.
 
-| split | utterances |
-|---|---|
-| train | 1012 |
-| valid | 143 |
-| test | 285 |
+## License and citation
 
-## Listening test
+CC BY-NC 4.0 (non-commercial). Please cite:
 
-**RAVDESS was validated by listeners** (Livingstone and Russo, 2018, PLOS ONE 13(5)
-e0196391). All 7,356 recordings of the full database (speech and song, in audio-video,
-video-only and audio-only form; this recipe uses the 1,440 audio-only speech files) were
-rated 10 times each for emotional validity (the rater chose the emotion), intensity and
-genuineness, by 247 untrained research participants from North America, undergraduate
-students at Ryerson University; another 72 participants provided test-retest data. The overall
-proportion of correct answers was 0.72 for speech (unbiased hit rate 0.53); interrater
-agreement was substantial for strong expressions (kappa 0.62) and moderate for normal ones
-(0.53). Over both speech and song, the audio-only presentations were recognised least
-well: 0.60 correct (95% CI 0.59 to 0.61), against 0.81 for audio-video and 0.75 for
-video-only. Per-recording scores are in the paper's supplementary table S1 and not in the
-audio download; the recipe uses the intended emotion of the file name.
+```
+@inproceedings{richter2024ears,
+  title     = {{EARS}: An Anechoic Fullband Speech Dataset Benchmarked for Speech Enhancement and Dereverberation},
+  author    = {Richter, Julius and Wu, Yi-Chiao and Krenn, Steven and Welker, Simon and Lay, Bunlong and Watanabe, Shinji and Richard, Alexander and Gerkmann, Timo},
+  booktitle = {Interspeech},
+  year      = {2024},
+}
+```
 
 ## Quick start
 
@@ -112,5 +85,3 @@ python run.py --stages infer measure \
     --inference_config conf/inference.yaml \
     --metrics_config conf/metrics.yaml
 ```
-
-**Duplicates.** 1 recording(s) are byte-identical to another one (one per group is kept). They are listed in `duplicate_ids` and are dropped only when `exclude_duplicates` in `dataset/config.yaml` is `true` (default `false`).
