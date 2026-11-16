@@ -1,0 +1,103 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The Zenodo record does not describe the folder or file naming inside the
+  # archive, so `build()` walks the whole tree and reads the emotion (and, if
+  # possible, the speaker) from the path of each audio file with the rules
+  # below. If a file cannot be labelled, the build stops and prints a sample
+  # of the paths it found; adjust the rules here and run it again. Every file
+  # found is listed in `<SANTALIESC_OUTPUT>/source_files.txt`, and the members
+  # of a downloaded archive in `<SANTALIESC_OUTPUT>/archive_members.txt`.
+  source_env_var: SANTALIESC
+  dataset_path: download
+  # The record states WAV. Other extensions are counted and reported, not read.
+  audio_extensions: [".wav"]
+  # Paths (relative to the source root, `/`-separated) matching any of these
+  # are skipped: macOS resource forks that also end in `.wav`.
+  ignore_path_re:
+    - "(^|/)__MACOSX/"
+    - "(^|/)\\._"
+
+  # Download --------------------------------------------------------------
+  # Zenodo record 20702265 (DOI 10.5281/zenodo.20702265), CC BY 4.0. One zip
+  # (892,440,738 bytes); `archive_md5` is the checksum the record lists. The
+  # name ends in `-001`, the part number of a Google Drive export; the record
+  # holds only this one part.
+  base_url: https://zenodo.org/api/records/20702265/files
+  archive_name: "SantaliESC (Santali Emotional Speech Corpus)-20260615T095634Z-3-001.zip"
+  archive_md5: 774b4335cfc4da2f2ed29e09cfb26847
+  remove_archive: true
+
+  # Labels ----------------------------------------------------------------
+  # The record names five acted emotions: Angry, Happy, Neutral, Sad,
+  # Surprise. Each key is the manifest label; the values are the spellings
+  # accepted in a path. The relative path (without extension) is lowercased
+  # and cut into words at every character that is not a letter or digit, and
+  # also between letters and digits (`Angry01` -> `angry`, `01`). A file is
+  # labelled when its words contain aliases of exactly one emotion; none or
+  # more than one is an error.
+  emotion_aliases:
+    angry: [angry, anger, ang]
+    happy: [happy, happiness, hap]
+    neutral: [neutral, neu]
+    sad: [sad, sadness]
+    surprise: [surprise, surprised, surp, sur]
+  # Overrides the word rule when set: a regex searched in the relative path,
+  # whose group `emotion` must be one of the aliases above. Example for names
+  # like `S12_E3_...` with numeric codes: also fill `emotion_codes`.
+  emotion_re: null
+  # Numeric/other codes the `emotion` group may hold, mapped to a label, e.g.
+  # {"1": angry, "2": happy, ...}. Only read together with `emotion_re`.
+  emotion_codes: {}
+
+  # Speakers --------------------------------------------------------------
+  # Read only to hold speakers out between splits. `speaker_re`, when set, is
+  # a regex searched in the relative path with a group `speaker`; it must
+  # match every file. When it is null and `infer_speaker_from_folders` is
+  # true, the innermost folder that is not an emotion name is taken as the
+  # speaker, but only if that gives exactly `expected_speakers` folders that
+  # each hold every emotion; otherwise no speaker is used.
+  speaker_re: null
+  infer_speaker_from_folders: true
+  expected_speakers: 80
+
+  # Release size stated on the record (80 speakers x 5 sentences x 5
+  # emotions). A different count is logged as a warning, not an error.
+  expected_utterances: 2000
+
+  # Split -----------------------------------------------------------------
+  # No partition is published. With speakers known (see above), speakers are
+  # shuffled with `split_seed` and cut by the ratios (80 -> 64/8/8), so no
+  # speaker is shared between splits. Without speakers, utterances are split
+  # at random within each label by the same ratios. `split_mode` forces one
+  # of the two: `auto`, `speaker` (fails when speakers are unknown) or
+  # `utterance`.
+  split_mode: auto
+  speaker_train_ratio: 0.8
+  speaker_valid_ratio: 0.1
+  speaker_test_ratio: 0.1
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The record states 48 kHz recordings, so `build()` converts every file to
+  # 16 kHz mono with ffmpeg.
+  output_env_var: SANTALIESC_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+  archive_members_file: archive_members.txt
+  source_files_file: source_files.txt
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
