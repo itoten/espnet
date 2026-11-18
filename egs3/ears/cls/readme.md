@@ -19,10 +19,8 @@ For each style a speaker has two recordings:
 The label is the style in the file name. The release spells two styles wrongly
 (`embarassment`, `extasy`); the recipe corrects them to `embarrassment` and
 `ecstasy` (`label_fix` in `dataset/config.yaml`). Nothing else is renamed or
-merged, so the recipe keeps all 23 labels (22 emotional styles and neutral).
-`dataset/config.yaml` also holds a proposal, not read by any code, of how some
-labels could be read as the seven basic emotion classes used by multi-corpus
-recipes.
+merged, so the recipe keeps the corpus's own 23 labels (22 emotional styles and
+neutral).
 
 `create_dataset` converts the recordings (48 kHz, 32-bit float) to 16 kHz mono
 16-bit PCM with ffmpeg.

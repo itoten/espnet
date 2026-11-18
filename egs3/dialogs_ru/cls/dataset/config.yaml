@@ -51,9 +51,10 @@ builder:
   # - `poem`: recited poetry (a reading style).
   # - `whisper`: a phonation mode, not an emotion.
   # - `laughing`: a vocal event; its emotion is not labelled.
-  # - `arrogance`: a judgement call. It is an attitude rather than one of
-  #   the basic emotions and has no counterpart among the seven classes
-  #   used by the other recipes, so it is dropped as well.
+  # - `arrogance`: a judgement call. The dataset card lists it with the
+  #   other "style/emotion" labels, but it names an attitude rather than an
+  #   emotion; it is dropped here and can be kept by moving it to
+  #   `emotion_map` (and raising `num_classes` in `conf/*.yaml` to 8).
   drop_emotions:
     - sgorogovrki
     - tongue-twister

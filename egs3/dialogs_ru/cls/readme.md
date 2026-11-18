@@ -16,12 +16,12 @@ What the recipe uses and leaves out:
 
 | label (`emotion` column) | used | reason |
 |---|---|---|
-| `neutral`, `happy`, `surprise`, `sad`, `angry`, `disgust`, `fear` | yes | the seven emotion classes |
+| `neutral`, `happy`, `surprise`, `sad`, `angry`, `disgust`, `fear` | yes | emotions |
 | `sgorogovrki` (the card calls it `tongue-twister`) | no | a reading task, not an emotion |
 | `poem` | no | a reading style, not an emotion |
 | `whisper` | no | a phonation mode, not an emotion |
 | `laughing` | no | a vocal event; the emotion behind it is not labelled |
-| `arrogance` | no | a judgement call: an attitude rather than a basic emotion, with no counterpart among the seven classes used by the other recipes |
+| `arrogance` | no | a judgement call: the card lists it with the emotions, but it names an attitude |
 
 The tongue-twister label is spelled `sgorogovrki` (a transliteration of the
 Russian word) in the split files, not `tongue-twister` as on the card; both
