@@ -4,6 +4,14 @@ builder:
   # `<source>/{train,val,test}.csv`, columns
   # `audio_path|speaker_id|text|emotion|emotion_on_russian|accent_text|duration`.
   # `audio_path` is relative to the source root (`wavs/<name>.wav`).
+  #
+  # The release is incomplete: the split files list 11,796 utterances, but
+  # `wavs/` of the pinned revision holds only 9,996 files (counted from the
+  # repository's file tree on 2026-11-18). The 1,800 utterances without audio
+  # are skipped and counted in the log. A different number of missing files
+  # (other than 0, should the release be completed) means a partial download
+  # and stops the build.
+  missing_audio_expected: 1800
   source_env_var: DIALOGS_RU
   dataset_path: download
 
@@ -53,6 +61,16 @@ builder:
     - whisper
     - laughing
     - arrogance
+
+  # Duplicates ------------------------------------------------------------
+  # Recordings with byte-identical content, found while building this recipe.
+  # One pair, same label (neutral) and same transcript, both in train:
+  # `masha_sveta_part10_1765` and `masha_sveta_part10_1821`; the second is
+  # listed. With `exclude_duplicates: true` it is left out; `false` uses every
+  # recording.
+  exclude_duplicates: false
+  duplicate_ids:
+    - dialogs_ru-masha_sveta_part10_1821
 
   # Split -----------------------------------------------------------------
   # The published split is used; `val` becomes `valid`. The dataset card

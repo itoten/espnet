@@ -75,15 +75,25 @@ def read_split_file(path: Path) -> list[dict[str, str]]:
     return rows
 
 
+def count_missing_audio(root: Path) -> int:
+    """Count the utterances of the split files whose wav is not under ``root``."""
+    return sum(
+        not (root / row["audio_path"]).is_file()
+        for name in _SPLIT_FILES.values()
+        for row in read_split_file(root / name)
+    )
+
+
 def _is_complete(root: Path) -> bool:
-    """Return whether ``root`` holds every split file and every wav they list."""
+    """Return whether ``root`` holds the split files and all the release's audio.
+
+    The release lacks the audio of ``missing_audio_expected`` utterances, so
+    the source counts as complete when exactly that many (or none) are
+    missing.
+    """
     if not all((root / name).is_file() for name in _SPLIT_FILES.values()):
         return False
-    for name in _SPLIT_FILES.values():
-        for row in read_split_file(root / name):
-            if not (root / row["audio_path"]).is_file():
-                return False
-    return True
+    return count_missing_audio(root) in (0, int(_CFG["missing_audio_expected"]))
 
 
 def resolve_source_root(
@@ -168,10 +178,17 @@ def read_entries(source_root: Path) -> dict[str, list[dict[str, str]]]:
     """
     entries: dict[str, list[dict[str, str]]] = {}
     dropped: Counter[str] = Counter()
+    no_audio: Counter[str] = Counter()
     seen: set[str] = set()
+    excluded = (
+        {str(i) for i in _CFG["duplicate_ids"]} if _CFG["exclude_duplicates"] else set()
+    )
     for split, name in _SPLIT_FILES.items():
         entries[split] = []
         for row in read_split_file(source_root / name):
+            if not (source_root / row["audio_path"]).is_file():
+                no_audio[split] += 1
+                continue
             emotion = row["emotion"].strip()
             if emotion in _DROP_EMOTIONS:
                 dropped[f"{split}:{emotion}"] += 1
@@ -185,6 +202,9 @@ def read_entries(source_root: Path) -> dict[str, list[dict[str, str]]]:
             if utt_id in seen:
                 raise ValueError(f"Duplicate utterance id: {utt_id}")
             seen.add(utt_id)
+            if utt_id in excluded:
+                dropped[f"{split}:listed duplicate"] += 1
+                continue
             entries[split].append(
                 {
                     "utt_id": utt_id,
@@ -194,6 +214,11 @@ def read_entries(source_root: Path) -> dict[str, list[dict[str, str]]]:
             )
     for key, count in sorted(dropped.items()):
         logger.info("Dropped %d utterance(s) with label %s", count, key)
+    for split, count in sorted(no_audio.items()):
+        logger.warning("Skipped %d %s utterance(s) without audio in the release", count, split)
+    missing = [str(i) for i in _CFG["duplicate_ids"] if str(i) not in seen]
+    if missing:
+        raise ValueError(f"`duplicate_ids` not found: {missing}")
     return entries
 
 
