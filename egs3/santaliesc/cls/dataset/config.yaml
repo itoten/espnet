@@ -1,10 +1,14 @@
 builder:
   # Source layout ---------------------------------------------------------
-  # The Zenodo record does not describe the folder or file naming inside the
-  # archive, so `build()` walks the whole tree and reads the emotion (and, if
-  # possible, the speaker) from the path of each audio file with the rules
-  # below. If a file cannot be labelled, the build stops and prints a sample
-  # of the paths it found; adjust the rules here and run it again. Every file
+  # The archive unpacks to
+  # `SantaliESC (Santali Emotional Speech Corpus)/<Emotion>/Statement <n>/03-01-01-<EE>-<SS>-<NN>.wav`:
+  # five emotion folders (Angry, Happy, Neutral, Sad, Surprise), five
+  # statement folders in each, and 80 files per statement folder. In the file
+  # name, EE is the emotion (01 Angry ... 05 Surprise, matching the folder),
+  # SS the statement and NN runs from 01 to 80 in every folder. The Zenodo
+  # record does not document the naming. `build()` walks the whole tree and
+  # labels each file from its path with the rules below; if a file cannot be
+  # labelled, the build stops and prints a sample of the paths. Every file
   # found is listed in `<SANTALIESC_OUTPUT>/source_files.txt`, and the members
   # of a downloaded archive in `<SANTALIESC_OUTPUT>/archive_members.txt`.
   source_env_var: SANTALIESC
@@ -50,19 +54,53 @@ builder:
   emotion_codes: {}
 
   # Speakers --------------------------------------------------------------
-  # Read only to hold speakers out between splits. `speaker_re`, when set, is
-  # a regex searched in the relative path with a group `speaker`; it must
-  # match every file. When it is null and `infer_speaker_from_folders` is
-  # true, the innermost folder that is not an emotion name is taken as the
-  # speaker, but only if that gives exactly `expected_speakers` folders that
-  # each hold every emotion; otherwise no speaker is used.
-  speaker_re: null
-  infer_speaker_from_folders: true
+  # Read only to hold speakers out between splits. `speaker_re` is a regex
+  # searched in the relative path with a group `speaker`; it must match every
+  # file. The last field NN of the file name is taken as the speaker: it runs
+  # from 01 to 80 in every emotion/statement folder, which matches the 80
+  # speakers x 5 statements x 5 emotions the record states. The record does
+  # not say so in words, so this is an inference from the layout. When
+  # `speaker_re` is null and `infer_speaker_from_folders` is true, the
+  # innermost folder that is not an emotion name is tried instead (it does
+  # not identify speakers in this release: those folders are the statements).
+  speaker_re: "-(?P<speaker>[0-9]{2})\\.wav$"
+  infer_speaker_from_folders: false
   expected_speakers: 80
 
   # Release size stated on the record (80 speakers x 5 sentences x 5
   # emotions). A different count is logged as a warning, not an error.
   expected_utterances: 2000
+
+  # Duplicates ------------------------------------------------------------
+  # Recordings with byte-identical content, found while building this recipe
+  # (12 pairs; ids are `santaliesc-<file name without .wav>`). Eight pairs
+  # have the same label (two neighbouring NN within one folder); for those,
+  # the second of each pair is listed in `duplicate_ids`. Four pairs have
+  # different labels: Neutral/Statement 4 NN 09-12 are identical to
+  # Sad/Statement 4 NN 77-80; both members are listed in `conflicting_ids`.
+  # With `exclude_duplicates: true` / `exclude_conflicting: true` the listed
+  # recordings are left out; `false` uses every recording. Kept duplicates
+  # may fall into different splits, since their NN differ.
+  exclude_duplicates: false
+  exclude_conflicting: false
+  duplicate_ids:
+    - santaliesc-03-01-01-02-05-22
+    - santaliesc-03-01-01-04-01-40
+    - santaliesc-03-01-01-04-04-75
+    - santaliesc-03-01-01-04-05-47
+    - santaliesc-03-01-01-05-03-55
+    - santaliesc-03-01-01-05-04-48
+    - santaliesc-03-01-01-05-04-60
+    - santaliesc-03-01-01-05-05-67
+  conflicting_ids:
+    - santaliesc-03-01-01-03-04-09
+    - santaliesc-03-01-01-03-04-10
+    - santaliesc-03-01-01-03-04-11
+    - santaliesc-03-01-01-03-04-12
+    - santaliesc-03-01-01-04-04-77
+    - santaliesc-03-01-01-04-04-78
+    - santaliesc-03-01-01-04-04-79
+    - santaliesc-03-01-01-04-04-80
 
   # Split -----------------------------------------------------------------
   # No partition is published. With speakers known (see above), speakers are
@@ -86,8 +124,8 @@ builder:
     test: manifest/test.tsv
 
   # Build outputs ---------------------------------------------------------
-  # The record states 48 kHz recordings, so `build()` converts every file to
-  # 16 kHz mono with ffmpeg.
+  # The release holds stereo files, 48 kHz (1,975) and 44.1 kHz (25);
+  # `build()` converts every file to 16 kHz mono 16-bit PCM with ffmpeg.
   output_env_var: SANTALIESC_OUTPUT
   data_path: data
   wav_subdir: wav

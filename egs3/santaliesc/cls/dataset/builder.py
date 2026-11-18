@@ -360,8 +360,7 @@ def read_entries(source_root: Path, all_files: list[str]) -> list[dict[str, str]
         except ValueError as exc:
             failures.append(str(exc))
             continue
-        stem = relpath[: -len(Path(relpath).suffix)]
-        utt_id = "santaliesc-" + re.sub(r"[^0-9A-Za-z]+", "_", stem).strip("_")
+        utt_id = "santaliesc-" + re.sub(r"[^0-9A-Za-z-]+", "_", Path(relpath).stem)
         entries.append(
             {
                 "utt_id": utt_id,
@@ -381,8 +380,12 @@ def read_entries(source_root: Path, all_files: list[str]) -> list[dict[str, str]
     if duplicated:
         raise ValueError(f"Utterance ids collide:{_sample(sorted(duplicated))}")
 
+    entries = _drop_listed(entries)
+
     expected = int(_CFG["expected_utterances"])
-    if len(entries) != expected:
+    if len(entries) != expected and not (
+        _CFG["exclude_duplicates"] or _CFG["exclude_conflicting"]
+    ):
         logger.warning(
             "Found %d utterances, but the Zenodo record states %d",
             len(entries),
@@ -394,6 +397,32 @@ def read_entries(source_root: Path, all_files: list[str]) -> list[dict[str, str]
         dict(sorted(Counter(e["label"] for e in entries).items())),
     )
     return entries
+
+
+def _drop_listed(entries: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Leave out the recordings listed in ``duplicate_ids``/``conflicting_ids``.
+
+    Each list applies only when its ``exclude_*`` switch is true. Every listed
+    id is checked against the release, so a stale list stops the build.
+
+    Raises:
+        ValueError: If a listed id is not among ``entries``.
+    """
+    ids = {e["utt_id"] for e in entries}
+    listed = {str(i) for i in _CFG["duplicate_ids"]} | {
+        str(i) for i in _CFG["conflicting_ids"]
+    }
+    missing = listed - ids
+    if missing:
+        raise ValueError(f"Listed duplicate ids not found: {sorted(missing)}")
+    excluded: set[str] = set()
+    if _CFG["exclude_duplicates"]:
+        excluded |= {str(i) for i in _CFG["duplicate_ids"]}
+    if _CFG["exclude_conflicting"]:
+        excluded |= {str(i) for i in _CFG["conflicting_ids"]}
+    if excluded:
+        logger.info("Left out %d listed duplicate recording(s)", len(excluded))
+    return [e for e in entries if e["utt_id"] not in excluded]
 
 
 def _check_ratios(prefix: str) -> tuple[float, float, float]:
@@ -583,6 +612,8 @@ class SantaliESCBuilder(DatasetBuilder):
                         "1",
                         "-ar",
                         sampling_rate,
+                        "-c:a",
+                        "pcm_s16le",
                         "-f",
                         "wav",
                         "-y",
