@@ -2,7 +2,7 @@
 
 Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling + FC
 head) on Dialogs alone and scores it on Dialogs' own test split, classifying each
-utterance into one of seven emotions.
+utterance into one of its 12 labels.
 
 [Dialogs](https://huggingface.co/datasets/langswap/dialogs-ru-emotional-conversations)
 is a studio-quality corpus of expressive, conversational Russian speech, recorded
@@ -12,24 +12,14 @@ text-to-speech. The dataset card states 11,796 utterances (20.6 hours, 44.1 kHz,
 16-bit) and 12 "style/emotion" labels per utterance, in the `emotion` column of
 the pipe-delimited split files `train.csv`, `val.csv` and `test.csv`.
 
-What the recipe uses and leaves out:
+The recipe keeps all 12 labels of the `emotion` column as they are written in the
+split files: `neutral`, `happy`, `surprise`, `sad`, `angry`, `disgust`, `fear`,
+`arrogance`, `laughing`, `poem`, `sgorogovrki` and `whisper`. The tongue-twister
+label is spelled `sgorogovrki` (a transliteration of the Russian word) in the
+split files, not `tongue-twister` as on the card; the recipe keeps the spelling
+of the files. An unknown label stops the build with an error.
 
-| label (`emotion` column) | used | reason |
-|---|---|---|
-| `neutral`, `happy`, `surprise`, `sad`, `angry`, `disgust`, `fear` | yes | emotions |
-| `sgorogovrki` (the card calls it `tongue-twister`) | no | a reading task, not an emotion |
-| `poem` | no | a reading style, not an emotion |
-| `whisper` | no | a phonation mode, not an emotion |
-| `laughing` | no | a vocal event; the emotion behind it is not labelled |
-| `arrogance` | no | a judgement call: the card lists it with the emotions, but it names an attitude |
-
-The tongue-twister label is spelled `sgorogovrki` (a transliteration of the
-Russian word) in the split files, not `tongue-twister` as on the card; both
-spellings are listed in `drop_emotions` in `dataset/config.yaml`. The log
-reports the number of utterances dropped for each label. An unknown label stops
-the build with an error.
-
-`create_dataset` converts the kept recordings to 16 kHz mono with ffmpeg.
+`create_dataset` converts the recordings to 16 kHz mono with ffmpeg.
 
 Two environment variables control where the data lives. Both are optional and
 default to `download/` and `data/` under the recipe.
@@ -84,7 +74,7 @@ How these were counted: rows of `train.csv` (11,428), `val.csv` (180) and `test.
 | sgorogovrki | 81 | 0.177 |
 | whisper | 52 | 0.091 |
 
-How these were counted: the `emotion` column of the split files, for the files present under `wavs/`. Hours per label are measured in the same way as the total hours above and summed over the files of that label. The last five labels are speaking styles and are not used by this recipe.
+How these were counted: the `emotion` column of the split files, for the files present under `wavs/`. Hours per label are measured in the same way as the total hours above and summed over the files of that label.
 
 ### Issues in the release
 
@@ -96,19 +86,20 @@ How these were counted: the `emotion` column of the split files, for the files p
 ## Splits
 
 The published split is used as it is, with `val` as the validation set. The
-dataset card gives 11,428 / 180 / 188 utterances for train / validation / test,
-before this recipe drops the speaking-style labels, and says that validation
-and test were drawn stratified, five utterances per speaker per label. All
-three speakers appear in every split, so the split is not speaker-independent,
-and validation and test are small. After the speaking styles and the
-utterances without audio in the release (see "The data") are left out:
+dataset card gives 11,428 / 180 / 188 utterances for train / validation / test
+and says that validation and test were drawn stratified, five utterances per
+speaker per label. All three speakers appear in every split, so the split is
+not speaker-independent, and validation and test are small. The utterances
+without audio in the release (see "The data") are skipped:
 
 | split | listed in the split file | used by this recipe |
 |---|---|---|
-| train | 11,428 | 9,185 |
-| valid | 180 | 106 |
-| test | 188 | 119 | `remove_long_short` drops train and valid
-clips outside 0.2 to 30 s; test stays unfiltered.
+| train | 11,428 | 9,686 |
+| valid | 180 | 148 |
+| test | 188 | 162 |
+
+`remove_long_short` drops train and valid clips outside 0.2 to 30 s; test stays
+unfiltered.
 
 ## License and citation
 

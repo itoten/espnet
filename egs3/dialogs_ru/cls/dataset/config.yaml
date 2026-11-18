@@ -33,8 +33,11 @@ builder:
 
   # Labels ----------------------------------------------------------------
   # The `emotion` column (English; `emotion_on_russian` is the same label in
-  # Russian) to manifest label. The corpus has 12 "style/emotion" labels.
-  # Seven are emotions and are kept, all of them:
+  # Russian) is the label. The corpus has 12 "style/emotion" labels and the
+  # recipe keeps all of them as they are written in the split files. The
+  # dataset card calls the tongue-twister label `tongue-twister`; the split
+  # files spell it `sgorogovrki` (a transliteration of the Russian word), and
+  # that spelling is kept. A label not listed here stops the build.
   emotion_map:
     neutral: neutral
     happy: happy
@@ -43,25 +46,13 @@ builder:
     angry: angry
     disgust: disgust
     fear: fear
-  # The other five are speaking styles or vocal events, not emotions, and
-  # are dropped:
-  # - `sgorogovrki`: tongue twisters. The dataset card calls this label
-  #   `tongue-twister`, but the CSVs spell it `sgorogovrki` (a
-  #   transliteration of the Russian word); both spellings are listed.
-  # - `poem`: recited poetry (a reading style).
-  # - `whisper`: a phonation mode, not an emotion.
-  # - `laughing`: a vocal event; its emotion is not labelled.
-  # - `arrogance`: a judgement call. The dataset card lists it with the
-  #   other "style/emotion" labels, but it names an attitude rather than an
-  #   emotion; it is dropped here and can be kept by moving it to
-  #   `emotion_map` (and raising `num_classes` in `conf/*.yaml` to 8).
-  drop_emotions:
-    - sgorogovrki
-    - tongue-twister
-    - poem
-    - whisper
-    - laughing
-    - arrogance
+    arrogance: arrogance
+    laughing: laughing
+    poem: poem
+    sgorogovrki: sgorogovrki
+    whisper: whisper
+  # Nothing is left out by label.
+  drop_emotions: []
 
   # Duplicates ------------------------------------------------------------
   # Recordings with byte-identical content, found while building this recipe.

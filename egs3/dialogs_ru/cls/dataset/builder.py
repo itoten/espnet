@@ -239,8 +239,8 @@ class DialogsRuBuilder(DatasetBuilder):
 
     The recordings are 44.1 kHz WAV, so `build()` converts every kept one to
     16 kHz mono and writes one manifest per published split. Utterances with
-    a speaking-style label (``drop_emotions``) are left out and counted in
-    the log.
+    a label listed in ``drop_emotions`` (none by default) are left out and
+    counted in the log.
     """
 
     def is_source_prepared(

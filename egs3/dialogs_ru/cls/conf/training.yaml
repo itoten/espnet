@@ -74,10 +74,9 @@ model:
     normalize:
       _target_: espnet3.systems.cls.src.model.WaveformNormalize
       stats_file: ${stats_dir}/train/feats_stats.npz
-  # Dialogs' seven emotion labels (its five speaking-style labels are
-  # dropped, see dataset/config.yaml). `token_list` ends
+  # Dialogs' 12 labels (see dataset/config.yaml). `token_list` ends
   # with `<unk>`, not a class.
-  num_classes: 7
+  num_classes: 12
   head_size: 1024
   head_layers: 1
   dropout: 0.5
