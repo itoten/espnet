@@ -33,6 +33,19 @@ builder:
     sad: sad
     surprised: surprise
 
+  # Duplicates ------------------------------------------------------------
+  # Clips with byte-identical content, found while building this recipe. Two
+  # pairs, each with the same label and transcript:
+  # EN_B00017_S08547_W000010 = EN_B00035_S05775_W000010 (disgusted) and
+  # ZH_B00005_S00050_W000006 = ZH_B00005_S00084_W000006 (surprised); the
+  # second of each pair is listed. With `exclude_duplicates: true` they are
+  # left out; `false` uses every clip. Kept duplicates may fall into
+  # different splits.
+  exclude_duplicates: false
+  duplicate_ids:
+    - emo_emilia-EN_B00035_S05775_W000010
+    - emo_emilia-ZH_B00005_S00084_W000006
+
   # Split -----------------------------------------------------------------
   # The release is a single evaluation set and publishes no partition.
   # Utterances are split at random within each label (not within each

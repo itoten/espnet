@@ -181,6 +181,13 @@ def read_entries(source_root: Path) -> list[dict[str, str]]:
         )
     if not entries:
         raise FileNotFoundError(f"No Emo-Emilia clip listed under {source_root}")
+    listed = [str(i) for i in _CFG["duplicate_ids"]]
+    missing = [i for i in listed if i not in seen]
+    if missing:
+        raise ValueError(f"`duplicate_ids` not found: {missing}")
+    if _CFG["exclude_duplicates"]:
+        entries = [e for e in entries if e["utt_id"] not in set(listed)]
+        logger.info("Left out %d listed duplicate clip(s)", len(listed))
     logger.info("Read %d clip(s)", len(entries))
     return entries
 
