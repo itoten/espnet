@@ -47,7 +47,63 @@ archives is large (tens of GB); if they are already present, nothing is download
 
 ## The data
 
-TODO: filled after the first build (counts of the release).
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-18 against the per-speaker archives `p001.zip` to `p107.zip` of the `dataset` release of the GitHub repository (copies obtained before this check; their file dates are June 2024). Only the emotional recordings (`emo_*`) were counted; the other parts of the release were not examined. All counts cover every such recording in the release, before any filtering by this recipe.
+
+### Access
+
+GitHub release, direct download, no sign-in.
+
+### Size of the release
+
+| recordings | speakers | total hours |
+|---|---|---|
+| 4,922 | 107 | 17.95 |
+
+How these were counted: every `pNNN/emo_<style>_{sentences,freeform}.wav` member of the 107 archives, read in place; hours from the WAV headers (1.92 to 63.99 s). All are 48 kHz mono. Every speaker has both recordings of every style: 2,461 `sentences` recordings (7.83 hours) and 2,461 `freeform` recordings (10.12 hours).
+
+### Files per label
+
+| style in the file name | recordings | hours |
+|---|---|---|
+| adoration | 214 | 0.806 |
+| amazement | 214 | 0.687 |
+| amusement | 214 | 0.791 |
+| anger | 214 | 0.794 |
+| confusion | 214 | 0.714 |
+| contentment | 214 | 0.729 |
+| cuteness | 214 | 0.692 |
+| desire | 214 | 0.765 |
+| disappointment | 214 | 0.839 |
+| disgust | 214 | 0.782 |
+| distress | 214 | 0.779 |
+| embarassment | 214 | 0.816 |
+| extasy | 214 | 0.717 |
+| fear | 214 | 0.799 |
+| guilt | 214 | 0.724 |
+| interest | 214 | 0.754 |
+| neutral | 214 | 0.761 |
+| pain | 214 | 0.741 |
+| pride | 214 | 0.829 |
+| realization | 214 | 1.027 |
+| relief | 214 | 0.764 |
+| sadness | 214 | 0.835 |
+| serenity | 214 | 0.802 |
+
+How these were counted: the style field of the file name. Hours per label are measured in the same way as the total hours above and summed over the recordings of that label.
+
+### Issues in the release
+
+- Two styles are misspelled in the file names: `embarassment` and `extasy`. The recipe reads them as `embarrassment` and `ecstasy`.
+- No two emotional recordings have byte-identical content.
+
+### Not stated in the documentation
+
+- Nine recordings are longer than 30 s, the limit that `remove_long_short` applies to train and valid: eight `freeform` recordings (six of them `realization`; the longest 64.0 s) and `p101/emo_realization_sentences` (31.6 s).
+
 
 ## Splits
 
@@ -55,6 +111,12 @@ The speaker split of the corpus paper (Richter et al., Interspeech 2024, Sec. 3,
 written for its speech-enhancement benchmarks) is used: p001 to p099 train, p100
 and p101 valid, p102 to p107 test (`split_speakers` in `dataset/config.yaml`). No
 speaker is in two splits.
+
+| split | speakers | recordings | per label |
+|---|---|---|---|
+| train | 99 | 4,554 | 198 |
+| valid | 2 | 92 | 4 |
+| test | 6 | 276 | 12 |
 
 ## License and citation
 
