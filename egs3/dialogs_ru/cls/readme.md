@@ -49,7 +49,49 @@ resumed by running `prepare_source` again.
 
 ## The data
 
-TODO: filled after the first build (counts of the release).
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-18 against the Hugging Face dataset `langswap/dialogs-ru-emotional-conversations` (repository revision `a74ff44d8d27ca3d21098ea3ed4d31a32923fbdd`, last modified 2026-10-12). All counts cover every file in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| utterances listed | utterances with audio | speakers | hours of audio |
+|---|---|---|---|
+| 11,796 | 9,996 | 3 | 17.42 |
+
+How these were counted: rows of `train.csv` (11,428), `val.csv` (180) and `test.csv` (188); files under `wavs/` (every one is listed in a split file); hours from the WAV headers (0.41 to 36.73 s). All are 44.1 kHz mono. Speakers are the `speaker_id` values `M`, `S` and `D`.
+
+### Files per label
+
+| `emotion` column | files with audio | hours |
+|---|---|---|
+| neutral | 5,264 | 9.023 |
+| happy | 2,603 | 4.972 |
+| surprise | 716 | 1.121 |
+| sad | 389 | 0.813 |
+| angry | 181 | 0.266 |
+| disgust | 152 | 0.247 |
+| fear | 105 | 0.130 |
+| poem | 187 | 0.131 |
+| laughing | 151 | 0.261 |
+| arrogance | 115 | 0.187 |
+| sgorogovrki | 81 | 0.177 |
+| whisper | 52 | 0.091 |
+
+How these were counted: the `emotion` column of the split files, for the files present under `wavs/`. Hours per label are measured in the same way as the total hours above and summed over the files of that label. The last five labels are speaking styles and are not used by this recipe.
+
+### Issues in the release
+
+- The audio of 1,800 listed utterances is missing: 1,742 of `train.csv` (1,664 with an emotion label, mostly neutral 961 and happy 440), 32 of `val.csv` and 26 of `test.csv`. `wavs/` holds 9,996 files. The split files' `duration` column puts the missing audio at 3.2 hours. The recipe skips these utterances.
+- The dataset card calls one label `tongue-twister`; the split files spell it `sgorogovrki`.
+- `masha_sveta_part10_1765` and `masha_sveta_part10_1821` (both neutral, same transcript, both in train) have byte-identical content; the second is listed in `duplicate_ids`.
+
 
 ## Splits
 
@@ -58,7 +100,14 @@ dataset card gives 11,428 / 180 / 188 utterances for train / validation / test,
 before this recipe drops the speaking-style labels, and says that validation
 and test were drawn stratified, five utterances per speaker per label. All
 three speakers appear in every split, so the split is not speaker-independent,
-and validation and test are small. `remove_long_short` drops train and valid
+and validation and test are small. After the speaking styles and the
+utterances without audio in the release (see "The data") are left out:
+
+| split | listed in the split file | used by this recipe |
+|---|---|---|
+| train | 11,428 | 9,185 |
+| valid | 180 | 106 |
+| test | 188 | 119 | `remove_long_short` drops train and valid
 clips outside 0.2 to 30 s; test stays unfiltered.
 
 ## License and citation
