@@ -46,7 +46,43 @@ present are not fetched again.
 
 ## The data
 
-TODO: filled after the first build (counts of the release).
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-18 against the Hugging Face dataset `ASLP-lab/Emo-Emilia` (repository revision `519da7a59f4a5a9b9bba5b5c318f1e2ee0eed97a`). All counts cover every clip in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, direct download, no sign-in.
+
+### Size of the release
+
+| clips | speakers | total hours |
+|---|---|---|
+| 1,400 | not identified | 3.29 |
+
+How these were counted: every `.wav` under `wav/` (all 1,400 are listed once in `Emo-Emilia-ALL.jsonl`); hours from the WAV headers (3.00 to 24.55 s). All are 16 kHz mono. By the id prefix, 700 clips are English (1.86 hours) and 700 Mandarin Chinese (1.43 hours).
+
+### Files per label
+
+| `emotion` field | clips | hours |
+|---|---|---|
+| angry | 200 | 0.529 |
+| disgusted | 200 | 0.439 |
+| fearful | 200 | 0.408 |
+| happy | 200 | 0.503 |
+| neutral | 200 | 0.421 |
+| sad | 200 | 0.556 |
+| surprised | 200 | 0.433 |
+
+How these were counted: the `emotion` field of `Emo-Emilia-ALL.jsonl`. Hours per label are measured in the same way as the total hours above and summed over the clips of that label.
+
+### Issues in the release
+
+- Two pairs of clips have byte-identical content, each with the same label and transcript: `EN_B00017_S08547_W000010` = `EN_B00035_S05775_W000010` (disgusted) and `ZH_B00005_S00050_W000006` = `ZH_B00005_S00084_W000006` (surprised). The second of each pair is listed in `duplicate_ids`.
+- The `wav` field of the JSONL gives `./Emo-Emilia/wav/<id>.wav`, a path that does not exist in the release (the clips are under `wav/`).
+
 
 ## Splits
 
@@ -57,6 +93,12 @@ not stratified by language. Speakers are not identified in the release, so the
 splits may share speakers. Because Emo-Emilia is published as an evaluation set,
 scores from this recipe are not comparable to results that use the whole set
 for testing.
+
+| split | clips | per label |
+|---|---|---|
+| train | 980 | 140 |
+| valid | 140 | 20 |
+| test | 280 | 40 |
 
 ## License and citation
 
