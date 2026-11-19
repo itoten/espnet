@@ -14,6 +14,8 @@ from espnet2.legacy.nets.pytorch_backend.transformer.subsampling import (
     Conv2dSubsampling8,
 )
 from espnet3.systems.cls.src.frontend import (
+    LogMelEncoderFrontend,
+    LogMelTransformerFrontend,
     OwsmFrontend,
     W2vBertFrontend,
     Wav2Vec2Frontend,
@@ -382,3 +384,93 @@ def test_owsm_padding_keeps_the_real_frame_count():
     assert s2t.encoder.seen["lengths"].tolist() == [200, 200]
     assert torch.equal(padded_lengths, plain_lengths)
     assert frames.size(1) > int(plain_lengths.max())
+
+
+def _two_padded_batches(frontend, short):
+    """Encode `short` next to a 1 s and next to a 1.5 s waveform.
+
+    The short waveform is zero-padded to the batch length in both batches, so
+    its frames may differ only through how the frontend treats the padding.
+    Returns [(frames, lengths) of batch A, (frames, lengths) of batch B].
+    """
+    out = []
+    for total in (16000, 24000):
+        batch = torch.zeros(2, total)
+        batch[0] = torch.randn(total)
+        batch[1, : short.numel()] = short
+        lengths = torch.tensor([total, short.numel()])
+        out.append(frontend(batch, lengths))
+    return out
+
+
+def _tiny_encoder(encoder_cls, **kwargs):
+    from functools import partial
+
+    return partial(
+        encoder_cls,
+        output_size=16,
+        attention_heads=2,
+        input_layer=None,
+        **kwargs,
+    )
+
+
+@pytest.mark.parametrize("kind", ["conformer", "ebranchformer"])
+def test_logmel_encoder_frontend_lengths_and_padding(kind):
+    from espnet2.asr.encoder.conformer_encoder import ConformerEncoder
+    from espnet2.asr.encoder.e_branchformer_encoder import EBranchformerEncoder
+
+    if kind == "conformer":
+        # The settings of conf/frontend/conformer.yaml: ESPnet2's default
+        # rel_pos_type "legacy" makes frames depend on the padding.
+        encoder = _tiny_encoder(
+            ConformerEncoder,
+            linear_units=32,
+            num_blocks=2,
+            rel_pos_type="latest",
+            macaron_style=True,
+            use_sdpa=True,
+        )
+    else:
+        encoder = _tiny_encoder(
+            EBranchformerEncoder,
+            cgmlp_linear_units=32,
+            linear_units=32,
+            num_blocks=2,
+            use_ffn=True,
+            macaron_ffn=True,
+            use_sdpa=True,
+        )
+    frontend = LogMelEncoderFrontend(encoder=encoder, d_model=16).eval()
+    assert frontend.output_size() == 16
+
+    short = torch.randn(8000)
+    frames, frame_lengths = _two_padded_batches(frontend, short)[0]
+    # one frame every 20 ms: 101 centred 10 ms frames, then stride 2
+    assert frame_lengths.tolist() == [51, 26]
+    assert frames.shape[0] == 2 and frames.shape[2] == 16
+    assert frames.size(1) >= int(frame_lengths.max())
+
+    # the amount of padding must not change a shorter utterance's frames
+    (frames_a, _), (frames_b, _) = _two_padded_batches(frontend, short)[:2]
+    torch.testing.assert_close(frames_a[1, :26], frames_b[1, :26], atol=1e-4, rtol=1e-4)
+
+
+def test_logmel_encoder_frontend_rejects_a_wrong_output_width():
+    from espnet2.asr.encoder.conformer_encoder import ConformerEncoder
+
+    encoder = _tiny_encoder(
+        ConformerEncoder, linear_units=32, num_blocks=1, rel_pos_type="latest"
+    )
+    with pytest.raises(ValueError, match="output_size"):
+        LogMelEncoderFrontend(encoder=encoder, d_model=32)
+
+
+def test_logmel_transformer_frontend_runs_and_pads_consistently():
+    frontend = LogMelTransformerFrontend(
+        d_model=16, num_layers=2, num_heads=2, ffn_dim=32
+    ).eval()
+    short = torch.randn(8000)
+    (frames_a, lengths_a), (frames_b, _) = _two_padded_batches(frontend, short)
+    assert lengths_a.tolist() == [51, 26]
+    torch.testing.assert_close(frames_a[1, :26], frames_b[1, :26], atol=1e-4, rtol=1e-4)

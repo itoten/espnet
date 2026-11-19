@@ -4,19 +4,26 @@ Every frontend takes a batch of waveforms with their lengths and returns frame
 features with their lengths, the interface of ESPnet2's ``AbsFrontend``. Each
 one feeds its encoder the input that encoder was pre-trained on, so only the
 encoder differs between models built on different frontends.
+``LogMelTransformerFrontend`` is the exception: a plain transformer on log-mel
+features, built with random weights to be trained from scratch.
 """
 
 from __future__ import annotations
 
-from typing import Optional, Tuple
+from typing import Optional, Sequence, Tuple
+
+import math
 
 import torch
 import torch.nn.functional as F
 from torch import nn
 
 from espnet2.asr.frontend.abs_frontend import AbsFrontend
+from espnet2.asr.frontend.default import DefaultFrontend
 
 __all__ = [
+    "LogMelTransformerFrontend",
+    "LogMelEncoderFrontend",
     "OwsmFrontend",
     "W2vBertFrontend",
     "Wav2Vec2Frontend",
@@ -447,4 +454,303 @@ class OwsmFrontend(AbsFrontend):
                 frame_lengths = (
                     torch.div(frame_lengths - 3, 2, rounding_mode="floor") + 1
                 )
+        return frames, frame_lengths.to(torch.long)
+
+
+def _sinusoidal_positions(
+    length: int, dim: int, device: torch.device
+) -> torch.Tensor:
+    """Return the fixed sinusoidal position table of the original Transformer."""
+    position = torch.arange(length, device=device, dtype=torch.float)[:, None]
+    scale = torch.exp(
+        torch.arange(0, dim, 2, device=device, dtype=torch.float)
+        * (-math.log(10000.0) / dim)
+    )
+    table = torch.zeros(length, dim, device=device)
+    table[:, 0::2] = torch.sin(position * scale)
+    table[:, 1::2] = torch.cos(position * scale)
+    return table
+
+
+class LogMelTransformerFrontend(AbsFrontend):
+    """Plain transformer encoder on log-mel features, trained from scratch.
+
+    The waveform becomes log-mel filterbank features (ESPnet2's
+    ``DefaultFrontend``), optionally masked by SpecAugment in training, then
+    standardised per utterance and per mel bin over its own frames. Strided 1-D
+    convolutions bring the frames to the encoder width (with strides
+    ``(1, 2)`` and a 10 ms hop: one frame every 20 ms, as in HuBERT), fixed
+    sinusoidal positions are added, and pre-LayerNorm transformer layers
+    follow, closed by a final LayerNorm. The layers are PyTorch's
+    ``nn.TransformerEncoderLayer``, whose attention runs on
+    ``scaled_dot_product_attention``.
+
+    With the defaults (24 layers, width 1024, 16 heads, FFN 4096) the encoder
+    has the depth and width of HuBERT Large and about 306M parameters, so that
+    a model trained from scratch can be compared with a pre-trained one of the
+    same size.
+
+    Args:
+        fs: Sampling rate of the waveforms.
+        n_fft: FFT size of the log-mel features.
+        win_length: Window length in samples.
+        hop_length: Hop length in samples.
+        n_mels: Number of mel bins.
+        d_model: Width of the encoder.
+        num_layers: Number of transformer layers.
+        num_heads: Number of attention heads.
+        ffn_dim: Width of the feed-forward block of each layer.
+        dropout: Dropout of the input, the attention and the feed-forward
+            blocks.
+        conv_strides: Stride of each convolution (kernel 3) in front of the
+            layers; their product is the frame subsampling.
+        specaug: Optional SpecAugment module (``espnet2.asr.specaug.specaug.
+            SpecAug``), applied to the log-mel features in training only.
+        compile_layers: Whether to compile each layer with ``torch.compile``
+            (``dynamic=True``), as in :class:`Wav2Vec2Frontend`.
+        compile_mode: ``mode`` given to ``torch.compile``.
+        max_train_crop: In training, cut every waveform of a batch to the
+            shortest one when that removes at most this fraction of the padded
+            length (``0`` never cuts). A batch without padding needs no
+            attention mask and runs on the fastest attention kernel; see
+            :class:`Wav2Vec2Frontend`.
+
+    Examples:
+        .. code-block:: yaml
+
+            frontend:
+              _target_: espnet3.systems.cls.src.frontend.LogMelTransformerFrontend
+              num_layers: 24
+              d_model: 1024
+              specaug:
+                _target_: espnet2.asr.specaug.specaug.SpecAug
+                apply_time_warp: false
+                time_mask_width_ratio_range: [0.0, 0.05]
+    """
+
+    def __init__(
+        self,
+        fs: int = 16000,
+        n_fft: int = 512,
+        win_length: int = 400,
+        hop_length: int = 160,
+        n_mels: int = 80,
+        d_model: int = 1024,
+        num_layers: int = 24,
+        num_heads: int = 16,
+        ffn_dim: int = 4096,
+        dropout: float = 0.1,
+        conv_strides: Sequence[int] = (1, 2),
+        specaug: Optional[nn.Module] = None,
+        compile_layers: bool = False,
+        compile_mode: Optional[str] = None,
+        max_train_crop: float = 0.0,
+    ) -> None:
+        """Build the feature extraction and the encoder with random weights."""
+        super().__init__()
+        self.feature = DefaultFrontend(
+            fs=fs,
+            n_fft=n_fft,
+            win_length=win_length,
+            hop_length=hop_length,
+            n_mels=n_mels,
+        )
+        self.specaug = specaug
+        self.d_model = int(d_model)
+        self.conv_strides = tuple(int(stride) for stride in conv_strides)
+        self.max_train_crop = float(max_train_crop)
+
+        convs = []
+        channels = int(n_mels)
+        for stride in self.conv_strides:
+            convs += [
+                nn.Conv1d(channels, self.d_model, 3, stride=stride, padding=1),
+                nn.GELU(),
+            ]
+            channels = self.d_model
+        self.subsample = nn.Sequential(*convs)
+        self.dropout = nn.Dropout(dropout)
+        # One layer at a time: nn.TransformerEncoder deep-copies a single
+        # layer, which would start every layer from the same weights.
+        self.layers = nn.ModuleList(
+            nn.TransformerEncoderLayer(
+                self.d_model,
+                num_heads,
+                ffn_dim,
+                dropout,
+                activation="gelu",
+                batch_first=True,
+                norm_first=True,
+            )
+            for _ in range(num_layers)
+        )
+        self.final_norm = nn.LayerNorm(self.d_model)
+        if compile_layers:
+            for layer in self.layers:
+                layer.compile(dynamic=True, mode=compile_mode)
+
+    def output_size(self) -> int:
+        """Return the width of one output frame."""
+        return self.d_model
+
+    @staticmethod
+    def _standardise(feats: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
+        """Standardise each utterance per mel bin over its own frames."""
+        valid = (
+            torch.arange(feats.size(1), device=feats.device)[None, :]
+            < lengths[:, None]
+        ).unsqueeze(-1).to(feats.dtype)
+        count = valid.sum(dim=1, keepdim=True).clamp(min=1)
+        mean = (feats * valid).sum(dim=1, keepdim=True) / count
+        variance = (((feats - mean) * valid) ** 2).sum(dim=1, keepdim=True) / count
+        return (feats - mean) / torch.sqrt(variance + 1.0e-5) * valid
+
+    def forward(
+        self, speech: torch.Tensor, speech_lengths: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Encode a batch of waveforms.
+
+        Args:
+            speech: Waveforms of shape ``(B, samples)``.
+            speech_lengths: Valid sample count per waveform, shape ``(B,)``.
+
+        Returns:
+            tuple: Frames of shape ``(B, T, D)`` and the valid frame count per
+            waveform.
+        """
+        if self.training and self.max_train_crop > 0:
+            shortest = int(speech_lengths.min())
+            if shortest >= (1 - self.max_train_crop) * speech.size(1):
+                speech = speech[:, :shortest]
+                speech_lengths = torch.full_like(speech_lengths, shortest)
+
+        # The STFT and the log run in fp32 even under bf16 autocast.
+        with torch.autocast(device_type=speech.device.type, enabled=False):
+            feats, feat_lengths = self.feature(speech.float(), speech_lengths)
+            if self.specaug is not None and self.training:
+                feats, feat_lengths = self.specaug(feats, feat_lengths)
+            feats = self._standardise(feats, feat_lengths)
+
+        frames = self.subsample(feats.transpose(1, 2)).transpose(1, 2)
+        frame_lengths = feat_lengths
+        for stride in self.conv_strides:
+            frame_lengths = torch.div(frame_lengths - 1, stride, rounding_mode="floor") + 1
+        positions = _sinusoidal_positions(frames.size(1), self.d_model, frames.device)
+        frames = self.dropout(frames + positions.to(frames.dtype))
+
+        padding = (
+            torch.arange(frames.size(1), device=frames.device)[None, :]
+            >= frame_lengths[:, None]
+        )
+        # Without padding, no mask: SDPA then takes its fastest kernel.
+        mask = padding if bool(padding.any()) else None
+        for layer in self.layers:
+            frames = layer(frames, src_key_padding_mask=mask)
+        return self.final_norm(frames), frame_lengths.to(torch.long)
+
+
+class LogMelEncoderFrontend(LogMelTransformerFrontend):
+    """An ESPnet2 encoder (e.g. Conformer, E-Branchformer) on log-mel features.
+
+    The same input stage as :class:`LogMelTransformerFrontend` (log-mel
+    features, optional SpecAugment in training, per-utterance standardisation
+    and strided 1-D convolutions to the encoder width), followed by an ESPnet2
+    ``AbsEncoder`` instead of the plain transformer layers. The encoder's own
+    input layer is not used (``input_layer: null``): it adds its positional
+    encoding to the frames of the convolutions, so all the models trained from
+    scratch share the input stage and differ only in their encoder blocks.
+
+    Config alone cannot do this: ESPnet2 encoders take features and lengths,
+    not waveforms, and return a 3-tuple, while ``ClsModel`` expects a frontend
+    that maps waveforms to frames.
+
+    Args:
+        encoder: A partially instantiated ESPnet2 encoder (``_partial_: true``);
+            it is called with ``input_size=d_model``. Give it
+            ``output_size: d_model`` and ``input_layer: null``.
+        compile_layers: Whether to compile each encoder block with
+            ``torch.compile`` (``dynamic=True``).
+        Other arguments: as in :class:`LogMelTransformerFrontend`.
+
+    Examples:
+        .. code-block:: yaml
+
+            frontend:
+              _target_: espnet3.systems.cls.src.frontend.LogMelEncoderFrontend
+              d_model: 1024
+              encoder:
+                _target_: espnet2.asr.encoder.conformer_encoder.ConformerEncoder
+                _partial_: true
+                output_size: 1024
+                attention_heads: 16
+                linear_units: 4096
+                num_blocks: 12
+                input_layer: null
+                use_sdpa: true
+    """
+
+    def __init__(
+        self,
+        encoder,
+        fs: int = 16000,
+        n_fft: int = 512,
+        win_length: int = 400,
+        hop_length: int = 160,
+        n_mels: int = 80,
+        d_model: int = 1024,
+        conv_strides: Sequence[int] = (1, 2),
+        specaug: Optional[nn.Module] = None,
+        compile_layers: bool = False,
+        compile_mode: Optional[str] = None,
+        max_train_crop: float = 0.0,
+    ) -> None:
+        """Build the input stage and the encoder with random weights."""
+        super().__init__(
+            fs=fs,
+            n_fft=n_fft,
+            win_length=win_length,
+            hop_length=hop_length,
+            n_mels=n_mels,
+            d_model=d_model,
+            num_layers=0,
+            conv_strides=conv_strides,
+            specaug=specaug,
+            compile_layers=False,
+            max_train_crop=max_train_crop,
+        )
+        # Parts of the plain transformer that this frontend does not use.
+        del self.layers, self.final_norm, self.dropout
+        self.encoder = encoder(input_size=self.d_model)
+        if self.encoder.output_size() != self.d_model:
+            raise ValueError(
+                f"encoder output_size {self.encoder.output_size()} "
+                f"must equal d_model {self.d_model}"
+            )
+        if compile_layers:
+            for block in self.encoder.encoders:
+                block.compile(dynamic=True, mode=compile_mode)
+
+    def forward(
+        self, speech: torch.Tensor, speech_lengths: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Encode a batch of waveforms into ``(B, T, d_model)`` frames."""
+        if self.training and self.max_train_crop > 0:
+            shortest = int(speech_lengths.min())
+            if shortest >= (1 - self.max_train_crop) * speech.size(1):
+                speech = speech[:, :shortest]
+                speech_lengths = torch.full_like(speech_lengths, shortest)
+
+        with torch.autocast(device_type=speech.device.type, enabled=False):
+            feats, feat_lengths = self.feature(speech.float(), speech_lengths)
+            if self.specaug is not None and self.training:
+                feats, feat_lengths = self.specaug(feats, feat_lengths)
+            feats = self._standardise(feats, feat_lengths)
+
+        frames = self.subsample(feats.transpose(1, 2)).transpose(1, 2)
+        frame_lengths = feat_lengths
+        for stride in self.conv_strides:
+            frame_lengths = (
+                torch.div(frame_lengths - 1, stride, rounding_mode="floor") + 1
+            )
+        frames, frame_lengths, _ = self.encoder(frames, frame_lengths)
         return frames, frame_lengths.to(torch.long)

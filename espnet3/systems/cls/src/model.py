@@ -229,6 +229,13 @@ class ClsModel(nn.Module):
         Returns:
             torch.Tensor: Logits of shape ``(B, num_classes)``.
         """
+        # ESPnet2's CommonPreprocessor returns the speech it reverberates or
+        # adds noise to as float64 of shape (samples, 1): back to (B, samples)
+        # in the model's dtype.
+        if speech.dim() == 3 and speech.size(-1) == 1:
+            speech = speech.squeeze(-1)
+        if speech.dtype == torch.float64:
+            speech = speech.float()
         frames, frame_lengths = self.frontend(speech, speech_lengths)
         return self.head(self.pooling(frames, frame_lengths))
 
