@@ -444,9 +444,10 @@ class CommonPreprocessor(AbsPreprocessor):
         if self.speech_name in data:
             if self.train and (self.rirs is not None or self.noises is not None):
                 speech = data[self.speech_name]
+                mono = speech.ndim == 1
 
                 # speech: (Nmic, Time)
-                if speech.ndim == 1:
+                if mono:
                     speech = speech[None, :]
                 else:
                     speech = speech.T
@@ -479,6 +480,12 @@ class CommonPreprocessor(AbsPreprocessor):
                 ma = np.max(np.abs(speech))
                 if ma > 1.0:
                     speech /= ma
+                # A 1-D input stays 1-D when the result has one channel, as
+                # without augmentation (and as data_aug below requires),
+                # instead of (Time, 1). A multi-channel RIR or noise still
+                # gives (Time, Nmic).
+                if mono and speech.shape[1] == 1:
+                    speech = speech[:, 0]
                 data[self.speech_name] = speech
 
             if self.train and self.data_aug:

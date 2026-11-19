@@ -232,3 +232,47 @@ def test_rir_delay_of_a_multichannel_rir(tmp_path, per_channel, expected):
         corr = [np.dot(out[k:, ch], speech[: 1600 - k]) for k in range(64)]
         shifts.append(int(np.argmax(corr)))
     assert shifts == expected
+
+
+def test_mono_speech_stays_one_dimensional_after_noise_and_rir(tmp_path):
+    # Noise and RIR work on (channels, time); a 1-D input must come back 1-D,
+    # as without them, so that data_aug (which needs 1-D) can follow.
+    import soundfile
+
+    noise = tmp_path / "noise.wav"
+    soundfile.write(noise, 0.1 * np.ones(8000), 16000, subtype="FLOAT")
+    noise_scp = tmp_path / "noise.scp"
+    noise_scp.write_text(f"n1 {noise}\n")
+    preprocessor = CommonPreprocessor(
+        train=True,
+        fs=16000,
+        rir_scp=_write_delayed_impulse_rir(tmp_path, 5),
+        rir_apply_prob=1.0,
+        noise_scp=str(noise_scp),
+        noise_apply_prob=1.0,
+        noise_db_range="10_10",
+        data_aug_effects=[[1.0, "speed_perturb", {"factor": 1.1}]],
+        data_aug_num=[1, 1],
+        data_aug_prob=1.0,
+    )
+    rng = np.random.default_rng(0)
+    speech = (0.1 * rng.standard_normal(16000)).astype(np.float64)
+    out = preprocessor("utt1", {"speech": speech.copy()})["speech"]
+    assert out.ndim == 1
+
+
+def test_mono_speech_with_a_multichannel_rir_keeps_its_channels(tmp_path):
+    import soundfile
+
+    rir = np.zeros((64, 2))
+    rir[3, 0] = 1.0
+    rir[7, 1] = 1.0
+    wav = tmp_path / "rir2ch.wav"
+    soundfile.write(wav, rir, 16000, subtype="FLOAT")
+    (tmp_path / "rir.scp").write_text(f"rir1 {wav}\n")
+    preprocessor = CommonPreprocessor(
+        train=True, rir_scp=str(tmp_path / "rir.scp"), rir_apply_prob=1.0
+    )
+    speech = 0.1 * np.random.default_rng(0).standard_normal(1600)
+    out = preprocessor("utt1", {"speech": speech})["speech"]
+    assert out.shape == (1600, 2)
