@@ -6,6 +6,7 @@ from typeguard import typechecked
 from espnet2.samplers.abs_sampler import AbsSampler
 from espnet2.samplers.category_balanced_sampler import CategoryBalancedSampler
 from espnet2.samplers.category_power_sampler import (
+    CategoryPowerNumElementsSampler,
     CategoryDatasetPowerSampler,
     CategoryPowerSampler,
 )
@@ -96,6 +97,14 @@ CATEGORY_BATCH_TYPES = dict(
     "    category_a utterance_id_a1 utterance_id_a2\n"
     "    category_b utterance_id_b1 utterance_id_b2\n"
     "    category_c utterance_id_c1 utterance_id_c2\n",
+    catpow_numel="CategoryPowerNumElementsSampler gives each category the share "
+    "P(l) = (n_l / N)^β / Σ_m (n_m / N)^β of the epoch's audio, met in duration "
+    "(β = 1 gives the training set as it is), and groups the drawn utterances "
+    "into length-sorted batches as NumElementsBatchSampler does (a batch's size "
+    "times its longest utterance stays within 'batch_bins'), so that padding "
+    "stays small. The categories can be e.g. the source corpus of each "
+    "utterance, to up-sample small corpora. Requires a 'category2utt' file as "
+    "catpow.",
     catpow_balance_dataset="CategoryDatasetPowerSampler performs hierarchical "
     "sampling for multi-category, multi-dataset training where both category "
     "imbalance and dataset imbalance exist. It first balances categories within "
@@ -239,6 +248,8 @@ def build_category_batch_sampler(
     epoch: int = 1,
     num_batches: Optional[int] = None,
     distributed: bool = False,
+    sort_in_batch: str = "descending",
+    sort_batch: str = "ascending",
 ) -> Tuple[AbsSampler, dict]:
 
     if type == "catbel":
@@ -267,6 +278,25 @@ def build_category_batch_sampler(
             distributed=distributed,
         )
         batch_sampler = CategoryPowerSampler(**sampler_args)
+    elif type == "catpow_numel":
+        sampler_args = dict(
+            batch_bins=batch_bins,
+            shape_files=shape_files,
+            min_batch_size=min_batch_size,
+            max_batch_size=max_batch_size,
+            upsampling_factor=upsampling_factor,
+            dataset_scaling_factor=dataset_scaling_factor,
+            drop_last=drop_last,
+            category2utt_file=category2utt_file,
+            epoch=epoch,
+            sort_in_batch=sort_in_batch,
+            sort_batch=sort_batch,
+        )
+        if dataset_scaling_factor is None:
+            sampler_args["dataset_scaling_factor"] = 1.0
+        if min_batch_size is None:
+            sampler_args["min_batch_size"] = 1
+        batch_sampler = CategoryPowerNumElementsSampler(**sampler_args)
     elif type == "catpow_balance_dataset":
         if Path(dataset2utt_parent_dir, "dataset2utt").exists():
             dataset2utt_file = str(Path(dataset2utt_parent_dir, "dataset2utt"))

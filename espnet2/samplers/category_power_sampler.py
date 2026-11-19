@@ -526,3 +526,175 @@ class CategoryDatasetPowerSampler(AbsSampler):
 
     def __iter__(self) -> Iterator[Tuple[str, ...]]:
         return iter(self.batch_list)
+
+
+class CategoryPowerNumElementsSampler(AbsSampler):
+    r"""Power-law category sampling by duration, with length-sorted batches.
+
+    Like :class:`CategoryPowerSampler`, each epoch gives category ``l`` the
+    share ``P(l) = (n_l / N)^β / Σ_m (n_m / N)^β`` of its audio, with ``n_l``
+    the total duration (bins) of category ``l``. Unlike it, the share is met in
+    duration, not in utterance count: the epoch holds about
+    ``P(l) * N * dataset_scaling_factor`` bins of category ``l``, drawn from
+    its utterances in a random order and starting the order again when it runs
+    out. With ``β = 1`` and ``dataset_scaling_factor = 1`` an epoch is then
+    exactly the training set, as with :class:`NumElementsBatchSampler`.
+    (``CategoryPowerSampler`` draws a category for every utterance, so a
+    category of long utterances gets more than its share of the audio.)
+
+    The utterances are then grouped as :class:`NumElementsBatchSampler` does,
+    so that padding stays small and a batch's padded size stays within
+    ``batch_bins``: sorted by length, and a batch is closed once its size
+    times its longest utterance exceeds ``batch_bins``. Lengths are sorted in
+    buckets of ``length_bucket`` bins with a random order inside each bucket,
+    which spreads the copies of an utterance drawn more than once over the
+    batches of its length; copies may still share a batch (each then gets
+    its own augmentation).
+
+    The categories can be anything that ``category2utt_file`` lists, e.g. the
+    source corpus of each utterance, to up-sample the small corpora of a
+    multi-corpus training set.
+
+    Set ``batch_type=catpow_numel`` to use it.
+
+    Args:
+        batch_bins: Maximum padded size (utterances times the longest length)
+            of a batch; a batch closes at the first utterance that exceeds it.
+        shape_files: One shape file (``<key> <length>``).
+        min_batch_size: Minimum number of utterances in a batch.
+        max_batch_size: Maximum number of utterances in a batch, or None.
+        upsampling_factor: β.
+        dataset_scaling_factor: The epoch holds this many times the bins of
+            the whole training set (``> 0``).
+        drop_last: Whether to drop the final, incomplete batch.
+        category2utt_file: ``<category> <key> <key> ...`` per line.
+        epoch: Seeds the drawing, so that every epoch draws anew.
+        sort_in_batch: ``descending`` or ``ascending`` length within a batch.
+        sort_batch: ``descending`` or ``ascending`` order of the batches by
+            length (the iterator shuffles them anyway when asked to).
+        length_bucket: Width in bins of the length buckets.
+    """
+
+    @typechecked
+    def __init__(
+        self,
+        batch_bins: int,
+        shape_files: Union[Tuple[str, ...], List[str]],
+        min_batch_size: int = 1,
+        max_batch_size: Optional[int] = None,
+        upsampling_factor: float = 1.0,
+        dataset_scaling_factor: float = 1.0,
+        drop_last: bool = False,
+        category2utt_file: Optional[str] = None,
+        epoch: int = 1,
+        sort_in_batch: str = "descending",
+        sort_batch: str = "ascending",
+        length_bucket: int = 4000,
+        **kwargs,
+    ):
+        assert batch_bins > 0
+        assert category2utt_file is not None
+        assert dataset_scaling_factor > 0, "dataset_scaling_factor must be > 0"
+        assert len(shape_files) == 1, "Only one shape file is supported"
+        if sort_in_batch not in ("descending", "ascending"):
+            raise ValueError("sort_in_batch must be ascending or descending")
+        if sort_batch not in ("descending", "ascending"):
+            raise ValueError("sort_batch must be ascending or descending")
+        self.batch_bins = batch_bins
+        self.min_batch_size = min_batch_size
+        self.max_batch_size = max_batch_size
+        self.upsampling_factor = upsampling_factor
+        self.dataset_scaling_factor = dataset_scaling_factor
+        self.drop_last = drop_last
+        self.category2utt_file = category2utt_file
+        self.sort_in_batch = sort_in_batch
+        self.sort_batch = sort_batch
+        rng = np.random.RandomState(epoch)
+
+        utt2size = {
+            k: v[0]
+            for k, v in load_num_sequence_text(
+                shape_files[0], loader_type="text_int"
+            ).items()
+        }
+        category2utt = {
+            k: v.split(" ") for k, v in read_2columns_text(category2utt_file).items()
+        }
+        category_bins = {
+            c: sum(utt2size[u] for u in utts) for c, utts in category2utt.items()
+        }
+        total_bins = sum(category_bins.values())
+        weights = {
+            c: (b / total_bins) ** upsampling_factor for c, b in category_bins.items()
+        }
+        norm = sum(weights.values())
+        self.category_probs = {c: w / norm for c, w in weights.items()}
+
+        # Draw each category's bins of the epoch, cycling through its
+        # utterances in a fresh random order each time round.
+        sampled = []
+        for c in sorted(category2utt):
+            utts = category2utt[c]
+            # Rounded: with β = 1 the probabilities sum to 1 - ε in floating
+            # point, and a fractional target would draw one utterance too many.
+            target = round(
+                self.category_probs[c] * total_bins * dataset_scaling_factor
+            )
+            drawn = 0
+            while drawn < target:
+                for i in rng.permutation(len(utts)):
+                    if drawn >= target:
+                        break
+                    sampled.append(utts[i])
+                    drawn += utt2size[utts[i]]
+
+        # Length buckets, random order inside each bucket.
+        noise = rng.random_sample(len(sampled))
+        order = sorted(
+            range(len(sampled)),
+            key=lambda i: (utt2size[sampled[i]] // length_bucket, noise[i]),
+        )
+        batches, current, longest = [], [], 0
+        for i in order:
+            utt = sampled[i]
+            current.append(utt)
+            longest = max(longest, utt2size[utt])
+            if (
+                len(current) * longest > batch_bins
+                and len(current) >= min_batch_size
+            ) or (max_batch_size is not None and len(current) >= max_batch_size):
+                batches.append(current)
+                current, longest = [], 0
+        if current and (not drop_last or not batches):
+            if len(current) >= min_batch_size or not batches:
+                batches.append(current)
+            else:
+                batches[-1].extend(current)
+        reverse = sort_in_batch == "descending"
+        batches = [
+            sorted(batch, key=lambda u: utt2size[u], reverse=reverse)
+            for batch in batches
+        ]
+        if sort_batch == "descending":
+            batches.reverse()
+        self.batch_list = batches
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}("
+            f"N-batch={len(self)}, "
+            f"batch_bins={self.batch_bins}, "
+            f"min_batch_size={self.min_batch_size}, "
+            f"max_batch_size={self.max_batch_size}, "
+            f"upsampling_factor={self.upsampling_factor}, "
+            f"dataset_scaling_factor={self.dataset_scaling_factor}, "
+            f"sort_in_batch={self.sort_in_batch}, "
+            f"sort_batch={self.sort_batch}, "
+            f"category2utt_file={self.category2utt_file}"
+        )
+
+    def __len__(self):
+        return len(self.batch_list)
+
+    def __iter__(self) -> Iterator[Tuple[str, ...]]:
+        return iter(self.batch_list)
