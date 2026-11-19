@@ -1,0 +1,7 @@
+# Every augmentation at once, for the HuBERT/WavLM frontends: noise,
+# reverberation, speed perturbation and masking.
+defaults:
+  - noise
+  - rir
+  - speed
+  - specaug_hubert

@@ -1,0 +1,263 @@
+builder:
+  # Corpora ---------------------------------------------------------------
+  # The 72 corpora kept for experiment multidataset_ser_01 by the dataset
+  # filter of ser_dataset_db (`local/dataset_filtering/output/
+  # multidataset_ser_01/result.csv`, status `kept` or `kept_unverified`;
+  # generated 2026-11-09 from DB commit 3ff353c). Each is downloaded and
+  # converted by its own `egs3/<corpus>/cls` recipe, into the places its
+  # `<CORPUS>` and `<CORPUS>_OUTPUT` environment variables give, exactly as
+  # running that recipe alone would. `kept_unverified` means the DB does not
+  # say whether the labels are automatic or the speech synthetic. One of the 72
+  # is commented out while its server is down (see the readme), so 71 are
+  # prepared.
+  corpora:
+    - aesdd
+    - albemo
+    - banglaser
+    - banspemo
+    - bari_emospeech
+    - baser
+    - berst
+    - brytserc                # kept_unverified
+    - cafe
+    - cbesd
+    - cremad
+    - csemotions
+    - dailytalk
+    # The CDN's certificate expired on 2026-11-04: set
+    # DUSHA_ALLOW_EXPIRED_CERTIFICATE=1 until it is renewed (see the readme).
+    - dusha
+    - eesc
+    - emns
+    - emodb
+    - emogator
+    - emospeech_keywords
+    - emotional_ema
+    - emotiontalk
+    - emouerj
+    - emovdb                  # kept_unverified
+    - emozionalmente
+    # On hold: on 2026-11-09 enterface.net answered no request, from three
+    # different networks. Put back once the site is up again.
+    # - enterface05             # kept_unverified
+    - eseravd
+    - hikia
+    - indianenglish           # kept_unverified
+    - indowavesentiment
+    - inesco
+    - javanese_ser_2black0
+    - jlcorpus
+    - jnv
+    - jvnv
+    - kannada
+    - kazemotts               # kept_unverified
+    - legov2
+    - maserc
+    - mav
+    - mcaespps
+    - meld
+    - mesd
+    - mess
+    - multidialog             # kept_unverified
+    - nemo
+    - nonverbaltts
+    - oreau
+    - pavoque
+    - polishemo
+    - quechua
+    - rasa
+    - ravdess
+    - recanvo
+    - resd
+    - saraiki_ser
+    - ses_ed
+    - ses_sd
+    - shemo
+    - sitb_osed
+    - subesco
+    - talromur3
+    - telugu_emotion_kaggle   # kept_unverified
+    - tess
+    - thaiser
+    - thorsten
+    - turevdb
+    - ua_ser
+    - uftbesd
+    - usc_emo_mri
+    - utemo
+    - vivae
+    - ysed
+
+  # Retries ---------------------------------------------------------------
+  # A corpus whose preparation fails with a network error that can pass
+  # (connection reset, timeout, HTTP 5xx/408/429, a failed `git` or `kaggle`
+  # call) is tried again after `wait_seconds`, doubled after every failure,
+  # up to `attempts` tries in all. Each corpus recipe resumes or restarts its
+  # own download, so a retry is safe. Errors that will not pass by waiting
+  # (HTTP 4xx, an untrusted or expired server certificate, a missing token or
+  # file) fail at once.
+  retry:
+    attempts: 4
+    wait_seconds: 60
+
+  # Roles -----------------------------------------------------------------
+  # Training uses the corpora whose license allows commercial use and puts no
+  # condition on what is made from them (CC0, CC BY, MIT, Apache, ODC-By);
+  # evaluation uses every other corpus. Licenses with a share-alike condition
+  # are treated like non-commercial ones (maintainer's decision, 2026-11-10):
+  # CC BY-SA (cbesd, dailytalk, jnv, jvnv, thaiser), Dusha's own license (a
+  # modified CC BY-SA), GPL-3.0 (meld) and ODbL (cremad). The licenses are
+  # those of ser_dataset_db (discussion 0003), with MultiDialog at its DB
+  # license of 2026-11-10 (CC BY-NC 4.0). Every corpus of `corpora` must
+  # have exactly one role; `create_dataset` stops otherwise. Each corpus is
+  # used in full: every split its own recipe writes (`train`, `valid`,
+  # `test`) is read from that recipe's unfiltered `manifest/`.
+  train_corpora:
+    - albemo
+    - banglaser
+    - banspemo
+    - bari_emospeech
+    - baser
+    - berst
+    - csemotions
+    - eesc
+    - emns
+    - emodb
+    - emogator
+    - emotional_ema
+    - emouerj
+    - emozionalmente
+    - eseravd
+    - hikia
+    - indianenglish
+    - indowavesentiment
+    - inesco
+    - javanese_ser_2black0
+    - jlcorpus
+    - kannada
+    - kazemotts
+    - maserc
+    - mav
+    - mesd
+    - mess
+    - oreau
+    - polishemo
+    - quechua
+    - rasa
+    - recanvo
+    - resd
+    - saraiki_ser
+    - ses_ed
+    - ses_sd
+    - sitb_osed
+    - subesco
+    - talromur3
+    - telugu_emotion_kaggle
+    - thorsten
+    - ua_ser
+    - uftbesd
+    - usc_emo_mri
+    - ysed
+
+  # Each becomes its own test set, named after the corpus, with all of the
+  # corpus's splits merged. eNTERFACE'05 (MIT) is left out while its site is
+  # down (see `corpora`).
+  eval_corpora:
+    - aesdd
+    - brytserc
+    - cafe
+    - cbesd
+    - cremad
+    - dailytalk
+    - dusha
+    - emospeech_keywords
+    - emotiontalk
+    - emovdb
+    - jnv
+    - jvnv
+    - legov2
+    - mcaespps
+    - meld
+    - multidialog
+    - nemo
+    - nonverbaltts
+    - pavoque
+    - ravdess
+    - shemo
+    - tess
+    - thaiser
+    - turevdb
+    - utemo
+    - vivae
+
+  # Labels ----------------------------------------------------------------
+  # `label_map` applies stage 1 of ser_dataset_db discussion 0004 (labels
+  # that plainly mean the same: spellings, word forms, and a parent label
+  # with an intensity or valence qualifier); it is applied to training and
+  # evaluation rows alike. The corpus recipes already write normalised names,
+  # except those below: RASA's `anger`, EmoGator's two surprises, LEGOv2's two
+  # degrees of anger and EARS's `sadness`. Labels that stage 1 maps outside the seven
+  # classes (e.g. `excited` to excitement) are left out either way.
+  label_map:
+    anger: angry
+    sadness: sad
+    surprise_negative: surprise
+    surprise_positive: surprise
+    slightly_angry: angry
+    very_angry: angry
+  # The classes the model learns, and the only labels used anywhere: a row
+  # with any other label is left out of training, validation and every
+  # evaluation set alike (the build log counts them per corpus and label).
+  labels:
+    - neutral
+    - happy
+    - sad
+    - angry
+    - fear
+    - surprise
+    - disgust
+
+  # Validation ------------------------------------------------------------
+  # How the validation set is taken out of the training corpora. `method`
+  # names one of the entries below; each method reads only its own block.
+  #   random_per_corpus: from each training corpus, `ratio` of its rows
+  #     (after the label filter), chosen uniformly at random with no regard
+  #     to speakers or the corpus's own splits; the rest is training.
+  #     The choice depends only on `seed` and the corpus's own rows, so
+  #     adding or removing another corpus does not change it. At least one
+  #     row is taken from every corpus.
+  #   corpus_valid_split: each corpus recipe's own `valid` split is the
+  #     validation set, its `train` and `test` splits are training. How the
+  #     recipes split (by speaker, at random, ...) differs between corpora.
+  # Changing these settings makes the next `create_dataset` rewrite the
+  # manifests (`manifest/build_settings.json` records what they were built
+  # with).
+  validation:
+    method: random_per_corpus
+    random_per_corpus:
+      ratio: 0.05
+      seed: 0
+    corpus_valid_split: {}
+
+  # Outputs ---------------------------------------------------------------
+  # The merged manifests are written under `$MULTIDATASET_SER_02_OUTPUT`
+  # (default `data/` under this recipe): `manifest/train.tsv`,
+  # `manifest/valid.tsv` and `manifest/<eval corpus>.tsv`. The WAV files stay
+  # wherever each corpus's own `<CORPUS>_OUTPUT` points.
+  output_env_var: MULTIDATASET_SER_02_OUTPUT
+  data_path: data
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+
+dataset:
+  # Every split reads the `remove_long_short` output (0.5 to 30 s, see
+  # `conf/training.yaml`): train and valid from these paths, each evaluation
+  # corpus from `<eval_manifest_dir>/<corpus>.tsv`. The evaluation sets are
+  # filtered too because the models cannot take every length: a WavLM input
+  # needs at least 400 samples (25 ms), and some corpora (MELD, MultiDialog)
+  # hold clips far shorter than that and others of several minutes.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+  eval_manifest_dir: manifest_filtered

@@ -1,0 +1,272 @@
+##########################################################
+#                    TRAINING SETTING                    #
+##########################################################
+# Settings shared by every encoder. Run with a per-encoder config,
+# `conf/training_<encoder>.yaml` (`hubert_large`: HuBERT Large fine-tuned;
+# `transformer`: a transformer of the same size trained from scratch), which
+# adds the frontend from `conf/frontend/<encoder>.yaml`, the experiment tag
+# and the peak learning rate; this file alone has no frontend. Everything
+# else (data, head, loss, batch, schedule, epochs) is shared, so the two
+# models differ only in their encoder. Run the steps as separate commands:
+#   python run.py --stages create_dataset remove_long_short prepare_labels \
+#       collect_stats --training_config conf/training_hubert_large.yaml
+#   python run.py --stages train --training_config conf/training_hubert_large.yaml
+#   python run.py --stages infer measure \
+#       --training_config conf/training_hubert_large.yaml \
+#       --inference_config conf/inference_hubert_large.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# `create_dataset` downloads and converts the corpora listed in
+# `dataset/config.yaml` (each with its own `egs3/<corpus>/cls` recipe), then
+# writes this recipe's merged manifests. Set MULTIDATASET_SER_02_ONLY to a
+# space-separated list of corpus names to prepare only those, e.g.
+# MULTIDATASET_SER_02_ONLY="ravdess emodb"; the merged manifests are then not
+# written.
+#
+##########################################################
+#                  SYSTEM AND PATH SETTING               #
+##########################################################
+# Left empty on purpose. Without it ESPnet3 instantiates `model` through Hydra
+# instead of routing it to an ESPnet2 task.
+task:
+
+# The merged manifests and the stage logs are written here. The WAV files
+# stay wherever each corpus's own `<CORPUS>_OUTPUT` points.
+data_dir: ${oc.env:MULTIDATASET_SER_02_OUTPUT,./data}
+
+create_dataset:
+  recipe_dir: ${recipe_dir}
+  only: ${oc.env:MULTIDATASET_SER_02_ONLY,null}
+
+# Workers for the stages that read many audio files (`remove_long_short`
+# reads every header, `collect_stats` every waveform). Set
+# MULTIDATASET_SER_02_WORKERS to the number of CPU cores to use; 1 by default.
+parallel:
+  env: local
+  n_workers: ${oc.decode:${oc.env:MULTIDATASET_SER_02_WORKERS,1}}
+  allow_overwrite_lock: false
+
+##########################################################
+#              LONG/SHORT FILTERING SETTING              #
+##########################################################
+# Applied to training, validation and every evaluation set alike (the
+# evaluation corpora of `dataset/config.yaml`; keep the two lists in step).
+# 0.5 s keeps every clip above the 11 frames the encoders' time masking needs
+# (`mask_time_length: 10` at 20 ms per frame), about 0.22 s at 16 kHz, and
+# above the 25 ms a WavLM input needs at all; some evaluation corpora hold
+# clips of a few milliseconds and others of several minutes.
+remove_long_short:
+  min_wav_duration: 0.5
+  max_wav_duration: 30
+  splits:
+    - train
+    - valid
+    - aesdd
+    - brytserc
+    - cafe
+    - cbesd
+    - cremad
+    - dailytalk
+    - dusha
+    - emospeech_keywords
+    - emotiontalk
+    - emovdb
+    - jnv
+    - jvnv
+    - legov2
+    - mcaespps
+    - meld
+    - multidialog
+    - nemo
+    - nonverbaltts
+    - pavoque
+    - ravdess
+    - shemo
+    - tess
+    - thaiser
+    - turevdb
+    - utemo
+    - vivae
+  save_path: ${data_dir}/manifest_filtered
+  manifest_paths:
+    train: ${data_dir}/manifest/train.tsv
+    valid: ${data_dir}/manifest/valid.tsv
+    aesdd: ${data_dir}/manifest/aesdd.tsv
+    brytserc: ${data_dir}/manifest/brytserc.tsv
+    cafe: ${data_dir}/manifest/cafe.tsv
+    cbesd: ${data_dir}/manifest/cbesd.tsv
+    cremad: ${data_dir}/manifest/cremad.tsv
+    dailytalk: ${data_dir}/manifest/dailytalk.tsv
+    dusha: ${data_dir}/manifest/dusha.tsv
+    emospeech_keywords: ${data_dir}/manifest/emospeech_keywords.tsv
+    emotiontalk: ${data_dir}/manifest/emotiontalk.tsv
+    emovdb: ${data_dir}/manifest/emovdb.tsv
+    jnv: ${data_dir}/manifest/jnv.tsv
+    jvnv: ${data_dir}/manifest/jvnv.tsv
+    legov2: ${data_dir}/manifest/legov2.tsv
+    mcaespps: ${data_dir}/manifest/mcaespps.tsv
+    meld: ${data_dir}/manifest/meld.tsv
+    multidialog: ${data_dir}/manifest/multidialog.tsv
+    nemo: ${data_dir}/manifest/nemo.tsv
+    nonverbaltts: ${data_dir}/manifest/nonverbaltts.tsv
+    pavoque: ${data_dir}/manifest/pavoque.tsv
+    ravdess: ${data_dir}/manifest/ravdess.tsv
+    shemo: ${data_dir}/manifest/shemo.tsv
+    tess: ${data_dir}/manifest/tess.tsv
+    thaiser: ${data_dir}/manifest/thaiser.tsv
+    turevdb: ${data_dir}/manifest/turevdb.tsv
+    utemo: ${data_dir}/manifest/utemo.tsv
+    vivae: ${data_dir}/manifest/vivae.tsv
+
+##########################################################
+#                  LABEL INVENTORY SETTING               #
+##########################################################
+prepare_labels:
+  save_path: ${data_dir}
+  filename: token_list
+  weights_filename: class_weights
+  manifest_path: ${data_dir}/manifest_filtered/train.tsv
+  add_symbol:
+    - "<unk>:-1"
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# `valid` is taken out of the training corpora as `validation` in
+# `dataset/config.yaml` says. The evaluation sets are listed in
+# `conf/inference.yaml` only.
+dataset:
+  train:
+    - data_src_args:
+        split: train
+  valid:
+    - data_src_args:
+        split: valid
+  preprocessor:
+    _target_: espnet2.train.preprocessor.CommonPreprocessor
+    fs: 16000
+    text_name: label
+    token_type: word
+    token_list: ${data_dir}/token_list
+
+##########################################################
+#                      MODEL SETTING                     #
+##########################################################
+model:
+  _target_: espnet3.systems.cls.src.model.ClsModel
+  # Set by `conf/training_<encoder>.yaml` from `conf/frontend/<encoder>.yaml`.
+  frontend: ${frontend}
+  # `labels` in `dataset/config.yaml`. Must match the line count of
+  # `token_list` minus its final `<unk>`.
+  num_classes: 7
+  head_size: 1024
+  head_layers: 1
+  dropout: 0.5
+  class_weights: ${data_dir}/class_weights
+
+##########################################################
+#                  OPTIMIZATION SETTING                  #
+##########################################################
+# The peak lr is set by each `conf/training_<encoder>.yaml`.
+optimizer:
+  _target_: torch.optim.AdamW
+  weight_decay: 0.01
+
+# Warm up from 1 % of `lr` over the first 10 % of the updates, hold for 40 %,
+# then decay to 5 % of `lr` over the last 50 %. `max_steps` counts optimizer
+# updates over the whole run: 20 epochs of 1,262 updates, the number on one
+# GPU with the `batch_bins` below. Recompute it when the batch, the GPU count
+# or `max_epochs` changes.
+# Written under its own key and referenced from `scheduler`: a `scheduler`
+# block here would be merged into the TEMPLATE's ConstantLR block, whose
+# `factor` and `total_iters` TristageLR does not take.
+lr_schedule:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: 25240
+  warmup_ratio: 0.1
+  hold_ratio: 0.4
+  decay_ratio: 0.5
+  init_lr_scale: 0.01
+  final_lr_scale: 0.05
+scheduler: ${lr_schedule}
+scheduler_interval: step
+
+# The checkpoint with the best validation accuracy is kept
+# (`valid.acc.ave_1best.pth`) and is the one `conf/inference.yaml` scores.
+best_model_criterion:
+  - - valid/acc
+    - 1
+    - max
+
+# Set MULTIDATASET_SER_02_SEED to train again with another seed.
+seed: ${oc.decode:${oc.env:MULTIDATASET_SER_02_SEED,0}}
+
+##########################################################
+#                   DATALOADER SETTING                   #
+##########################################################
+# Batches are per GPU: each GPU takes whole batches of its own. A training
+# batch holds up to `batch_bins` waveform samples, padding included
+# (20,160,000 is 21 minutes at 16 kHz), one update each. With HuBERT Large
+# this peaks at about 94 GB of the 141 GB of an H200; use 11,520,000 (12
+# minutes, `max_steps` 44020) on a GPU with less memory. `num_workers`
+# processes per GPU read the audio files.
+dataloader:
+  train:
+    iter_factory:
+      num_workers: 8
+      batches:
+        type: numel
+        batch_bins: 20160000
+        sort_in_batch: descending
+        sort_batch: descending
+  valid:
+    iter_factory:
+      num_workers: 8
+      batches:
+        fold_lengths: [160000]
+        sort_in_batch: descending
+        sort_batch: descending
+
+##########################################################
+#                     TRAINER SETTING                    #
+##########################################################
+# About 264,000 training utterances: one epoch is 1,262 steps on one GPU.
+# 20 epochs, validated every second epoch: with HuBERT Large, a run of 30
+# epochs reached its final validation accuracy at epoch 19. `patience` (in
+# validations) is wide enough that training is not stopped before the lr
+# decay. The number of GPUs is NUM_DEVICE (1 by default). With more than one,
+# set `strategy: ddp_find_unused_parameters_true` (HuBERT's LayerDrop leaves
+# some parameters without a gradient in a step) and recompute `max_steps`.
+trainer:
+  devices: ${num_device}
+  num_nodes: ${num_nodes}
+  strategy: auto
+  gradient_clip_val: 5.0
+  max_epochs: 20
+  check_val_every_n_epoch: 2
+  # bf16 autocast: faster and lighter than fp32 on H100/H200-class GPUs.
+  precision: bf16-mixed
+  accumulate_grad_batches: 1
+  callbacks:
+    - _target_: lightning.pytorch.callbacks.EarlyStopping
+      monitor: valid/acc
+      mode: max
+      patience: 5
+    # Also keep the weights of every second epoch (each validated one) under
+    # `<exp_dir>/epochs/` (about 1.3 GB each), to score the evaluation sets
+    # epoch by epoch. `mode` only
+    # keeps this callback apart from ESPnet3's own `last.ckpt` checkpointer,
+    # which Lightning would otherwise reject as a duplicate; nothing is
+    # monitored. Remove the entry to save the space.
+    - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+      dirpath: ${exp_dir}/epochs
+      filename: epoch{epoch}
+      auto_insert_metric_name: false
+      save_top_k: -1
+      every_n_epochs: 2
+      save_weights_only: true
+      mode: max
+
+# Set `RESUME_CKPT=<exp_dir>/last.ckpt` to continue an interrupted run.
+fit:
+  ckpt_path: ${oc.env:RESUME_CKPT,null}

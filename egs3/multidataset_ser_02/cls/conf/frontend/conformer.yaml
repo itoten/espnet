@@ -1,0 +1,37 @@
+# A Conformer on 80-dim log-mel features, with random weights, to be trained
+# from scratch. The input stage is the one of `transformer.yaml` (log-mel
+# features standardised per utterance, convolutions of strides 1 and 2: one
+# frame every 20 ms, like HuBERT); ESPnet2's ConformerEncoder follows, with
+# its own input layer turned off. Width 1024 and 16 heads as HuBERT Large; the
+# number of blocks sets the size to about HuBERT Large's (315M in the
+# encoder).
+_target_: espnet3.systems.cls.src.frontend.LogMelEncoderFrontend
+fs: 16000
+n_fft: 512
+win_length: 400
+hop_length: 160
+n_mels: 80
+d_model: 1024
+conv_strides: [1, 2]
+specaug: null
+encoder:
+  _target_: espnet2.asr.encoder.conformer_encoder.ConformerEncoder
+  _partial_: true
+  output_size: 1024
+  attention_heads: 16
+  linear_units: 4096
+  num_blocks: 12
+  dropout_rate: 0.1
+  positional_dropout_rate: 0.1
+  attention_dropout_rate: 0.1
+  input_layer: null
+  normalize_before: true
+  macaron_style: true
+  rel_pos_type: latest
+  pos_enc_layer_type: rel_pos
+  selfattention_layer_type: rel_selfattn
+  activation_type: swish
+  use_cnn_module: true
+  cnn_module_kernel: 31
+  use_flash_attn: false
+  use_sdpa: true

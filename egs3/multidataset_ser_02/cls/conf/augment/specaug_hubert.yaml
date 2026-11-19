@@ -1,0 +1,11 @@
+# SpecAugment-style masking for the HuBERT/WavLM frontends: HuBERT's own
+# masking of its feature frames, in training only. Time masks cover about
+# 10 % of the frames (the checkpoint's default, in force for every run
+# of this frontend, is 7.5 %), and masks over the
+# feature channels (64 channels per mask, about 15 % of them; none by
+# default) are added.
+frontend:
+  encoder:
+    mask_time_prob: 0.1
+    mask_feature_prob: 0.15
+    mask_feature_length: 64

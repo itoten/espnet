@@ -1,0 +1,17 @@
+# Inference with the `transformer` frontend; must match
+# `conf/training_transformer.yaml`. Batched and under bf16 autocast as in
+# `conf/inference_hubert_large.yaml`.
+defaults:
+  - inference
+  - frontend: transformer
+  - _self_
+
+batch_size: 512
+
+runner:
+  _target_: espnet3.systems.cls.src.inference_runner.PrefetchInferenceRunner
+  read_workers: 16
+
+model:
+  max_batch_samples: 11520000
+  autocast: bf16

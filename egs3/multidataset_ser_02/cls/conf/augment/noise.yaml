@@ -1,0 +1,15 @@
+# Additive noise: in training, half of the utterances get a random noise
+# recording from `${data_dir}/augment/noise.scp` (Kaldi-style `<id> <path>`,
+# e.g. the `noise` part of MUSAN) at an SNR of 5 to 20 dB. Validation and
+# evaluation data are never augmented. Augmentation runs in the data loader
+# workers (CPU), so they are raised to 15.
+dataset:
+  preprocessor:
+    fs: 16000
+    noise_scp: ${data_dir}/augment/noise.scp
+    noise_apply_prob: 0.5
+    noise_db_range: "5_20"
+dataloader:
+  train:
+    iter_factory:
+      num_workers: 15

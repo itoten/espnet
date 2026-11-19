@@ -1,0 +1,83 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Zero-shot baseline: Qwen2.5-Omni-7B, as released, labels the evaluation
+# corpora with the VoxEmo protocol (`src/voxemo.py`). Standalone: there is
+# no training config.
+#   python run.py --stages infer measure \
+#       --inference_config conf/inference.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# Reads the evaluation manifests the `cls` recipe writes (`create_dataset`
+# and `remove_long_short` with `../cls/conf/training.yaml`), under
+# $MULTIDATASET_SER_02_OUTPUT.
+#
+# Environment variables:
+#   MULTIDATASET_SER_02_EXP_TAG         experiment name (default below)
+#   MULTIDATASET_SER_02_TEST_SETS       space-separated test sets to run
+#                                       (default: all), e.g. to run one
+#                                       process per GPU on different sets
+#   MULTIDATASET_SER_02_MAX_UTTERANCES  keep at most this many utterances
+#                                       per test set, drawn with `seed`
+#                                       (default: all)
+#   MULTIDATASET_SER_02_BATCH_SIZE      utterances per batch (default 8)
+exp_tag: ${oc.env:MULTIDATASET_SER_02_EXP_TAG,voxemo_qwen2_5_omni_7b}
+only: ${oc.env:MULTIDATASET_SER_02_TEST_SETS,null}
+max_utterances: ${oc.decode:${oc.env:MULTIDATASET_SER_02_MAX_UTTERANCES,null}}
+seed: 0
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# The same test sets as `../cls/conf/inference.yaml`; keep the lists in step.
+# Each item carries the corpus's closed label set, which goes into the prompt.
+dataset:
+  test:
+    - {name: aesdd,              data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: aesdd,              max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: brytserc,           data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: brytserc,           max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: cafe,               data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: cafe,               max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: cbesd,              data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: cbesd,              max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: cremad,             data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: cremad,             max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: dailytalk,          data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: dailytalk,          max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: dusha,              data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: dusha,              max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: emospeech_keywords, data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: emospeech_keywords, max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: emotiontalk,        data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: emotiontalk,        max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: emovdb,             data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: emovdb,             max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: jnv,                data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: jnv,                max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: jvnv,               data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: jvnv,               max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: legov2,             data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: legov2,             max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: mcaespps,           data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: mcaespps,           max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: meld,               data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: meld,               max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: multidialog,        data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: multidialog,        max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: nemo,               data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: nemo,               max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: nonverbaltts,       data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: nonverbaltts,       max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: pavoque,            data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: pavoque,            max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: ravdess,            data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: ravdess,            max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: shemo,              data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: shemo,              max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: tess,               data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: tess,               max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: thaiser,            data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: thaiser,            max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: turevdb,            data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: turevdb,            max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: utemo,              data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: utemo,              max_utterances: "${max_utterances}", seed: "${seed}"}}
+    - {name: vivae,              data_src: egs3.multidataset_ser_02.qwen2_5_omni.dataset, data_src_args: {split: vivae,              max_utterances: "${max_utterances}", seed: "${seed}"}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# The five VoxEmo prompts (Direct, +T, +A, +T+A, +T+A+R), answered greedily,
+# then the prompt ensemble. `max_new_tokens` leaves room for the transcript,
+# caption and reasoning fields. The generator is built on the provider's
+# device by `VoxEmoClassifier` (hence `_partial_`).
+model:
+  _target_: egs3.multidataset_ser_02.qwen2_5_omni.src.voxemo.VoxEmoClassifier
+  variants: [direct, t, a, t_a, t_a_r]
+  generator:
+    _target_: espnet3.systems.qwen2_5_omni.inference.Qwen2_5OmniInference
+    _partial_: true
+    model_name: Qwen/Qwen2.5-Omni-7B
+    dtype: bfloat16
+    attn_implementation: sdpa
+    max_new_tokens: 512
+
+input_key: [speech, label_set]
+batch_size: ${oc.decode:${oc.env:MULTIDATASET_SER_02_BATCH_SIZE,8}}
+output_fn: egs3.multidataset_ser_02.qwen2_5_omni.src.inference.build_output

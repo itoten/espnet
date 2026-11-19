@@ -1,0 +1,14 @@
+# SpecAugment for the log-mel frontends (`transformer`, `conformer`,
+# `ebranchformer`), in training only: two frequency masks of up to 27 of the
+# 80 mel bins and five time masks of up to 5 % of the utterance each, without
+# time warping.
+frontend:
+  specaug:
+    _target_: espnet2.asr.specaug.specaug.SpecAug
+    apply_time_warp: false
+    apply_freq_mask: true
+    freq_mask_width_range: [0, 27]
+    num_freq_mask: 2
+    apply_time_mask: true
+    time_mask_width_ratio_range: [0.0, 0.05]
+    num_time_mask: 5

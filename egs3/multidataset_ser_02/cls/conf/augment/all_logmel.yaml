@@ -1,0 +1,7 @@
+# Every augmentation at once, for the log-mel frontends: noise,
+# reverberation, speed perturbation and SpecAugment.
+defaults:
+  - noise
+  - rir
+  - speed
+  - specaug_logmel

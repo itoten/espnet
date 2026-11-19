@@ -1,0 +1,19 @@
+# A plain transformer on 80-dim log-mel features, with random weights, to be
+# trained from scratch. Same depth and width as HuBERT Large (24 layers, width
+# 1024, 16 heads, FFN 4096) and one frame every 20 ms like it (10 ms hop, then
+# convolutions of strides 1 and 2): about 306M parameters in the encoder
+# against HuBERT Large's 315M. Log-mel features are standardised per
+# utterance, so this frontend needs no statistics file.
+_target_: espnet3.systems.cls.src.frontend.LogMelTransformerFrontend
+fs: 16000
+n_fft: 512
+win_length: 400
+hop_length: 160
+n_mels: 80
+d_model: 1024
+num_layers: 24
+num_heads: 16
+ffn_dim: 4096
+dropout: 0.1
+conv_strides: [1, 2]
+specaug: null

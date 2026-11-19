@@ -1,0 +1,30 @@
+# Model B: a transformer of HuBERT Large's size trained from scratch on
+# log-mel features (`conf/frontend/transformer.yaml`). Everything not set here
+# comes from `conf/training.yaml`, as for `conf/training_hubert_large.yaml`:
+# same data, head, loss, batch, lr schedule and epochs.
+defaults:
+  - training
+  - frontend: transformer
+  # Data augmentation: `conf/augment/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_02_AUGMENT (none by default).
+  - augment/${oc.env:MULTIDATASET_SER_02_AUGMENT,none}
+  # Training sampler: `conf/sampler/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_02_SAMPLER (`numel`, the length-sorted batches of
+  # `conf/training.yaml`, by default).
+  - sampler/${oc.env:MULTIDATASET_SER_02_SAMPLER,numel}
+  - _self_
+
+# Set MULTIDATASET_SER_02_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_02_EXP_TAG,train_transformer}
+
+frontend:
+  compile_layers: true
+  max_train_crop: 0.05
+
+# Peak lr. Set MULTIDATASET_SER_02_LR to try another value. A transformer
+# trained from scratch takes a much higher lr than a pre-trained one; the
+# betas are those of the usual ESPnet transformer recipes.
+optimizer:
+  lr: ${oc.decode:${oc.env:MULTIDATASET_SER_02_LR,3.0e-4}}
+  betas: [0.9, 0.98]
