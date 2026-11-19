@@ -1,0 +1,47 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Quick usage:
+#   python run.py --stages infer --inference_config conf/inference.yaml
+#
+# Shared default merged under every Qwen2.5-Omni recipe's inference config.
+# There is no training, so a recipe's inference config sets its own
+# `exp_tag` (standalone inference).
+
+recipe_dir: .
+exp_tag:
+exp_dir: ${recipe_dir}/exp/${exp_tag}
+data_dir: ${recipe_dir}/data
+inference_dir: ${exp_dir}/${self_name:}
+
+dataset:
+  _target_: espnet3.components.data.data_organizer.DataOrganizer
+  _recursive_: false
+  recipe_dir: ${recipe_dir}
+  test:
+
+# Test set names to run instead of every `dataset.test` entry: a list, or one
+# space-separated string. Unset runs them all.
+only:
+
+parallel:
+  env: local
+  n_workers: 1
+  # Replace a stale shard lock left by an interrupted run. Do not enable while
+  # another run may still be writing to the same output directory.
+  allow_overwrite_lock: false
+
+# `model` is instantiated with `device` injected by the provider, e.g.
+# `espnet3.systems.qwen2_5_omni.inference.Qwen2_5OmniInference` or a recipe
+# class that builds the prompts around it. Left empty here, so that a
+# recipe's block is not merged with keys of another class.
+model:
+
+input_key: speech
+batch_size:
+output_fn:
+
+provider:
+  _target_: espnet3.systems.base.inference_provider.InferenceProvider
+runner:
+  _target_: espnet3.systems.base.inference_runner.InferenceRunner
