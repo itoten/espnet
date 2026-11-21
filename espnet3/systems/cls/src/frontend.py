@@ -726,6 +726,17 @@ class LogMelEncoderFrontend(LogMelTransformerFrontend):
                 f"encoder output_size {self.encoder.output_size()} "
                 f"must equal d_model {self.d_model}"
             )
+        # Plain (absolute-position) attention on SDPA can run on the flash
+        # kernel when a batch has no padding, but ESPnet2 encoders always pass
+        # a padding mask. Their attention layers skip it when told the batch
+        # has none (set per batch in `forward`). Relative-position attention
+        # adds a position term to the scores and cannot use flash anyway.
+        self._sdpa_attention = [
+            module
+            for module in self.encoder.modules()
+            if type(module).__name__ == "MultiHeadedAttention"
+            and getattr(module, "use_sdpa", False)
+        ]
         if compile_layers:
             for block in self.encoder.encoders:
                 block.compile(dynamic=True, mode=compile_mode)
@@ -752,5 +763,9 @@ class LogMelEncoderFrontend(LogMelTransformerFrontend):
             frame_lengths = (
                 torch.div(frame_lengths - 1, stride, rounding_mode="floor") + 1
             )
+        if self._sdpa_attention:
+            no_padding = bool((frame_lengths == frames.size(1)).all())
+            for module in self._sdpa_attention:
+                module.skip_mask = no_padding
         frames, frame_lengths, _ = self.encoder(frames, frame_lengths)
         return frames, frame_lengths.to(torch.long)

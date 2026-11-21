@@ -176,6 +176,11 @@ class MultiHeadedAttention(nn.Module):
         if getattr(self, "use_sdpa", False):
             q, k, v = self.forward_qkv(query, key, value, expand_kv)
 
+            # A caller that knows the batch has no padding may set
+            # `skip_mask`: without a mask, SDPA can take its flash kernel,
+            # which refuses any mask, even one that keeps every frame.
+            if getattr(self, "skip_mask", False):
+                mask = None
             # The shape of mask must be broadcastable to the shape of attention weights
             out = torch.nn.functional.scaled_dot_product_attention(
                 q,

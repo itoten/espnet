@@ -1,0 +1,44 @@
+# The Conformer of `conf/training_conformer.yaml` with absolute positions and plain
+# self-attention (`conf/frontend/conformer_abs.yaml`), to see whether relative
+# positions matter. Everything else, the half batches with gradient
+# accumulation included, is the same as in `conf/training_conformer.yaml`, so
+# that the two runs differ only in the positions. (Without relative
+# positions the 21-minute batches would fit in memory.)
+defaults:
+  - training
+  - frontend: conformer_abs
+  # Data augmentation: `conf/augment/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_02_AUGMENT (none by default).
+  - augment/${oc.env:MULTIDATASET_SER_02_AUGMENT,none}
+  # Training sampler: `conf/sampler/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_02_SAMPLER (`numel`, the length-sorted batches of
+  # `conf/training.yaml`, by default).
+  - sampler/${oc.env:MULTIDATASET_SER_02_SAMPLER,numel}
+  - _self_
+
+# Set MULTIDATASET_SER_02_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_02_EXP_TAG,train_conformer_abs}
+
+frontend:
+  compile_layers: true
+  max_train_crop: 0.05
+
+# Peak lr: the best of the transformer's search (`conf/training_transformer.yaml`),
+# not searched again. Set MULTIDATASET_SER_02_LR to try another value.
+optimizer:
+  lr: ${oc.decode:${oc.env:MULTIDATASET_SER_02_LR,5.0e-5}}
+  betas: [0.9, 0.98]
+
+# The longest batches of 21 minutes of audio do not fit in the 141 GB of an
+# H200 with this encoder (it ran out of memory in the first epoch). Each
+# update instead accumulates the gradients of two batches of half the size:
+# the same 21 minutes of audio and the same number of updates (so
+# `lr_schedule.max_steps` is unchanged) as for the other encoders.
+dataloader:
+  train:
+    iter_factory:
+      batches:
+        batch_bins: 10080000
+trainer:
+  accumulate_grad_batches: 2

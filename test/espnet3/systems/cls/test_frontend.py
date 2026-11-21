@@ -474,3 +474,34 @@ def test_logmel_transformer_frontend_runs_and_pads_consistently():
     (frames_a, lengths_a), (frames_b, _) = _two_padded_batches(frontend, short)
     assert lengths_a.tolist() == [51, 26]
     torch.testing.assert_close(frames_a[1, :26], frames_b[1, :26], atol=1e-4, rtol=1e-4)
+
+
+def test_logmel_encoder_frontend_drops_the_mask_only_without_padding():
+    from espnet2.asr.encoder.conformer_encoder import ConformerEncoder
+
+    encoder = _tiny_encoder(
+        ConformerEncoder,
+        linear_units=32,
+        num_blocks=2,
+        rel_pos_type="latest",
+        pos_enc_layer_type="abs_pos",
+        selfattention_layer_type="selfattn",
+        use_flash_attn=False,
+        use_sdpa=True,
+    )
+    frontend = LogMelEncoderFrontend(encoder=encoder, d_model=16).eval()
+    attention = frontend._sdpa_attention
+    assert len(attention) == 2
+
+    speech = torch.randn(2, 16000)
+    full = frontend(speech, torch.tensor([16000, 16000]))[0]
+    assert all(module.skip_mask for module in attention)
+    frontend(speech, torch.tensor([16000, 8000]))
+    assert not any(module.skip_mask for module in attention)
+
+    # Without padding, dropping the all-true mask changes nothing.
+    frontend._sdpa_attention = []
+    for module in attention:
+        module.skip_mask = False
+    masked = frontend(speech, torch.tensor([16000, 16000]))[0]
+    torch.testing.assert_close(full, masked, atol=1e-5, rtol=1e-5)
