@@ -5,7 +5,9 @@
 #   python run.py --stages measure --metrics_config conf/metrics.yaml
 #
 # Assumptions:
-# - `infer` has already produced `<test_name>/{ref,hyp,score}.scp`.
+# - `infer` has already produced `<test_name>/{hyp,score}.scp`; each reference
+#   is read from the test set's `label` field (`dataset:label`), so `measure`
+#   needs `--inference_config` for the test set definition.
 # - `prepare_labels` has written `${data_dir}/token_list`.
 # - If `dataset.test` is omitted, test sets are discovered from `${inference_dir}`
 #   subdirectories.
@@ -40,37 +42,37 @@ dataset:
 # OmegaConf replaces lists rather than appending to them.
 metrics:
   - metric:
-      _target_: espnet3.systems.cls.metrics.wa.WA
+      _target_: espnet3.systems.esp2_cls.metrics.wa.WA
     inputs:
-      ref: ref   # `<test_name>/ref.scp`, written by infer
+      ref: dataset:label   # the test set's own label
       hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.ua.UA
+      _target_: espnet3.systems.esp2_cls.metrics.ua.UA
       token_list: ${data_dir}/token_list  # optional; fixes the class set
     inputs:
-      ref: ref   # `<test_name>/ref.scp`, written by infer
+      ref: dataset:label   # the test set's own label
       hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.macro_f1.MacroF1
+      _target_: espnet3.systems.esp2_cls.metrics.macro_f1.MacroF1
       token_list: ${data_dir}/token_list  # optional; fixes the class set
+    inputs:
+      ref: dataset:label   # the test set's own label
+      hyp: hyp   # `<test_name>/hyp.scp`
 
   # mAP and AUC rank per-class probabilities, so they read `score` instead
   # of `hyp`.
-    inputs:
-      ref: ref   # `<test_name>/ref.scp`, written by infer
-      hyp: hyp   # `<test_name>/hyp.scp`
   - metric:
-      _target_: espnet3.systems.cls.metrics.mean_ap.MAP
+      _target_: espnet3.systems.esp2_cls.metrics.mean_ap.MAP
       token_list: ${data_dir}/token_list  # required; sets the column order
     inputs:
-      ref: ref
+      ref: dataset:label
       score: score
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.auc.AUC
+      _target_: espnet3.systems.esp2_cls.metrics.auc.AUC
       token_list: ${data_dir}/token_list  # required; sets the column order
     inputs:
-      ref: ref
+      ref: dataset:label
       score: score

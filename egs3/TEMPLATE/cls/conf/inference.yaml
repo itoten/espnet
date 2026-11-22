@@ -43,14 +43,26 @@ parallel:
 ##########################################################
 # `model` is instantiated with `device` injected by the provider. Recipes add
 # `network` (the training config's `model` block), `model_file` and
-# `token_list`. `output_fn` maps one model output to the fields written as SCP
-# files.
+# `token_list`. `contract` declares what the runner passes in and writes out:
+# `hyp` is the predicted label and `score` the space-separated per-class
+# probabilities in `token_list` order. The reference is not written; the
+# metrics read it from the test set (`dataset:label`).
 model:
   _target_: espnet3.systems.cls.src.inference_model.ClsInferenceModel
 input_key: speech
-output_fn:
+contract:
+  inputs:
+    speech:
+      kind: audio
+      sample_rate: 16000
+      channels: 1
+  outputs:
+    hyp:
+      kind: text
+    score:
+      kind: text
 
 provider:
   _target_: espnet3.systems.base.inference_provider.InferenceProvider
 runner:
-  _target_: espnet3.systems.base.inference_runner.InferenceRunner
+  _target_: espnet3.systems.cls.src.inference_runner.ClsInferenceRunner

@@ -65,4 +65,3 @@ model:
   token_list: ${data_dir}/token_list
 
 input_key: speech
-output_fn: src.inference.build_output

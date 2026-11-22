@@ -53,7 +53,7 @@ ui:
     - key: speech
       type: audio
       label: "Input Audio"
-  # `hyp` is the predicted class label written by the recipe's `build_output`.
+  # `hyp` is the predicted class label (`contract.outputs` of inference.yaml).
   outputs:
     - key: hyp
       type: text

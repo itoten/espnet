@@ -82,4 +82,3 @@ input_key: speech
 # Every utterance is padded or cut to 15 s, so batches waste no compute on
 # padding.
 batch_size: ${oc.decode:${oc.env:MULTIDATASET_SER_02_BATCH_SIZE,16}}
-output_fn: src.inference.build_output

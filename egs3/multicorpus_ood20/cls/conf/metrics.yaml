@@ -16,39 +16,39 @@ data_dir: ${oc.env:MULTICORPUS_OOD20_OUTPUT,./data}
 
 metrics:
   - metric:
-      _target_: espnet3.systems.cls.metrics.wa.WA
+      _target_: espnet3.systems.esp2_cls.metrics.wa.WA
     inputs:
-      ref: ref   # `<test_name>/ref.scp`, written by infer
+      ref: dataset:label   # the test set's own label
       hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.ua.UA
+      _target_: espnet3.systems.esp2_cls.metrics.ua.UA
       token_list: ${data_dir}/token_list
       unknown_reference: score
     inputs:
-      ref: ref   # `<test_name>/ref.scp`, written by infer
+      ref: dataset:label   # the test set's own label
       hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.macro_f1.MacroF1
+      _target_: espnet3.systems.esp2_cls.metrics.macro_f1.MacroF1
       token_list: ${data_dir}/token_list
       unknown_reference: score
     inputs:
-      ref: ref   # `<test_name>/ref.scp`, written by infer
+      ref: dataset:label   # the test set's own label
       hyp: hyp   # `<test_name>/hyp.scp`
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.mean_ap.MAP
+      _target_: espnet3.systems.esp2_cls.metrics.mean_ap.MAP
       token_list: ${data_dir}/token_list
       unknown_reference: score
     inputs:
-      ref: ref
+      ref: dataset:label
       score: score
 
   - metric:
-      _target_: espnet3.systems.cls.metrics.auc.AUC
+      _target_: espnet3.systems.esp2_cls.metrics.auc.AUC
       token_list: ${data_dir}/token_list
       unknown_reference: score
     inputs:
-      ref: ref
+      ref: dataset:label
       score: score

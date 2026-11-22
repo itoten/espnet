@@ -77,4 +77,3 @@ model:
     surprised: surprise
 
 input_key: speech
-output_fn: src.inference.build_output
