@@ -11,6 +11,8 @@ from espnet3.contract import Field
 from espnet3.systems.esp2_cls.src.scoring_utils import (
     build_score_matrix,
     build_target_matrix,
+    check_unknown_reference,
+    drop_unknown_rows,
     load_class_labels,
     require_sklearn,
     supported_classes,
@@ -41,14 +43,19 @@ class MAP(BaseMetric):
     inputs = (Field("ref", "text"), Field("score", "text"))
     outputs = (Field("mAP", "number"),)
 
-    def __init__(self, token_list: str) -> None:
+    def __init__(self, token_list: str, unknown_reference: str = "error") -> None:
         """Initialize the mAP metric.
 
         Args:
             token_list: Path to the recipe's token list. It defines the order
                 of the columns in ``score.scp``.
+            unknown_reference: What to do with a reference label that is not
+                in ``token_list``: ``"error"`` (default), ``"score"`` (treat
+                the utterance as a negative for every class) or ``"skip"``
+                (leave those utterances out).
         """
         self.token_list = token_list
+        self.unknown_reference = check_unknown_reference(unknown_reference)
         super().__init__()
         self.add_state("refs", [], "cat")
         self.add_state("scores", [], "cat")
@@ -76,13 +83,22 @@ class MAP(BaseMetric):
 
         Raises:
             RuntimeError: If ``scikit-learn`` is not installed.
-            ValueError: If a reference label is missing from ``token_list``,
+            ValueError: If a reference label is missing from ``token_list``
+                (while ``unknown_reference`` is ``"error"``),
                 a score row has the wrong length, or no class has a positive reference.
         """
         sklearn_metrics = require_sklearn()
         classes = load_class_labels(self.token_list)
-        target = build_target_matrix(self.refs, classes)
-        output = build_score_matrix(self.scores, len(classes))
+        refs, (scores,) = drop_unknown_rows(
+            list(self.refs),
+            [list(self.scores)],
+            self.token_list,
+            self.unknown_reference,
+        )
+        target = build_target_matrix(
+            refs, classes, allow_unknown=self.unknown_reference == "score"
+        )
+        output = build_score_matrix(scores, len(classes))
         keep, _ = supported_classes(target, classes)
         values = [
             sklearn_metrics.average_precision_score(target[:, k], output[:, k])

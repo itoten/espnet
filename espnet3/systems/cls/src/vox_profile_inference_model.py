@@ -15,11 +15,11 @@ from torch import nn
 from transformers import WhisperConfig, WhisperFeatureExtractor
 from transformers.models.whisper.modeling_whisper import WhisperEncoder
 
-from espnet3.systems.cls.metrics.scoring_utils import load_class_labels
 from espnet3.systems.cls.src.label_map import (
     gather_class_scores,
     resolve_label_map,
 )
+from espnet3.systems.esp2_cls.src.scoring_utils import load_class_labels
 
 __all__ = ["VoxProfileEmotionInferenceModel"]
 
@@ -63,9 +63,7 @@ class _EmotionHead(nn.Module):
         padding up to 15 s is left out of the mean.
         """
         hidden = self.model_seq(frames.transpose(1, 2)).transpose(1, 2)
-        pooled = torch.stack(
-            [hidden[i, :n].mean(dim=0) for i, n in enumerate(lengths)]
-        )
+        pooled = torch.stack([hidden[i, :n].mean(dim=0) for i, n in enumerate(lengths)])
         return self.emotion_layer(pooled)
 
 
@@ -176,9 +174,7 @@ class VoxProfileEmotionInferenceModel:
             self.LABELS, dict(label_map), self.classes, "Vox-Profile"
         )
 
-        with open(
-            hf_hub_download(model_tag, "config.json", revision=revision)
-        ) as f:
+        with open(hf_hub_download(model_tag, "config.json", revision=revision)) as f:
             model_config = json.load(f)
         self._check_model_config(model_config)
 
@@ -302,9 +298,7 @@ class VoxProfileEmotionInferenceModel:
             return_tensors="pt",
             max_length=MAX_SECONDS * SAMPLE_RATE,
         ).input_features
-        frames = self.encoder(
-            features.to(self.device, self.dtype)
-        ).last_hidden_state
+        frames = self.encoder(features.to(self.device, self.dtype)).last_hidden_state
         logits = self.head(frames, self.frame_lengths([len(w) for w in waveforms]))
         return torch.softmax(logits.float(), dim=-1).cpu()
 

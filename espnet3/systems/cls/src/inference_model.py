@@ -10,7 +10,8 @@ import numpy as np
 import torch
 from torch import nn
 
-from espnet3.systems.cls.metrics.scoring_utils import load_class_labels
+from espnet2.torch_utils.safe_torch_load import safe_torch_load
+from espnet3.systems.esp2_cls.src.scoring_utils import load_class_labels
 
 __all__ = ["ClsInferenceModel"]
 
@@ -85,7 +86,9 @@ class ClsInferenceModel:
             raise ValueError(f"autocast must be one of {list(_DTYPES)} or None")
         self.autocast = autocast
 
-        state = torch.load(str(model_file), map_location="cpu", weights_only=True)
+        # A full Lightning checkpoint also holds the optimizer and loop state;
+        # safe_torch_load explains how to opt in if it cannot be read safely.
+        state = safe_torch_load(str(model_file), map_location="cpu")
         state = state.get("state_dict", state)
         # Weights saved from the Lightning module carry its `model.` prefix.
         if state and all(key.startswith("model.") for key in state):
@@ -107,9 +110,11 @@ class ClsInferenceModel:
         groups: List[List[int]] = []
         for i in order:
             # The first index of a group is its longest waveform.
-            if groups and (len(groups[-1]) + 1) * lengths[
-                groups[-1][0]
-            ] <= self.max_batch_samples:
+            if (
+                groups
+                and (len(groups[-1]) + 1) * lengths[groups[-1][0]]
+                <= self.max_batch_samples
+            ):
                 groups[-1].append(i)
             else:
                 groups.append([i])

@@ -4,16 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from espnet3.systems.cls.metrics.auc import AUC
-from espnet3.systems.cls.metrics.macro_f1 import MacroF1
-from espnet3.systems.cls.metrics.mean_ap import MAP
-from espnet3.systems.cls.metrics.scoring_utils import (
+from espnet3.systems.esp2_cls.metrics.auc import AUC
+from espnet3.systems.esp2_cls.metrics.macro_f1 import MacroF1
+from espnet3.systems.esp2_cls.metrics.mean_ap import MAP
+from espnet3.systems.esp2_cls.metrics.ua import UA
+from espnet3.systems.esp2_cls.src.scoring_utils import (
     build_target_matrix,
     check_unknown_reference,
     drop_unknown_rows,
     resolve_classes,
 )
-from espnet3.systems.cls.metrics.ua import UA
 
 pytest.importorskip("sklearn")
 

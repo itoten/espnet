@@ -8,11 +8,11 @@ from typing import Any, List, Mapping, Tuple
 import numpy as np
 import torch
 
-from espnet3.systems.cls.metrics.scoring_utils import load_class_labels
 from espnet3.systems.cls.src.label_map import (
     gather_class_scores,
     resolve_label_map,
 )
+from espnet3.systems.esp2_cls.src.scoring_utils import load_class_labels
 
 __all__ = ["Emotion2vecInferenceModel"]
 

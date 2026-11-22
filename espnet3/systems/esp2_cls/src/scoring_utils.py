@@ -17,6 +17,74 @@ logger = logging.getLogger(__name__)
 
 UNK_SYMBOL = "<unk>"
 
+# What to do with a reference label the model has no class for:
+#   error: refuse to score (the default; catches a wrong token list)
+#   score: count it; no prediction can match it, so its recall and F1 are 0
+#   skip:  leave those utterances out of the score
+UNKNOWN_REFERENCE_MODES = ("error", "score", "skip")
+
+
+def check_unknown_reference(mode: str) -> str:
+    """Return ``mode`` if it is a valid ``unknown_reference`` setting.
+
+    Raises:
+        ValueError: If ``mode`` is not one of ``UNKNOWN_REFERENCE_MODES``.
+
+    Example:
+        >>> check_unknown_reference("score")
+        'score'
+    """
+    if mode not in UNKNOWN_REFERENCE_MODES:
+        raise ValueError(
+            f"unknown_reference must be one of {UNKNOWN_REFERENCE_MODES}, "
+            f"got {mode!r}"
+        )
+    return mode
+
+
+def drop_unknown_rows(
+    references: Sequence[str],
+    others: Sequence[Sequence[str]],
+    token_list: str | Path,
+    mode: str,
+) -> Tuple[List[str], List[List[str]]]:
+    """Drop the utterances whose reference has a label outside the token list.
+
+    Only ``mode == "skip"`` drops anything; the other modes return the inputs
+    unchanged.
+
+    Args:
+        references: One SCP reference value per utterance.
+        others: Sequences aligned with ``references`` (hypotheses, scores)
+            that are filtered together with it.
+        token_list: Token list that defines the model's classes.
+        mode: One of ``UNKNOWN_REFERENCE_MODES``.
+
+    Returns:
+        Tuple[List[str], List[List[str]]]: The filtered references and the
+        filtered ``others``.
+
+    Example:
+        >>> drop_unknown_rows(["a", "x"], [["a", "b"]], "tl", "score")
+        (['a', 'x'], [['a', 'b']])
+    """
+    references = list(references)
+    others = [list(o) for o in others]
+    if mode != "skip":
+        return references, others
+    known = set(load_class_labels(token_list))
+    keep = [
+        i
+        for i, ref in enumerate(references)
+        if all(label in known for label in ref.split())
+    ]
+    if len(keep) < len(references):
+        logger.warning(
+            "Skipping %d utterance(s) whose reference label is not a class",
+            len(references) - len(keep),
+        )
+    return [references[i] for i in keep], [[o[i] for i in keep] for o in others]
+
 
 def require_sklearn():
     """Return ``sklearn.metrics``, raising a helpful error when unavailable.
@@ -80,7 +148,7 @@ def load_class_labels(token_list: str | Path) -> List[str]:
 
 
 def build_target_matrix(
-    references: Sequence[str], classes: Sequence[str]
+    references: Sequence[str], classes: Sequence[str], allow_unknown: bool = False
 ) -> np.ndarray:
     """Convert reference label strings into a multi-hot target matrix.
 
@@ -88,12 +156,15 @@ def build_target_matrix(
         references: One SCP value per utterance. Space-separated labels are
             treated as multiple positives, matching espnet2's ``cls_score.py``.
         classes: Class labels in score-vector order.
+        allow_unknown: Give a label absent from ``classes`` an all-zero
+            contribution (a negative for every class) instead of raising.
 
     Returns:
         np.ndarray: Float array of shape ``(n_utterances, n_classes)``.
 
     Raises:
-        ValueError: If a reference label is absent from ``classes``.
+        ValueError: If a reference label is absent from ``classes`` and
+            ``allow_unknown`` is false.
 
     Example:
         The second utterance carries two labels, so its row has two ones.
@@ -107,6 +178,8 @@ def build_target_matrix(
     for row, reference in enumerate(references):
         for label in reference.split():
             if label not in index:
+                if allow_unknown:
+                    continue
                 raise ValueError(
                     f"Reference label {label!r} is not in the token list: "
                     f"{list(classes)}"
@@ -213,7 +286,9 @@ def single_labels(references: Sequence[str]) -> List[str]:
 
 
 def resolve_classes(
-    labels: Sequence[str], token_list: str | Path | None = None
+    labels: Sequence[str],
+    token_list: str | Path | None = None,
+    unknown_reference: str = "error",
 ) -> List[str]:
     """Return the classes to macro-average over, dropping unused ones.
 
@@ -222,13 +297,17 @@ def resolve_classes(
         token_list: Optional token list fixing the class set and its order.
             When omitted, the classes are taken from ``labels`` in sorted
             order.
+        unknown_reference: What to do with a reference label absent from
+            ``token_list``: ``"error"`` raises, ``"score"`` adds it as a class
+            that is never predicted. (``"skip"`` is applied earlier, by
+            :func:`drop_unknown_rows`, so no such label reaches this point.)
 
     Returns:
         List[str]: Classes that have at least one reference example.
 
     Raises:
-        ValueError: If a reference label is absent from ``token_list``, or if
-            ``labels`` is empty.
+        ValueError: If a reference label is absent from ``token_list`` and
+            ``unknown_reference`` is ``"error"``, or if ``labels`` is empty.
 
     Example:
         Without a token list the classes come from the references, sorted.
@@ -242,10 +321,13 @@ def resolve_classes(
     if token_list is not None:
         classes = load_class_labels(token_list)
         unknown = sorted(present - set(classes))
-        if unknown:
+        if unknown and unknown_reference == "error":
             raise ValueError(
                 f"Reference labels {unknown} are not in the token list: {classes}"
             )
+        if unknown:
+            logger.warning("Scoring labels the model cannot predict: %s", unknown)
+            classes = classes + unknown
     else:
         classes = sorted(present)
     dropped = [label for label in classes if label not in present]

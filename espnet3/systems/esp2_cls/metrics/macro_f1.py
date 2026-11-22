@@ -7,6 +7,8 @@ from typing import Dict, Optional, Sequence
 from espnet3.components.metrics.base_metric import BaseMetric
 from espnet3.contract import Field
 from espnet3.systems.esp2_cls.src.scoring_utils import (
+    check_unknown_reference,
+    drop_unknown_rows,
     require_sklearn,
     resolve_classes,
     single_labels,
@@ -34,15 +36,24 @@ class MacroF1(BaseMetric):
     inputs = (Field("ref", "text"), Field("hyp", "text"))
     outputs = (Field("MacroF1", "number"),)
 
-    def __init__(self, token_list: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        token_list: Optional[str] = None,
+        unknown_reference: str = "error",
+    ) -> None:
         """Initialize the macro F1 metric.
 
         Args:
             token_list: Optional path to the recipe's token list. It fixes the
                 class set so unseen labels are caught; without it the classes
                 are taken from the references.
+            unknown_reference: What to do with a reference label that is not
+                in ``token_list``: ``"error"`` (default), ``"score"`` (count
+                it as a class no prediction can match) or ``"skip"`` (leave
+                those utterances out).
         """
         self.token_list = token_list
+        self.unknown_reference = check_unknown_reference(unknown_reference)
         super().__init__()
         self.add_state("refs", [], "cat")
         self.add_state("hyps", [], "cat")
@@ -71,7 +82,7 @@ class MacroF1(BaseMetric):
             RuntimeError: If ``scikit-learn`` is not installed.
             ValueError: If no utterance was added, an utterance carries
                 multiple labels, or a reference label is missing from
-                ``token_list``.
+                ``token_list`` while ``unknown_reference`` is ``"error"``.
 
         Examples:
             >>> metric = MacroF1()
@@ -82,7 +93,11 @@ class MacroF1(BaseMetric):
         sklearn_metrics = require_sklearn()
         references = single_labels(self.refs)
         hypotheses = single_labels(self.hyps)
-        classes = resolve_classes(references, self.token_list)
+        if self.token_list is not None:
+            references, (hypotheses,) = drop_unknown_rows(
+                references, [hypotheses], self.token_list, self.unknown_reference
+            )
+        classes = resolve_classes(references, self.token_list, self.unknown_reference)
         score = sklearn_metrics.f1_score(
             references,
             hypotheses,
