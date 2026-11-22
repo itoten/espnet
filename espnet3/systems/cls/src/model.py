@@ -261,7 +261,8 @@ class ClsModel(nn.Module):
             tuple: ``(loss, stats, weight)`` as ESPnet3's trainer expects.
 
         Raises:
-            ValueError: If an utterance carries anything other than one label.
+            ValueError: If an utterance carries anything other than one label,
+                or a label is not one of the model's classes.
         """
         if label.dim() != 2:
             raise ValueError(f"label must be (B, 1), got shape {tuple(label.shape)}")
@@ -271,9 +272,19 @@ class ClsModel(nn.Module):
                 f"{label_lengths.tolist()} labels per utterance"
             )
 
-        logits = self.compute_logits(speech, speech_lengths)
         target = label[:, 0].long()
+        # A label outside the classes (such as the `<unk>` entry that ends the
+        # token list, given to a label the training data never had) would
+        # otherwise fail inside cross_entropy as an opaque CUDA assert.
+        if bool(((target < 0) | (target >= self.num_classes)).any()):
+            raise ValueError(
+                f"label holds class indices {sorted(set(target.tolist()))}, but the "
+                f"model has {self.num_classes} classes (0..{self.num_classes - 1}). "
+                "A label missing from the token list maps to <unk>, which is not a "
+                "class; check num_classes against the token list."
+            )
 
+        logits = self.compute_logits(speech, speech_lengths)
         loss = F.cross_entropy(logits, target, weight=self.class_weights)
         accuracy = (logits.argmax(dim=-1) == target).float().mean()
         stats = {"loss": loss.detach(), "acc": accuracy.detach()}

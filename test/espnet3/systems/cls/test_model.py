@@ -51,6 +51,8 @@ from espnet3.systems.cls.src.model import (
 # | test_rejects_mismatched_class_weights       | A wrong weight count is an   |
 # |                                             | error.                       |
 # | test_rejects_multi_label_batches            | The model is single-label.   |
+# | test_rejects_a_label_outside_the_classes    | <unk> or a negative index    |
+# |                          | fails with a clear error before the forward.    |
 # | test_collect_feats_exposes_the_waveform     | collect_stats measures the   |
 # |                                             | waveform it returns.         |
 
@@ -249,3 +251,13 @@ def test_collect_feats_exposes_the_waveform():
 
     assert torch.equal(feats["feats"], batch["speech"])
     assert torch.equal(feats["feats_lengths"], batch["speech_lengths"])
+
+
+@pytest.mark.parametrize("bad", [7, -1])
+def test_rejects_a_label_outside_the_classes(bad):
+    """<unk> (index num_classes) must fail clearly, not as a CUDA assert."""
+    batch = _batch()
+    batch["label"][1, 0] = bad
+
+    with pytest.raises(ValueError, match="7 classes"):
+        _model()(**batch)

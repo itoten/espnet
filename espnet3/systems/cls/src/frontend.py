@@ -79,15 +79,15 @@ class Wav2Vec2Frontend(AbsFrontend):
         compile_feature_encoder: Whether to compile the convolutional feature
             encoder with ``torch.compile`` (``dynamic=True``). It runs on the
             raw waveform, so its normalisations and activations move a lot of
-            memory; compiling fuses them. With ``compile_layers`` this made
-            HuBERT Large training on one H200 about 17 % faster.
+            memory; compiling fuses them, which mostly pays off together
+            with ``compile_layers``.
         max_train_crop: In training, cut every waveform of a batch to the
             shortest one when that removes at most this fraction of the
             padded length (``0`` never cuts). A batch without padding needs
             no attention mask, and only then does SDPA attention take its
-            fastest (flash) kernel. With length-sorted batches, which hold
-            about 0.15 % padding, ``0.05`` made HuBERT Large training about
-            11 % faster. Evaluation is never cut.
+            fastest (flash) kernel. It suits length-sorted batches, whose
+            waveforms differ little in length; a small value such as
+            ``0.05`` drops almost no audio. Evaluation is never cut.
 
     Examples:
         .. code-block:: yaml
