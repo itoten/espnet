@@ -1,0 +1,63 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # One folder per label (`anger/`, `fear/`, `happy/`, `neutral/`, `sad/`),
+  # 100 files in each, named `<NN>_<MMM>_<code>` with a doubled extension:
+  # 499 are `.wav.wav` and one is `happy/01_100_hap.wav.m4a`. The dataset card
+  # describes nothing beyond its license; `metadata.csv` is not read (its
+  # emotion column is empty).
+  source_env_var: SINHALA_EMOTIONAL_TTS_DATASET
+  dataset_path: download
+  audio_extensions: [".wav", ".m4a"]
+  expected_files: 500
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset jithara/sinhala-emotional-tts-dataset at a pinned
+  # commit (open, no login; the card's license field is cc-by-4.0).
+  hf_repo: jithara/sinhala-emotional-tts-dataset
+  hf_revision: e245128188c2f09ff58cb93344cc4519c9535d25
+  allow_patterns:
+    - "anger/*"
+    - "fear/*"
+    - "happy/*"
+    - "neutral/*"
+    - "sad/*"
+    - metadata.csv
+    - README.md
+
+  # Labels ----------------------------------------------------------------
+  # The folder is the label; all five are kept, with their names as in the
+  # release.
+  label_folders:
+    anger: anger
+    fear: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+
+  # Split -----------------------------------------------------------------
+  # No partition is published, and the release does not identify speakers
+  # (every file name starts with `01`). Files are split at random within
+  # each label.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every file to 16 kHz mono 16-bit PCM with ffmpeg.
+  output_env_var: SINHALA_EMOTIONAL_TTS_DATASET_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
