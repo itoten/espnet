@@ -67,7 +67,7 @@ How these were counted: the folder of each file; the code in the file name agree
 
 ### Not stated in the documentation
 
-- The file names follow the same pattern and emotion codes as EmoTa (Tamil), `<speaker>_<sentence>_<ang|fea|hap|neu|sad>`. Compared with the 936 EmoTa recordings (both converted to 16 kHz), no pair of recordings of similar length has a waveform correlation of 0.5 or more, so the audio is not taken from EmoTa.
+- The file names follow the same pattern and emotion codes as EmoTa (Tamil), `<speaker>_<sentence>_<ang|fea|hap|neu|sad>`. Compared with the 936 EmoTa recordings (both converted to 16 kHz), no pair of recordings whose lengths differ by 0.15 s or less has a waveform correlation of 0.5 or more (lags up to 0.5 s), so this check found no recording taken from EmoTa.
 
 
 ## Splits
