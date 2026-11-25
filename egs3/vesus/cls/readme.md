@@ -94,8 +94,10 @@ fit this six-class recipe.
 
 ## License and citation
 
-The request form asks the user to agree not to disseminate the database
-independently; no other terms are given with the release. Please cite:
+The VESUS page says the database is made freely available for academic use and
+asks that any work using VESUS cite the paper below; the request form asks the
+user to agree not to disseminate the database independently. The release itself
+states no other terms. Please cite:
 
 ```
 @inproceedings{sager2019vesus,
