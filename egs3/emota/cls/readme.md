@@ -44,7 +44,42 @@ explains these steps. Files already present are not fetched again.
 
 ## The data
 
-TODO: filled after the first build (counts of the release).
+> These counts and observations were made by the recipe author while building this recipe,
+> as a practical reference for users. They are not peer-reviewed measurements and should not be
+> cited as research results; cite the corpus documentation instead.
+
+Checked on 2026-11-25 against the Hugging Face dataset `aaivu-labs/EmoTa` (repository revision `58682568acd31be03acf07bb33de3f2528e74563`), its `data/*.wav` files. All counts cover every recording in the release, before any filtering by this recipe.
+
+### Access
+
+Hugging Face, gated: the access request asks for a name, an affiliation, a country and the intended use, and for agreement to the EmoTa Academic-Commercial License; access was granted automatically.
+
+### Size of the release
+
+| recordings | speakers | total hours |
+|---|---|---|
+| 936 | 22 | 0.72 |
+
+How these were counted: every `.wav` under `data/`, named `<speaker>_<sentence>_<emotion code>.wav`; hours from the WAV headers (1.06 to 6.40 s). Speakers are the first field of the file name (01 to 22).
+
+### Files per label
+
+| emotion code in the file name | read as | recordings | hours |
+|---|---|---|---|
+| ang | angry | 199 | 0.148 |
+| fea | fear | 110 | 0.079 |
+| hap | happy | 209 | 0.170 |
+| neu | neutral | 209 | 0.161 |
+| sad | sad | 209 | 0.166 |
+
+How these were counted: the emotion code of the file name. Hours per label are measured in the same way as the total hours above and summed over the recordings of that label.
+
+### Issues in the release
+
+- Speakers 01 to 10 and 22 have no `fea` recordings; speakers 11 to 21 have all five codes. Speakers 01 to 08 and 10 have 36 recordings, 09 has 32, 22 has 30, and 11 to 21 have 50 each.
+- The recording format differs between speakers: 48 kHz for 16 speakers (650 recordings), 22.05 kHz for speakers 11 to 14 and 17 (250), and 44.1 kHz for speaker 02 (36); 464 recordings are mono and 472 stereo.
+- No two recordings have byte-identical content.
+
 
 ## Splits
 
@@ -52,8 +87,14 @@ The corpus publishes no partition and the dataset card suggests none.
 Utterances are split 70/10/20 at random within each label (`train_ratio`,
 `valid_ratio`, `test_ratio`, `split_seed` in `dataset/config.yaml`). Speakers and
 sentences are not held out, so all three splits share them. Not every speaker
-recorded every emotion (the dataset card gives fewer `fear` utterances than the
-other emotions), which is why a speaker-held-out split is not used.
+recorded every emotion (11 of the 22 speakers have no `fea` recordings, see "The
+data"), which is why a speaker-held-out split is not used.
+
+| split | recordings | angry | fear | happy | neutral | sad |
+|---|---|---|---|---|---|---|
+| train | 654 | 139 | 77 | 146 | 146 | 146 |
+| valid | 94 | 20 | 11 | 21 | 21 | 21 |
+| test | 188 | 40 | 22 | 42 | 42 | 42 |
 
 ## License and citation
 
