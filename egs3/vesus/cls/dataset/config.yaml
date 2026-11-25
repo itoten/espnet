@@ -1,0 +1,59 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # The release is one archive, `VESUS.zip`, holding
+  # `Audio/<actor>/<emotion folder>/<number>.wav` (actors 1 to 10; folders
+  # Angry, Fearful, Happy, Monotone, Neutral, Sad), plus `Challenges/`,
+  # `Tools/` and `README.txt`. The archive is read in place (nothing is
+  # extracted); an unpacked copy with `Audio/` also works. One file name has a
+  # space before the extension (`Audio/5/Fearful/152 .wav`), hence ` ?` below.
+  source_env_var: VESUS
+  dataset_path: download
+  archive_name: VESUS.zip
+  audio_re: "^Audio/(?P<actor>[0-9]+)/(?P<folder>[A-Za-z]+)/(?P<number>[0-9]+) ?\\.wav$"
+  # Recordings in the release (counted while building this recipe).
+  expected_recordings: 15040
+
+  # Download --------------------------------------------------------------
+  # Not possible by a script: the NSA lab at Johns Hopkins University sends a
+  # download link after a request form (readme.md, Download).
+
+  # Labels ----------------------------------------------------------------
+  # The folder is the instructed emotion. All six are kept; the names are
+  # only lowercased.
+  label_folders:
+    Angry: angry
+    Fearful: fearful
+    Happy: happy
+    Monotone: monotone
+    Neutral: neutral
+    Sad: sad
+
+  # Split -----------------------------------------------------------------
+  # Held out by actor. The release's `Challenges/` files are protocols over
+  # the listener-rated recordings with listener labels (five classes, no
+  # Monotone), so they are not used for this six-class split. The actors were
+  # shuffled with seed 0 (Python `random.Random(0)`) and the first two taken
+  # for test and valid; actors 8 and 9 are both male.
+  split_speakers:
+    train: ["1", "2", "3", "4", "5", "6", "7", "10"]
+    valid: ["9"]
+    test: ["8"]
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # `build()` converts every recording to 16 kHz mono 16-bit PCM with ffmpeg.
+  output_env_var: VESUS_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv
