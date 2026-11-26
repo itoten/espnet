@@ -50,6 +50,9 @@ from espnet3.systems.cls.src.model import (
 # |                          | since prepare_labels writes it after config load.|
 # | test_rejects_mismatched_class_weights       | A wrong weight count is an   |
 # |                                             | error.                       |
+# | test_label_smoothing_matches_espnet2        | Same loss as ESPnet2's        |
+# |                          | nn.CrossEntropyLoss(label_smoothing=lsm_weight).|
+# | test_rejects_bad_label_smoothing            | Outside [0, 1) is an error.  |
 # | test_rejects_multi_label_batches            | The model is single-label.   |
 # | test_collect_feats_exposes_the_waveform     | collect_stats measures the   |
 # |                                             | waveform it returns.         |
@@ -230,6 +233,29 @@ def test_class_weights_can_come_from_a_file(tmp_path):
 def test_rejects_mismatched_class_weights():
     with pytest.raises(ValueError, match="holds 3 values"):
         _model(class_weights=[1.0, 1.0, 1.0])
+
+
+def test_label_smoothing_matches_espnet2():
+    """The loss is ESPnet2's classification loss with ``lsm_weight``."""
+    batch = _batch(batch_size=3)
+    batch["label"] = torch.tensor([[0], [3], [6]])
+    torch.manual_seed(0)
+    model = _model(label_smoothing=0.1)
+    model.eval()
+    loss, _, _ = model(**batch)
+    logits = model.compute_logits(batch["speech"], batch["speech_lengths"])
+    expected = torch.nn.CrossEntropyLoss(
+        weight=model.class_weights, label_smoothing=0.1
+    )(logits, batch["label"][:, 0])
+    assert torch.isclose(loss, expected)
+    plain = torch.nn.functional.cross_entropy(logits, batch["label"][:, 0])
+    assert not torch.isclose(loss, plain)
+
+
+@pytest.mark.parametrize("value", [-0.1, 1.0])
+def test_rejects_bad_label_smoothing(value):
+    with pytest.raises(ValueError, match="label_smoothing"):
+        _model(label_smoothing=value)
 
 
 def test_rejects_multi_label_batches():

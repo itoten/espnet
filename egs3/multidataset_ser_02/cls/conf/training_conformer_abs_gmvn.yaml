@@ -1,0 +1,25 @@
+# The Conformer of `conf/training_conformer_abs.yaml` with ESPnet2's
+# `GlobalMVN` in place of the per-utterance standardisation: the log-mel
+# features are normalised with the mean and variance of the whole training
+# set, after SpecAugment, as in ESPnet2's ASR recipes. The per-utterance
+# statistics include the frames that SpecAugment zeroes, so with SpecAugment
+# the unmasked frames were shifted in training but not at inference; fixed
+# statistics leave them as at inference. Everything else is the same as in
+# `conf/training_conformer_abs.yaml`.
+#
+# The statistics are those of the log-mel features over the training set,
+# written by `collect_stats` (`ClsModel.collect_feats` gives the log-mel of a
+# log-mel frontend) to their own directory; run it once before training:
+#   python run.py --stages collect_stats \
+#       --training_config conf/training_conformer_abs_gmvn.yaml
+defaults:
+  - training_conformer_abs
+  - _self_
+
+exp_tag: ${oc.env:MULTIDATASET_SER_02_EXP_TAG,train_conformer_abs_gmvn}
+stats_dir: ${recipe_dir}/exp/stats_logmel
+
+frontend:
+  normalize:
+    _target_: espnet2.layers.global_mvn.GlobalMVN
+    stats_file: ${stats_dir}/train/logmel_stats.npz

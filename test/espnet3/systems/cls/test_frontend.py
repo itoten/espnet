@@ -5,6 +5,8 @@ import torch
 from torch import nn
 from transformers import (
     SeamlessM4TFeatureExtractor,
+    HubertConfig,
+    HubertModel,
     WavLMConfig,
     WavLMModel,
     WhisperFeatureExtractor,
@@ -283,6 +285,91 @@ def test_wav2vec2_does_not_pad_in_eval():
     assert frames.size(1) == 4
 
 
+def _tiny_hubert(layers=2, layerdrop=0.0):
+    config = HubertConfig(
+        layerdrop=layerdrop,
+        hidden_size=HIDDEN,
+        num_hidden_layers=layers,
+        num_attention_heads=2,
+        intermediate_size=32,
+        conv_dim=(8,) * 7,
+        num_conv_pos_embeddings=8,
+        do_stable_layer_norm=True,
+        feat_extract_norm="layer",
+        mask_time_prob=0.5,
+        mask_time_length=2,
+    )
+    return HubertModel(config)
+
+
+def test_wav2vec2_weighted_sum_over_all_hidden_states():
+    frontend = Wav2Vec2Frontend(_tiny_hubert(layers=2), multilayer_feature=True).eval()
+    speech, lengths = _speech([3200, 1600], total=3200)
+
+    frames, frame_lengths = frontend(speech, lengths)
+
+    # The convolutional front and two layers: three equally weighted states.
+    assert frontend.featurizer.weights.shape == (3,)
+    out = frontend.encoder(
+        speech, attention_mask=torch.ones_like(speech, dtype=torch.long), output_hidden_states=True
+    )
+    assert len(out.hidden_states) == 3
+    assert frames.shape == out.last_hidden_state.shape
+    assert frame_lengths.tolist() == [9, 4]
+
+
+def test_wav2vec2_weighted_sum_learns_the_layer_weights():
+    frontend = Wav2Vec2Frontend(_tiny_hubert(), multilayer_feature=True).train()
+    speech, lengths = _speech([3200], total=3200)
+
+    frames, _ = frontend(speech, lengths)
+    frames.sum().backward()
+
+    assert frontend.featurizer.weights.grad is not None
+    assert any(p.grad is not None for p in frontend.encoder.encoder.parameters())
+
+
+def test_wav2vec2_weighted_sum_needs_layerdrop_off_in_training():
+    # transformers records hidden states from the layers that ran: with every
+    # layer dropped the weighted sum gets one state, not three. The recipe
+    # turns LayerDrop off for the weighted sum (hubert_large_nold_wsum.yaml).
+    frontend = Wav2Vec2Frontend(
+        _tiny_hubert(layers=2, layerdrop=1.0), multilayer_feature=True
+    ).train()
+    speech, lengths = _speech([3200], total=3200)
+    with pytest.raises(RuntimeError):
+        frontend(speech, lengths)
+
+
+def test_wav2vec2_frozen_encoder_stays_in_eval_without_gradients():
+    frontend = Wav2Vec2Frontend(
+        _tiny_hubert(), multilayer_feature=True, freeze_encoder=True
+    ).train()
+    speech, lengths = _speech([3200], total=3200)
+
+    assert frontend.training and not frontend.encoder.training
+    frames, _ = frontend(speech, lengths)
+    frames.sum().backward()
+
+    assert frontend.featurizer.weights.grad is not None
+    assert all(p.grad is None for p in frontend.encoder.parameters())
+    assert not any(p.requires_grad for p in frontend.encoder.parameters())
+    # Evaluation mode: no time masking, so the output is deterministic.
+    again, _ = frontend(speech, lengths)
+    assert torch.allclose(frames, again)
+
+
+def test_wav2vec2_default_is_the_last_hidden_state():
+    encoder = _tiny_hubert().eval()
+    frontend = Wav2Vec2Frontend(encoder).eval()
+    speech, lengths = _speech([3200], total=3200)
+
+    frames, _ = frontend(speech, lengths)
+
+    assert frontend.featurizer is None
+    assert torch.allclose(frames, encoder(speech, attention_mask=torch.ones_like(speech, dtype=torch.long)).last_hidden_state)
+
+
 def test_w2v_bert_feeds_stacked_filterbanks():
     encoder = FakeW2vBert()
     frontend = W2vBertFrontend(encoder, SeamlessM4TFeatureExtractor())
@@ -505,3 +592,97 @@ def test_logmel_encoder_frontend_drops_the_mask_only_without_padding():
         module.skip_mask = False
     masked = frontend(speech, torch.tensor([16000, 16000]))[0]
     torch.testing.assert_close(full, masked, atol=1e-5, rtol=1e-5)
+
+
+def _logmel_stats_file(tmp_path, frontend, speech, lengths):
+    """Write a GlobalMVN statistics file of the frontend's own log-mel features."""
+    import numpy as np
+
+    feats, feat_lengths = frontend.logmel(speech, lengths)
+    frames = torch.cat([f[: int(n)] for f, n in zip(feats, feat_lengths)])
+    path = tmp_path / "logmel_stats.npz"
+    np.savez(
+        path,
+        count=frames.size(0),
+        sum=frames.sum(0).numpy(),
+        sum_square=(frames**2).sum(0).numpy(),
+    )
+    return path
+
+
+def test_logmel_frontend_normalize_replaces_the_per_utterance_standardisation(
+    tmp_path,
+):
+    from espnet2.layers.global_mvn import GlobalMVN
+
+    torch.manual_seed(0)
+    speech = torch.randn(2, 16000)
+    lengths = torch.tensor([16000, 12000])
+    plain = LogMelTransformerFrontend(d_model=16, num_layers=1, num_heads=2, ffn_dim=32)
+    stats = _logmel_stats_file(tmp_path, plain, speech, lengths)
+    normalize = GlobalMVN(stats)
+    frontend = LogMelTransformerFrontend(
+        d_model=16, num_layers=1, num_heads=2, ffn_dim=32, normalize=normalize
+    ).eval()
+
+    feats, feat_lengths = frontend._input_features(speech, lengths)
+    raw, _ = frontend.logmel(speech, lengths)
+    expected, _ = GlobalMVN(stats)(raw.clone(), feat_lengths)
+    torch.testing.assert_close(feats, expected)
+    # without `normalize` the per-utterance standardisation stays as it was
+    plain.eval()
+    feats_plain, _ = plain._input_features(speech, lengths)
+    torch.testing.assert_close(feats_plain, plain._standardise(raw, feat_lengths))
+
+
+def test_logmel_frontend_specaug_leaves_unmasked_frames_alone_with_globalmvn(
+    tmp_path,
+):
+    """Global statistics keep the unmasked frames as at inference."""
+    from espnet2.asr.specaug.specaug import SpecAug
+    from espnet2.layers.global_mvn import GlobalMVN
+
+    torch.manual_seed(0)
+    speech = torch.randn(2, 16000)
+    lengths = torch.tensor([16000, 16000])
+    specaug = SpecAug(
+        apply_time_warp=False,
+        apply_freq_mask=False,
+        apply_time_mask=True,
+        time_mask_width_range=(20, 30),
+        num_time_mask=2,
+    )
+    probe = LogMelTransformerFrontend(d_model=16, num_layers=1, num_heads=2, ffn_dim=32)
+    stats = _logmel_stats_file(tmp_path, probe, speech, lengths)
+    frontend = LogMelTransformerFrontend(
+        d_model=16,
+        num_layers=1,
+        num_heads=2,
+        ffn_dim=32,
+        specaug=specaug,
+        normalize=GlobalMVN(stats),
+    )
+    frontend.train()
+    masked, _ = frontend._input_features(speech, lengths)
+    frontend.eval()
+    clean, _ = frontend._input_features(speech, lengths)
+    raw, _ = frontend.logmel(speech, lengths)
+    # frames SpecAugment zeroed: the log-mel is 0 there, everywhere else the
+    # training input equals the inference input
+    zeroed = (masked == GlobalMVN(stats)(torch.zeros_like(raw), lengths * 0 + raw.size(1))[0])
+    unmasked = ~zeroed.all(dim=-1)
+    assert unmasked.any() and (~unmasked).any()
+    torch.testing.assert_close(masked[unmasked], clean[unmasked])
+
+
+def test_cls_model_collect_feats_gives_the_logmel_of_a_logmel_frontend():
+    from espnet3.systems.cls.src.model import ClsModel
+
+    frontend = LogMelTransformerFrontend(d_model=16, num_layers=1, num_heads=2, ffn_dim=32)
+    model = ClsModel(frontend=frontend, num_classes=3, head_size=8).eval()
+    speech = torch.randn(2, 16000)
+    lengths = torch.tensor([16000, 8000])
+    feats = model.collect_feats(speech, lengths)
+    assert set(feats) == {"feats", "feats_lengths", "logmel", "logmel_lengths"}
+    assert feats["logmel"].shape[-1] == 80
+    assert feats["logmel_lengths"].tolist() == [101, 51]
