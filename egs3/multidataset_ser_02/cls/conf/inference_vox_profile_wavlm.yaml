@@ -1,0 +1,85 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Zero-shot baseline: the Vox-Profile categorical emotion classifier
+# (WavLM Large, fully fine-tuned, https://github.com/tiantiaf0627/vox-profile-release)
+# as released, with no training on this recipe's data. Run standalone,
+# without a training config:
+#   python run.py --stages infer measure \
+#       --inference_config conf/inference_vox_profile_wavlm.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# Needs the token list and evaluation manifests written by `create_dataset`,
+# `remove_long_short` and `prepare_labels` with `conf/training.yaml`.
+#
+# Trained on MSP-Podcast only, which is not one of this recipe's corpora, so
+# it is zero-shot on every evaluation corpus. The model reads at most 15 s:
+# longer utterances are scored on their first 15 s. Its weights are under
+# the OpenRAIL license and are not for commercial use.
+#
+# Kept apart from `inference.yaml`, whose `model` block (a trained `ClsModel`)
+# would be merged into this one rather than replaced.
+exp_tag: zeroshot_vox_profile_wavlm
+data_dir: ${oc.env:MULTIDATASET_SER_02_OUTPUT,./data}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# The same test sets as `inference.yaml`; keep the two lists in step.
+dataset:
+  test:
+    - {name: aesdd,              data_src_args: {split: aesdd}}
+    - {name: brytserc,           data_src_args: {split: brytserc}}
+    - {name: cafe,               data_src_args: {split: cafe}}
+    - {name: cbesd,              data_src_args: {split: cbesd}}
+    - {name: cremad,             data_src_args: {split: cremad}}
+    - {name: dailytalk,          data_src_args: {split: dailytalk}}
+    - {name: dusha,              data_src_args: {split: dusha}}
+    - {name: emospeech_keywords, data_src_args: {split: emospeech_keywords}}
+    - {name: emotiontalk,        data_src_args: {split: emotiontalk}}
+    - {name: emovdb,             data_src_args: {split: emovdb}}
+    - {name: jnv,                data_src_args: {split: jnv}}
+    - {name: jvnv,               data_src_args: {split: jvnv}}
+    - {name: legov2,             data_src_args: {split: legov2}}
+    - {name: mcaespps,           data_src_args: {split: mcaespps}}
+    - {name: meld,               data_src_args: {split: meld}}
+    - {name: multidialog,        data_src_args: {split: multidialog}}
+    - {name: nemo,               data_src_args: {split: nemo}}
+    - {name: nonverbaltts,       data_src_args: {split: nonverbaltts}}
+    - {name: pavoque,            data_src_args: {split: pavoque}}
+    - {name: ravdess,            data_src_args: {split: ravdess}}
+    - {name: shemo,              data_src_args: {split: shemo}}
+    - {name: tess,               data_src_args: {split: tess}}
+    - {name: thaiser,            data_src_args: {split: thaiser}}
+    - {name: turevdb,            data_src_args: {split: turevdb}}
+    - {name: utemo,              data_src_args: {split: utemo}}
+    - {name: vivae,              data_src_args: {split: vivae}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# The nine Vox-Profile labels are reduced to the seven classes: the
+# probabilities of the seven mapped below are renormalised, and those of
+# `Contempt` and `Other` are discarded, so the prediction is always one of
+# the seven, as for a trained model.
+model:
+  _target_: espnet3.systems.cls.src.vox_profile_wavlm_inference_model.VoxProfileWavLMEmotionInferenceModel
+  model_tag: tiantiaf/wavlm-large-categorical-emotion
+  # The model repository's commit, so that a later upload does
+  # not change the results.
+  revision: 621a2ceaaa2408e390e0fc9454e8c29490f689e2
+  token_list: ${data_dir}/token_list
+  label_map:
+    Anger: angry
+    Disgust: disgust
+    Fear: fear
+    Happiness: happy
+    Neutral: neutral
+    Sadness: sad
+    Surprise: surprise
+
+input_key: speech
+# Each utterance (cut at 15 s) runs through the encoder on its own, so the
+# batch size only sets how many are handed to the model at once.
+batch_size: ${oc.decode:${oc.env:MULTIDATASET_SER_02_BATCH_SIZE,16}}
+output_fn: src.inference.build_output
