@@ -1,0 +1,45 @@
+# Model A: HuBERT Large (`conf/frontend/hubert_large.yaml`), pre-trained on
+# Libri-Light, fine-tuned here with its convolutional feature encoder frozen.
+# Everything not set here comes from `conf/training.yaml`.
+#
+# Set for speed on one H200 (one GPU processed about 2,980 seconds of audio a
+# second; 20 epochs take about 3.2 hours):
+# - SDPA attention (`attn_implementation: sdpa` in the frontend).
+# - Each transformer layer compiled with `torch.compile`, and the frozen
+#   convolutional feature encoder as well.
+# - Batches cut to their shortest utterance in training (`max_train_crop`):
+#   the batches are sorted by length and hold 0.15 % padding, but any padding
+#   at all needs an attention mask, which keeps SDPA off its fastest kernel.
+defaults:
+  - training
+  # The lr schedule: `conf/lr_schedule/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_03_LR_SCHEDULE (`tristage` by default).
+  - lr_schedule/${oc.env:MULTIDATASET_SER_03_LR_SCHEDULE,tristage}
+  # The frontend: `conf/frontend/<name>.yaml`, chosen by MULTIDATASET_SER_03_FRONTEND
+  # (`hubert_large`, the last layer, by default). Give the same value to `infer`.
+  - frontend: ${oc.env:MULTIDATASET_SER_03_FRONTEND,hubert_large}
+  # Data augmentation: `conf/augment/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_03_AUGMENT (none by default).
+  - augment/${oc.env:MULTIDATASET_SER_03_AUGMENT,none}
+  # Training sampler: `conf/sampler/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_03_SAMPLER (`numel`, the length-sorted batches of
+  # `conf/training.yaml`, by default).
+  - sampler/${oc.env:MULTIDATASET_SER_03_SAMPLER,numel}
+  - _self_
+
+# Set MULTIDATASET_SER_03_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_03_EXP_TAG,train_hubert_large}
+
+frontend:
+  compile_layers: true
+  compile_feature_encoder: true
+  max_train_crop: 0.05
+
+# Peak lr. Set MULTIDATASET_SER_03_LR to try another value.
+optimizer:
+  lr: ${oc.decode:${oc.env:MULTIDATASET_SER_03_LR,3.0e-5}}
+
+# Fused AdamW is not used: with `gradient_clip_val` set, Lightning's mixed
+# precision plugin refuses any optimizer that unscales gradients itself, even
+# under bf16 where there is no scaler.

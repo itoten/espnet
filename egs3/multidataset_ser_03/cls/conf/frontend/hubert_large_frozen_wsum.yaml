@@ -1,0 +1,13 @@
+# HuBERT Large (conf/frontend/hubert_large.yaml) with a learned weighted sum of
+# all its hidden states (ESPnet's Featureizer, as in SUPERB) instead of the last
+# one, with the encoder frozen and in evaluation mode (SUPERB).
+_target_: espnet3.systems.cls.src.frontend.Wav2Vec2Frontend
+encoder:
+  _target_: transformers.AutoModel.from_pretrained
+  pretrained_model_name_or_path: facebook/hubert-large-ll60k
+  attn_implementation: sdpa
+normalize:
+  _target_: espnet3.systems.cls.src.model.WaveformNormalize
+  stats_file: ${stats_dir}/train/feats_stats.npz
+multilayer_feature: true
+freeze_encoder: true

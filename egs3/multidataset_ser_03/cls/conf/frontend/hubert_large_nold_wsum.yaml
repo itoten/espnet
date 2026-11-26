@@ -1,0 +1,16 @@
+# HuBERT Large (conf/frontend/hubert_large.yaml) with a learned weighted sum of
+# all its hidden states (ESPnet's Featureizer, as in SUPERB) instead of the last
+# one; the encoder is fine-tuned as in hubert_large.yaml.
+# LayerDrop is off: transformers records hidden states from the layers that
+# ran, so a skipped layer would leave the weighted sum one state short.
+# Compare with hubert_large_nold.yaml (last layer, LayerDrop off as well).
+_target_: espnet3.systems.cls.src.frontend.Wav2Vec2Frontend
+encoder:
+  _target_: transformers.AutoModel.from_pretrained
+  pretrained_model_name_or_path: facebook/hubert-large-ll60k
+  attn_implementation: sdpa
+  layerdrop: 0.0
+normalize:
+  _target_: espnet3.systems.cls.src.model.WaveformNormalize
+  stats_file: ${stats_dir}/train/feats_stats.npz
+multilayer_feature: true

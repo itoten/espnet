@@ -1,0 +1,16 @@
+# Inference with the `conformer_m` frontend; must match `conf/training_conformer_m.yaml`.
+# Batched as in `conf/inference_hubert_large.yaml`, in fp32.
+defaults:
+  - inference
+  - frontend: conformer_m
+  - _self_
+
+batch_size: 512
+
+runner:
+  _target_: espnet3.systems.cls.src.inference_runner.PrefetchInferenceRunner
+  read_workers: 16
+
+model:
+  max_batch_samples: 11520000
+  autocast: null

@@ -1,0 +1,75 @@
+##########################################################
+#                   INFERENCE SETTING                    #
+##########################################################
+# Settings shared by every encoder. Run with a per-encoder config,
+# `conf/inference_<encoder>.yaml`, which adds the frontend:
+#   python run.py --stages infer measure \
+#       --training_config conf/training_hubert_large.yaml \
+#       --inference_config conf/inference_hubert_large.yaml \
+#       --metrics_config conf/metrics.yaml
+#
+# `exp_tag` / `exp_dir` come from the training config but `data_dir` does
+# not, so it is set here with the same expression as in training.yaml.
+data_dir: ${oc.env:MULTIDATASET_SER_03_OUTPUT,./data}
+# The weights scored: `<exp_dir>/<MULTIDATASET_SER_03_WEIGHTS>.pth`, by default
+# the checkpoint with the best validation accuracy; `valid.acc.ave_5best`
+# is the average of the five best and `epochs.ave_last5` (written by
+# `local/average_last_epochs.py`) that of the last five validated epochs.
+# Each is scored into its own directory, `inference/<weights>/`, as in
+# ESPnet2's recipes.
+inference_weights: ${oc.env:MULTIDATASET_SER_03_WEIGHTS,valid.acc.best}
+inference_dir: ${exp_dir}/inference/${inference_weights}
+
+##########################################################
+#                    DATASET DEFINITION                  #
+##########################################################
+# One test set per evaluation corpus (`eval_corpora` in `dataset/config.yaml`),
+# each with the rows of every split of that corpus whose label is one of the
+# seven classes and whose duration is 0.5 to 30 s (`remove_long_short`).
+dataset:
+  test:
+    - {name: aesdd,              data_src_args: {split: aesdd}}
+    - {name: brytserc,           data_src_args: {split: brytserc}}
+    - {name: cafe,               data_src_args: {split: cafe}}
+    - {name: cbesd,              data_src_args: {split: cbesd}}
+    - {name: cremad,             data_src_args: {split: cremad}}
+    - {name: dailytalk,          data_src_args: {split: dailytalk}}
+    - {name: dusha,              data_src_args: {split: dusha}}
+    - {name: emospeech_keywords, data_src_args: {split: emospeech_keywords}}
+    - {name: emotiontalk,        data_src_args: {split: emotiontalk}}
+    - {name: emovdb,             data_src_args: {split: emovdb}}
+    - {name: jnv,                data_src_args: {split: jnv}}
+    - {name: jvnv,               data_src_args: {split: jvnv}}
+    - {name: legov2,             data_src_args: {split: legov2}}
+    - {name: mcaespps,           data_src_args: {split: mcaespps}}
+    - {name: meld,               data_src_args: {split: meld}}
+    - {name: multidialog,        data_src_args: {split: multidialog}}
+    - {name: nemo,               data_src_args: {split: nemo}}
+    - {name: nonverbaltts,       data_src_args: {split: nonverbaltts}}
+    - {name: pavoque,            data_src_args: {split: pavoque}}
+    - {name: ravdess,            data_src_args: {split: ravdess}}
+    - {name: shemo,              data_src_args: {split: shemo}}
+    - {name: tess,               data_src_args: {split: tess}}
+    - {name: thaiser,            data_src_args: {split: thaiser}}
+    - {name: turevdb,            data_src_args: {split: turevdb}}
+    - {name: utemo,              data_src_args: {split: utemo}}
+    - {name: vivae,              data_src_args: {split: vivae}}
+
+##########################################################
+#                    MODEL AND OUTPUT                    #
+##########################################################
+# `network` must match `model` in training.yaml (without `class_weights`).
+model:
+  _target_: espnet3.systems.cls.src.inference_model.ClsInferenceModel
+  network:
+    _target_: espnet3.systems.cls.src.model.ClsModel
+    frontend: ${frontend}
+    num_classes: 7
+    head_size: 1024
+    head_layers: 1
+    dropout: 0.5
+  model_file: ${exp_dir}/${inference_weights}.pth
+  token_list: ${data_dir}/token_list
+
+input_key: speech
+output_fn: src.inference.build_output

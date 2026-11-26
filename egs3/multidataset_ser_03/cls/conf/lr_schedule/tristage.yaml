@@ -1,0 +1,17 @@
+# Warm up from 1 % of `lr` over the first 10 % of the updates, hold for 40 %,
+# then decay to 5 % of `lr` over the last 50 % (ESPnet2's TristageLR). The
+# three ratios (summing to 1) can be set with MULTIDATASET_SER_03_WARMUP_RATIO,
+# MULTIDATASET_SER_03_HOLD_RATIO and MULTIDATASET_SER_03_DECAY_RATIO.
+# `max_steps` counts optimizer updates over the whole run: `max_epochs` times
+# the updates of one epoch on one GPU with the `batch_bins` of
+# `conf/training.yaml` (see the readme). Set MULTIDATASET_SER_03_MAX_STEPS
+# together with MULTIDATASET_SER_03_EPOCHS, and recompute it when the batch or
+# the GPU count changes.
+lr_schedule:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: ${oc.decode:${oc.env:MULTIDATASET_SER_03_MAX_STEPS,25660}}
+  warmup_ratio: ${oc.decode:${oc.env:MULTIDATASET_SER_03_WARMUP_RATIO,0.1}}
+  hold_ratio: ${oc.decode:${oc.env:MULTIDATASET_SER_03_HOLD_RATIO,0.4}}
+  decay_ratio: ${oc.decode:${oc.env:MULTIDATASET_SER_03_DECAY_RATIO,0.5}}
+  init_lr_scale: 0.01
+  final_lr_scale: 0.05

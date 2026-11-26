@@ -1,0 +1,24 @@
+# Inference with the `hubert_large` frontend; must match `conf/training_hubert_large.yaml`.
+#
+# Batched for speed: the inference stage hands the model 512 utterances at a
+# time, which the model sorts by length and runs in sub-batches of at most
+# 12 minutes of audio; the runner reads the audio of the next 512 with
+# threads while the GPU works. In fp32 (`autocast: null`): inference is cheap,
+# and bf16 changed about 2.6 % of the predictions in multidataset_ser_02
+# (`autocast: bf16` is about three times faster).
+defaults:
+  - inference
+  # The frontend: `conf/frontend/<name>.yaml`, chosen by MULTIDATASET_SER_03_FRONTEND
+  # (`hubert_large`, the last layer, by default). Give the same value to `infer`.
+  - frontend: ${oc.env:MULTIDATASET_SER_03_FRONTEND,hubert_large}
+  - _self_
+
+batch_size: 512
+
+runner:
+  _target_: espnet3.systems.cls.src.inference_runner.PrefetchInferenceRunner
+  read_workers: 16
+
+model:
+  max_batch_samples: 11520000
+  autocast: null

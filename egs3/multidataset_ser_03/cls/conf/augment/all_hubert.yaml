@@ -1,0 +1,7 @@
+# Data augmentation for the HuBERT frontend: noise, reverberation and
+# HuBERT's own masking. Speed perturbation (`speed`) is left out: it lowered
+# the evaluation scores of every model in multidataset_ser_02.
+defaults:
+  - noise
+  - rir
+  - specaug_hubert

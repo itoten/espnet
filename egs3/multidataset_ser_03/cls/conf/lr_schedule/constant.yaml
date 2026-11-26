@@ -1,0 +1,12 @@
+# Warm up from 1 % of `lr` over the first 10 % of the updates, then keep `lr`
+# to the end (ESPnet2's TristageLR without the decay). The warm-up share can be
+# set with MULTIDATASET_SER_03_WARMUP_RATIO and MULTIDATASET_SER_03_HOLD_RATIO
+# (summing to 1).
+lr_schedule:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: ${oc.decode:${oc.env:MULTIDATASET_SER_03_MAX_STEPS,25660}}
+  warmup_ratio: ${oc.decode:${oc.env:MULTIDATASET_SER_03_WARMUP_RATIO,0.1}}
+  hold_ratio: ${oc.decode:${oc.env:MULTIDATASET_SER_03_HOLD_RATIO,0.9}}
+  decay_ratio: 0.0
+  init_lr_scale: 0.01
+  final_lr_scale: 0.05

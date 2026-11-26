@@ -1,0 +1,14 @@
+# Masking for the HuBERT/WavLM frontends, in training only, with the values of
+# fairseq's official HuBERT fine-tuning example
+# (`examples/hubert/config/finetune/base_10h.yaml`: mask_prob 0.75 and
+# mask_length 10 over the frames, mask_channel_prob 0.5 and
+# mask_channel_length 64 over the channels). No HuBERT Large fine-tuning
+# configuration is published. Without this file the checkpoint's own default
+# still applies (`facebook/hubert-large-ll60k`: mask_time_prob 0.075,
+# mask_time_length 10, no channel masks).
+frontend:
+  encoder:
+    mask_time_prob: 0.75
+    mask_time_length: 10
+    mask_feature_prob: 0.5
+    mask_feature_length: 64
