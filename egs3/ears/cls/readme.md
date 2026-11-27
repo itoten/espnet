@@ -11,6 +11,16 @@ read speech in several styles, every speaker recorded the same material in a set
 emotional styles. This recipe uses only those emotional recordings and none of the
 other parts of the release.
 
+The 22 emotions (paper, Sec. 2; names as in the file names, two of them corrected
+as described below) are adoration, amazement, amusement, anger, confusion,
+contentment, cuteness, desire, disappointment, disgust, distress, embarrassment,
+ecstasy, fear, guilt, interest, pain, pride, realization, relief, sadness and
+serenity; with neutral, the recipe has 23 labels. The labels are the emotions the
+participants were asked to express: they read three sentences and described an
+image "with a specific emotional tone" for each emotion, while a trained operator
+checked that the requested style was followed and had faulty segments
+re-recorded (paper, Sec. 2). No listening test of the emotions is reported.
+
 For each style a speaker has two recordings:
 
 - `emo_<style>_sentences.wav`: three sentences read in that style
@@ -37,11 +47,16 @@ Archives are read in place; nothing is extracted.
 
 ## Download
 
-`prepare_source` downloads the per-speaker archives `p001.zip` to `p107.zip` from
-the `dataset` release of the
-[GitHub repository](https://github.com/facebookresearch/ears_dataset/releases),
-keeps only the `emo_*` recordings of each and deletes the archive. The whole set of
-archives is large (tens of GB); if they are already present, nothing is downloaded.
+If the per-speaker archives `p001.zip` to `p107.zip` (from the `dataset` release of
+the [GitHub repository](https://github.com/facebookresearch/ears_dataset/releases))
+are already in `$EARS` (directly or under `ARCHIVES/`), nothing is downloaded: the
+archives are read in place and left as they are.
+
+Otherwise `prepare_source` downloads them one by one; from each it extracts only the
+`emo_*` recordings into `$EARS/pNNN/` and then deletes the archive, so the other
+recordings of the release (reading styles, freeform, non-verbal sounds) are not kept.
+The archives together are about 66 GB; the extracted `emo_*` recordings are much
+smaller.
 
 ## The data
 
