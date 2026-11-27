@@ -139,8 +139,10 @@ only.
 
 ## License and citation
 
-The Hugging Face metadata says Apache-2.0. Check the terms of the BEAT project
-before redistributing or using the data commercially. Please cite:
+Apache-2.0: the Hugging Face metadata says so, and the footer of the
+[project page](https://pantomatrix.github.io/BEAT/) reads "Licensed under the
+Apache-2.0 license." (checked 2026-11-21; the footer does not say whether it
+covers the page or the data). Please cite:
 
 ```
 @inproceedings{liu2022beat,
