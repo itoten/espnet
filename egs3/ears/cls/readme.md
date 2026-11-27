@@ -4,12 +4,32 @@ Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling +
 head) on the emotional recordings of EARS alone and scores it on the corpus's own
 held-out speakers, classifying each recording into one of 23 labels.
 
+> **This recipe covers only part of EARS.** EARS has about 100 hours from 107
+> speakers (paper): reading in seven styles, conversational freeform speech,
+> non-verbal sounds (laughter, crying, coughing, ...) and the emotional recordings.
+> Only the emotional recordings (`emo_*`, about 18 hours) carry emotion labels, and
+> this recipe uses only them. All counts below ("The data", "Splits") are counts of
+> the emotional recordings, not of EARS. When the recipe downloads the corpus
+> itself, it keeps only the `emo_*` recordings and deletes the rest (see
+> "Download"); to use the other parts, obtain the archives separately. The other
+> parts were not examined while building this recipe.
+
 [EARS](https://github.com/facebookresearch/ears_dataset) (Expressive Anechoic
 Recordings of Speech) is an anechoic, fullband (48 kHz) English speech corpus from
 107 speakers, made for speech enhancement and dereverberation benchmarks. Besides
 read speech in several styles, every speaker recorded the same material in a set of
 emotional styles. This recipe uses only those emotional recordings and none of the
 other parts of the release.
+
+The 22 emotions (paper, Sec. 2; names as in the file names, two of them corrected
+as described below) are adoration, amazement, amusement, anger, confusion,
+contentment, cuteness, desire, disappointment, disgust, distress, embarrassment,
+ecstasy, fear, guilt, interest, pain, pride, realization, relief, sadness and
+serenity; with neutral, the recipe has 23 labels. The labels are the emotions the
+participants were asked to express: they read three sentences and described an
+image "with a specific emotional tone" for each emotion, while a trained operator
+checked that the requested style was followed and had faulty segments
+re-recorded (paper, Sec. 2). No listening test of the emotions is reported.
 
 For each style a speaker has two recordings:
 
@@ -37,11 +57,16 @@ Archives are read in place; nothing is extracted.
 
 ## Download
 
-`prepare_source` downloads the per-speaker archives `p001.zip` to `p107.zip` from
-the `dataset` release of the
-[GitHub repository](https://github.com/facebookresearch/ears_dataset/releases),
-keeps only the `emo_*` recordings of each and deletes the archive. The whole set of
-archives is large (tens of GB); if they are already present, nothing is downloaded.
+If the per-speaker archives `p001.zip` to `p107.zip` (from the `dataset` release of
+the [GitHub repository](https://github.com/facebookresearch/ears_dataset/releases))
+are already in `$EARS` (directly or under `ARCHIVES/`), nothing is downloaded: the
+archives are read in place and left as they are.
+
+Otherwise `prepare_source` downloads them one by one; from each it extracts only the
+`emo_*` recordings into `$EARS/pNNN/` and then deletes the archive, so the other
+recordings of the release (reading styles, freeform, non-verbal sounds) are not kept.
+The archives together are about 66 GB; the extracted `emo_*` recordings are much
+smaller.
 
 ## The data
 
@@ -57,7 +82,7 @@ GitHub release, direct download, no sign-in.
 
 ### Size of the release
 
-| recordings | speakers | total hours |
+| emotional recordings (`emo_*` only) | speakers | total hours |
 |---|---|---|
 | 4,922 | 107 | 17.95 |
 

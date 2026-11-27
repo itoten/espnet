@@ -66,6 +66,7 @@ How these were counted: the emotion folder of each file; the code `EE` in the fi
   - Eight pairs have the same label, each within one folder, with two different NN (`duplicate_ids`; the second of each pair is listed): Happy/5 NN 21 and 22; Sad/1 39 and 40; Sad/4 03 and 75; Sad/5 46 and 47; Surprise/3 54 and 55; Surprise/4 47 and 48, 59 and 60; Surprise/5 63 and 67.
   - Since the copies carry different NN, either the copy or the speaker number is wrong for these files.
 - The record gives the total length as about 1 hour 53 minutes; the WAV headers add up to 2.27 hours.
+- On listening, `Surprise/Statement 1/03-01-01-05-01-01.wav` has a short burst of buzzing noise in the middle, as if part of the file were corrupted. Only a few recordings were listened to (one per emotion), so other recordings may have the same problem.
 
 
 ## Download

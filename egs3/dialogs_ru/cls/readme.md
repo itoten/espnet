@@ -12,6 +12,14 @@ text-to-speech. The dataset card states 11,796 utterances (20.6 hours, 44.1 kHz,
 16-bit) and 12 "style/emotion" labels per utterance, in the `emotion` column of
 the pipe-delimited split files `train.csv`, `val.csv` and `test.csv`.
 
+According to the paper (Sec. 3.4), the labels were given after recording by
+crowd workers on Yandex Tasks: three annotators judged each utterance, the
+majority label was taken, and when all three differed the globally least
+frequent of their labels was chosen, to favour rare styles. The individual
+judgements are not released, so it is not known which utterances were decided
+by this tie rule. The scripts were written with the help of GPT-3.5 and the
+actors were free to improvise on them (Sec. 3.1).
+
 The recipe keeps all 12 labels of the `emotion` column as they are written in the
 split files: `neutral`, `happy`, `surprise`, `sad`, `angry`, `disgust`, `fear`,
 `arrogance`, `laughing`, `poem`, `sgorogovrki` and `whisper`. The tongue-twister
@@ -81,6 +89,7 @@ How these were counted: the `emotion` column of the split files, for the files p
 - The audio of 1,800 listed utterances is missing: 1,742 of `train.csv` (1,664 with an emotion label, mostly neutral 961 and happy 440), 32 of `val.csv` and 26 of `test.csv`. `wavs/` holds 9,996 files. The split files' `duration` column puts the missing audio at 3.2 hours. The recipe skips these utterances.
 - The dataset card calls one label `tongue-twister`; the split files spell it `sgorogovrki`.
 - `masha_sveta_part10_1765` and `masha_sveta_part10_1821` (both neutral, same transcript, both in train) have byte-identical content; the second is listed in `duplicate_ids`.
+- The labels were changed after the first upload: the repository commit `00331bcbd9` (2026-06-15, "apply emotion_final relabel (12 styles, drop yawn)") changed the `emotion` of 2,402 of the 11,796 utterances, compared with the files of commit `bf2303eb62` just before it. The largest changes were neutral to happy (550), happy to neutral (238), surprise to happy (183), surprise to neutral (160) and neutral to sad (112); the 51 utterances labelled `yawn` were moved to other labels. The repository gives no reason or procedure for the change. This recipe uses the labels after it.
 
 
 ## Splits

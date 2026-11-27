@@ -5,6 +5,13 @@ head) on BEAT alone and scores it on a held-out-speaker test split, classifying
 each speech segment into one of eight emotions: `neutral`, `happy`, `angry`,
 `sad`, `contempt`, `surprise`, `fear` and `disgust`.
 
+**Recordings are not samples.** The release has 1,946 recordings of about one to
+fourteen minutes. The recipe cuts them into short segments (see Segmentation),
+and the segments are the samples that are trained and scored: 39,431 segments
+with the default settings. Counts of recordings ("The data") and counts of
+segments ("Splits") therefore differ by a factor of about 20; compare hours
+rather than counts.
+
 [BEAT](https://huggingface.co/datasets/haiyangliu0/BEAT) (Body-Expression-Audio-Text)
 was recorded for conversational gesture synthesis: speakers talk while their
 body and face are captured with motion capture. The Hugging Face repository
@@ -20,8 +27,7 @@ the label) and `1` for conversation (about ten minutes, nearly all labelled
 neutral). The label is the first field of the `.csv`, for example
 `01_happiness,0.0,62.0,62.0,1`; one label covers the whole recording. The
 release spells neutral `00_netural`; `emotion_map` in `dataset/config.yaml`
-maps the eight release labels to the names above. `contempt` is kept as its
-own class.
+maps the eight release labels to the names above.
 
 ## Segmentation
 
@@ -73,7 +79,7 @@ Hugging Face, direct download, no sign-in.
 
 ### Size of the release
 
-| recordings | speakers | total hours |
+| recordings (files, not samples) | speakers | total hours |
 |---|---|---|
 | 1,946 | 30 | 62.74 |
 
@@ -116,8 +122,9 @@ split. `remove_long_short` drops segments outside 0.2-30 s from train and
 valid; with the default segmentation (segments of 1.2 to 15.2 s) it drops
 none.
 
-Segments per split with the default settings (both recording types; 39,431
-segments, 51.78 hours, from 1,943 recordings):
+Segments (the samples used for training and scoring, not recordings) per split
+with the default settings (both recording types; 39,431 segments, 51.78 hours,
+cut from 1,943 recordings):
 
 | label | train | valid | test |
 |---|---|---|---|
@@ -139,8 +146,10 @@ only.
 
 ## License and citation
 
-The Hugging Face metadata says Apache-2.0. Check the terms of the BEAT project
-before redistributing or using the data commercially. Please cite:
+Apache-2.0: the Hugging Face metadata says so, and the footer of the
+[project page](https://pantomatrix.github.io/BEAT/) reads "Licensed under the
+Apache-2.0 license." (checked 2026-11-21; the footer does not say whether it
+covers the page or the data). Please cite:
 
 ```
 @inproceedings{liu2022beat,
