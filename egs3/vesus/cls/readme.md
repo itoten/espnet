@@ -12,6 +12,15 @@ neutral, monotone, happy, sad, angry and fearful. The release also holds crowd
 ratings of the perceived emotion of most recordings (`Tools/VESUS_Key.csv`) and
 evaluation protocols built on them (`Challenges/`); this recipe does not use them.
 
+How the labels were made (paper, Sec. 2-3): the actors read the whole script once
+in a neutral voice and then once in each of happiness, sadness, anger and fear, and
+rated their own confidence in each portrayal; the folder is this instructed
+emotion. Separately, ten Amazon Mechanical Turk workers per utterance chose the
+emotion they perceived among the five (not monotone); individual raters agreed
+with the instructed emotion 57% of the time, and the majority vote of the ten 65%
+(paper, Table 3). The paper does not describe the monotone recordings; the
+release's `README.txt` lists monotone as the second of six readings.
+
 The label of a recording is its folder, the instructed emotion. All six are kept,
 lowercased: `angry`, `fearful`, `happy`, `monotone`, `neutral`, `sad`.
 `create_dataset` converts every recording to 16 kHz mono 16-bit PCM with ffmpeg,
