@@ -4,6 +4,16 @@ Trains the `cls` system (fine-tuned WavLM Large + attentive statistics pooling +
 head) on the emotional recordings of EARS alone and scores it on the corpus's own
 held-out speakers, classifying each recording into one of 23 labels.
 
+> **This recipe covers only part of EARS.** EARS has about 100 hours from 107
+> speakers (paper): reading in seven styles, conversational freeform speech,
+> non-verbal sounds (laughter, crying, coughing, ...) and the emotional recordings.
+> Only the emotional recordings (`emo_*`, about 18 hours) carry emotion labels, and
+> this recipe uses only them. All counts below ("The data", "Splits") are counts of
+> the emotional recordings, not of EARS. When the recipe downloads the corpus
+> itself, it keeps only the `emo_*` recordings and deletes the rest (see
+> "Download"); to use the other parts, obtain the archives separately. The other
+> parts were not examined while building this recipe.
+
 [EARS](https://github.com/facebookresearch/ears_dataset) (Expressive Anechoic
 Recordings of Speech) is an anechoic, fullband (48 kHz) English speech corpus from
 107 speakers, made for speech enhancement and dereverberation benchmarks. Besides
@@ -72,7 +82,7 @@ GitHub release, direct download, no sign-in.
 
 ### Size of the release
 
-| recordings | speakers | total hours |
+| emotional recordings (`emo_*` only) | speakers | total hours |
 |---|---|---|
 | 4,922 | 107 | 17.95 |
 
