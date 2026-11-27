@@ -7,13 +7,19 @@ classifying each clip into one of seven emotions.
 [Emo-Emilia](https://huggingface.co/datasets/ASLP-lab/Emo-Emilia) was released
 with the C<sup>2</sup>SER paper as a speech emotion recognition test set. Its
 clips are a subset of Emilia, a large multilingual speech-generation corpus of
-in-the-wild speech. According to the dataset card, the clips were labelled
-automatically, then each label was checked by at least two experts; the set has
-1,400 clips, 100 per emotion in each of two languages (English and Mandarin
-Chinese, 700 each). The language is the prefix of the clip id (`EN_` or `ZH_`).
+in-the-wild speech. The set has 1,400 clips, 100 per emotion in each of two
+languages (English and Mandarin Chinese, 700 each); the language is the prefix of
+the clip id (`EN_` or `ZH_`).
+
+How the labels were made (paper, Sec. IV-B): Emilia was labelled automatically,
+with Emotion2Vec on the speech and GLM-4-9B-Chat on the text; clips on which the two
+agreed were kept, 300 per emotion were drawn at random (4,200 candidates), and four
+bilingual experts reviewed every candidate independently; only clips with
+unanimous labels from all four were kept. The dataset card says instead that each
+clip was checked by "at least two experts".
 
 Labels come from the `emotion` field of `Emo-Emilia-ALL.jsonl`. All seven are
-emotions and all are kept, renamed to the spellings of the other recipes:
+kept; three are written as nouns rather than adjectives:
 
 | `emotion` field | label |
 |---|---|
@@ -102,8 +108,14 @@ for testing.
 
 ## License and citation
 
-CC BY-NC 4.0 (non-commercial). Emo-Emilia is a subset of Emilia; check the
-Emilia terms as well before use. Please cite:
+CC BY-NC 4.0 (non-commercial), by the dataset card. Emo-Emilia is a subset of
+Emilia, and the Emo-Emilia card points to Emilia. Emilia itself is distributed on
+Hugging Face (`amphion/Emilia-Dataset`) behind Terms of Access, read on 2026-11-25:
+Emilia is to be used under CC BY-NC; the researcher accepts full responsibility for
+the use and defends and indemnifies the Emilia authors against any claims from it;
+colleagues given access must agree to the same terms; access can be terminated at
+any time. The Emo-Emilia card does not say whether these terms apply to Emo-Emilia.
+Please cite:
 
 ```
 @misc{zhao2025steeringlanguagemodelstable,
