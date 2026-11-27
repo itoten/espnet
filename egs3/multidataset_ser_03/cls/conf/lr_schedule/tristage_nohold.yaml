@@ -1,0 +1,10 @@
+# As `tristage.yaml`, but without holding the peak: warm up over the first
+# 10 % of the updates, then decay to 5 % of `lr` over the remaining 90 %.
+lr_schedule:
+  _target_: espnet2.schedulers.tristage_lr.TristageLR
+  max_steps: ${oc.decode:${oc.env:MULTIDATASET_SER_03_MAX_STEPS,25660}}
+  warmup_ratio: 0.1
+  hold_ratio: 0.0
+  decay_ratio: 0.9
+  init_lr_scale: 0.01
+  final_lr_scale: 0.05

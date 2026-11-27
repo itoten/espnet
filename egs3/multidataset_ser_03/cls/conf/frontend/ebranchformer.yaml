@@ -1,0 +1,44 @@
+# E-Branchformer encoder trained from scratch on 80-dim log-mel features, the
+# size of HuBERT Large (10 blocks of width 1024, 16 heads, cgMLP 4096, FFN
+# 4096, about 312M parameters). Absolute positions and plain self-attention,
+# as in `conformer.yaml`.
+_target_: espnet3.systems.cls.src.frontend.LogMelEncoderFrontend
+fs: 16000
+n_fft: 512
+win_length: 400
+hop_length: 160
+n_mels: 80
+d_model: 1024
+conv_strides: [1, 2]
+specaug: null
+# The log-mel features are normalised with the mean and variance of the
+# training set (ESPnet2's GlobalMVN, after SpecAugment, as in ESPnet2's ASR
+# recipes); `collect_stats` writes the statistics.
+normalize:
+  _target_: espnet2.layers.global_mvn.GlobalMVN
+  stats_file: ${stats_dir}/train/logmel_stats.npz
+encoder:
+  _target_: espnet2.asr.encoder.e_branchformer_encoder.EBranchformerEncoder
+  _partial_: true
+  output_size: 1024
+  attention_heads: 16
+  attention_layer_type: selfattn
+  pos_enc_layer_type: abs_pos
+  rel_pos_type: latest
+  cgmlp_linear_units: 4096
+  cgmlp_conv_kernel: 31
+  use_linear_after_conv: false
+  gate_activation: identity
+  num_blocks: 10
+  # Dropout of the encoder blocks (0.1 as in ESPnet2's Conformer ASR recipes);
+  # MULTIDATASET_SER_03_ENC_DROPOUT sets all three.
+  dropout_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_ENC_DROPOUT,0.1}}
+  positional_dropout_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_ENC_DROPOUT,0.1}}
+  attention_dropout_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_ENC_DROPOUT,0.1}}
+  input_layer: null
+  use_ffn: true
+  macaron_ffn: true
+  linear_units: 4096
+  merge_conv_kernel: 31
+  use_flash_attn: false
+  use_sdpa: true

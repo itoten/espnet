@@ -1,0 +1,4 @@
+# Additive noise and reverberation (no SpecAug).
+defaults:
+  - noise
+  - rir

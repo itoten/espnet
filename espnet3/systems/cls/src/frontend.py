@@ -81,6 +81,18 @@ class Wav2Vec2Frontend(AbsFrontend):
             raw waveform, so its normalisations and activations move a lot of
             memory; compiling fuses them, which mostly pays off together
             with ``compile_layers``.
+        multilayer_feature: Whether to give the classifier a learned weighted
+            sum of all the hidden states (the output of the convolutional
+            front and of every transformer layer) instead of the last one.
+            The weighted sum is ESPnet's ``Featureizer``
+            (``espnet2.asr.frontend.espnet_ssl``, the S3PRL featurizer that
+            ``S3prlFrontend`` uses with ``multilayer_feature``): softmax
+            weights over the layers, initialised equal.
+        freeze_encoder: Whether to freeze the whole encoder and run it in
+            evaluation mode without gradients, as in SUPERB: only the
+            weighted sum (with ``multilayer_feature``), the pooling and the
+            head learn. Evaluation mode also turns off the encoder's own
+            time masking, dropout and LayerDrop.
         max_train_crop: In training, cut every waveform of a batch to the
             shortest one when that removes at most this fraction of the
             padded length (``0`` never cuts). A batch without padding needs
@@ -109,12 +121,24 @@ class Wav2Vec2Frontend(AbsFrontend):
         compile_mode: Optional[str] = None,
         compile_feature_encoder: bool = False,
         max_train_crop: float = 0.0,
+        multilayer_feature: bool = False,
+        freeze_encoder: bool = False,
     ) -> None:
         """Keep the encoder, optionally freeze its front and compile it."""
         super().__init__()
         self.encoder = encoder
         self.normalize = normalize
         self.max_train_crop = float(max_train_crop)
+        self.freeze_encoder = bool(freeze_encoder)
+        if self.freeze_encoder:
+            encoder.requires_grad_(False)
+            encoder.eval()
+        self.featurizer = None
+        if multilayer_feature:
+            from espnet2.asr.frontend.espnet_ssl import Featureizer
+
+            # hidden_states: the convolutional front, then each layer.
+            self.featurizer = Featureizer(encoder.config.num_hidden_layers + 1)
         if freeze_subsampling:
             # HubertModel has no freeze_feature_encoder(); this is what that
             # method calls in the models that have it.
@@ -134,6 +158,13 @@ class Wav2Vec2Frontend(AbsFrontend):
     def output_size(self) -> int:
         """Return the width of one output frame."""
         return int(self.encoder.config.hidden_size)
+
+    def train(self, mode: bool = True) -> "Wav2Vec2Frontend":
+        """Set the training mode, keeping a frozen encoder in evaluation mode."""
+        super().train(mode)
+        if self.freeze_encoder:
+            self.encoder.eval()
+        return self
 
     def forward(
         self, speech: torch.Tensor, speech_lengths: torch.Tensor
@@ -159,7 +190,7 @@ class Wav2Vec2Frontend(AbsFrontend):
 
         config = self.encoder.config
         if (
-            self.training
+            self.encoder.training
             and getattr(config, "apply_spec_augment", False)
             and getattr(config, "mask_time_prob", 0) > 0
         ):
@@ -173,7 +204,19 @@ class Wav2Vec2Frontend(AbsFrontend):
             torch.arange(speech.size(1), device=speech.device)[None, :]
             < speech_lengths[:, None]
         ).long()
-        frames = self.encoder(speech, attention_mask=mask).last_hidden_state
+        with torch.set_grad_enabled(
+            torch.is_grad_enabled() and not self.freeze_encoder
+        ):
+            if self.featurizer is not None:
+                out = self.encoder(
+                    speech, attention_mask=mask, output_hidden_states=True
+                )
+            else:
+                out = self.encoder(speech, attention_mask=mask)
+        if self.featurizer is not None:
+            frames = self.featurizer(list(out.hidden_states))
+        else:
+            frames = out.last_hidden_state
         # The encoder owns its convolutional strides, so it is the only thing
         # that can say how many frames a waveform becomes.
         frame_lengths = self.encoder._get_feat_extract_output_lengths(speech_lengths)
@@ -477,7 +520,9 @@ class LogMelTransformerFrontend(AbsFrontend):
 
     The waveform becomes log-mel filterbank features (ESPnet2's
     ``DefaultFrontend``), optionally masked by SpecAugment in training, then
-    standardised per utterance and per mel bin over its own frames. Strided 1-D
+    normalised: by ``normalize`` when given (as ESPnet2's ASR model does, e.g.
+    ``GlobalMVN`` with statistics of the training set), otherwise standardised
+    per utterance and per mel bin over its own frames. Strided 1-D
     convolutions bring the frames to the encoder width (with strides
     ``(1, 2)`` and a 10 ms hop: one frame every 20 ms, as in HuBERT), fixed
     sinusoidal positions are added, and pre-LayerNorm transformer layers
@@ -506,6 +551,13 @@ class LogMelTransformerFrontend(AbsFrontend):
             layers; their product is the frame subsampling.
         specaug: Optional SpecAugment module (``espnet2.asr.specaug.specaug.
             SpecAug``), applied to the log-mel features in training only.
+        normalize: Optional ESPnet2 normalisation layer (``AbsNormalize``,
+            e.g. ``espnet2.layers.global_mvn.GlobalMVN`` on the
+            ``logmel_stats.npz`` that ``collect_stats`` writes), applied after
+            SpecAugment as in ESPnet2's ASR model. Without it each utterance is
+            standardised over its own frames; SpecAugment's zeroed frames then
+            enter those statistics and shift the unmasked frames too, so give
+            a normalisation with fixed statistics when SpecAugment is on.
         compile_layers: Whether to compile each layer with ``torch.compile``
             (``dynamic=True``), as in :class:`Wav2Vec2Frontend`.
         compile_mode: ``mode`` given to ``torch.compile``.
@@ -542,6 +594,7 @@ class LogMelTransformerFrontend(AbsFrontend):
         dropout: float = 0.1,
         conv_strides: Sequence[int] = (1, 2),
         specaug: Optional[nn.Module] = None,
+        normalize: Optional[nn.Module] = None,
         compile_layers: bool = False,
         compile_mode: Optional[str] = None,
         max_train_crop: float = 0.0,
@@ -556,6 +609,7 @@ class LogMelTransformerFrontend(AbsFrontend):
             n_mels=n_mels,
         )
         self.specaug = specaug
+        self.normalize = normalize
         self.d_model = int(d_model)
         self.conv_strides = tuple(int(stride) for stride in conv_strides)
         self.max_train_crop = float(max_train_crop)
@@ -593,6 +647,39 @@ class LogMelTransformerFrontend(AbsFrontend):
         """Return the width of one output frame."""
         return self.d_model
 
+    def logmel(
+        self, speech: torch.Tensor, speech_lengths: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Return the log-mel features before SpecAugment and normalisation.
+
+        ``ClsModel.collect_feats`` hands them to ``collect_stats``, which
+        writes their statistics (``logmel_stats.npz``) for ``GlobalMVN``.
+        """
+        with torch.autocast(device_type=speech.device.type, enabled=False):
+            return self.feature(speech.float(), speech_lengths)
+
+    def _input_features(
+        self, speech: torch.Tensor, speech_lengths: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Crop, log-mel, SpecAugment (training only) and normalise a batch."""
+        if self.training and self.max_train_crop > 0:
+            shortest = int(speech_lengths.min())
+            if shortest >= (1 - self.max_train_crop) * speech.size(1):
+                speech = speech[:, :shortest]
+                speech_lengths = torch.full_like(speech_lengths, shortest)
+
+        # The STFT, the log and the normalisation run in fp32 even under bf16
+        # autocast.
+        with torch.autocast(device_type=speech.device.type, enabled=False):
+            feats, feat_lengths = self.feature(speech.float(), speech_lengths)
+            if self.specaug is not None and self.training:
+                feats, feat_lengths = self.specaug(feats, feat_lengths)
+            if self.normalize is not None:
+                feats, feat_lengths = self.normalize(feats, feat_lengths)
+            else:
+                feats = self._standardise(feats, feat_lengths)
+        return feats, feat_lengths
+
     @staticmethod
     def _standardise(feats: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
         """Standardise each utterance per mel bin over its own frames."""
@@ -618,18 +705,7 @@ class LogMelTransformerFrontend(AbsFrontend):
             tuple: Frames of shape ``(B, T, D)`` and the valid frame count per
             waveform.
         """
-        if self.training and self.max_train_crop > 0:
-            shortest = int(speech_lengths.min())
-            if shortest >= (1 - self.max_train_crop) * speech.size(1):
-                speech = speech[:, :shortest]
-                speech_lengths = torch.full_like(speech_lengths, shortest)
-
-        # The STFT and the log run in fp32 even under bf16 autocast.
-        with torch.autocast(device_type=speech.device.type, enabled=False):
-            feats, feat_lengths = self.feature(speech.float(), speech_lengths)
-            if self.specaug is not None and self.training:
-                feats, feat_lengths = self.specaug(feats, feat_lengths)
-            feats = self._standardise(feats, feat_lengths)
+        feats, feat_lengths = self._input_features(speech, speech_lengths)
 
         frames = self.subsample(feats.transpose(1, 2)).transpose(1, 2)
         frame_lengths = feat_lengths
@@ -653,8 +729,8 @@ class LogMelEncoderFrontend(LogMelTransformerFrontend):
     """An ESPnet2 encoder (e.g. Conformer, E-Branchformer) on log-mel features.
 
     The same input stage as :class:`LogMelTransformerFrontend` (log-mel
-    features, optional SpecAugment in training, per-utterance standardisation
-    and strided 1-D convolutions to the encoder width), followed by an ESPnet2
+    features, optional SpecAugment in training, normalisation (``normalize``,
+    or per-utterance standardisation without it) and strided 1-D convolutions to the encoder width), followed by an ESPnet2
     ``AbsEncoder`` instead of the plain transformer layers. The encoder's own
     input layer is not used (``input_layer: null``): it adds its positional
     encoding to the frames of the convolutions, so all the models trained from
@@ -700,6 +776,7 @@ class LogMelEncoderFrontend(LogMelTransformerFrontend):
         d_model: int = 1024,
         conv_strides: Sequence[int] = (1, 2),
         specaug: Optional[nn.Module] = None,
+        normalize: Optional[nn.Module] = None,
         compile_layers: bool = False,
         compile_mode: Optional[str] = None,
         max_train_crop: float = 0.0,
@@ -715,6 +792,7 @@ class LogMelEncoderFrontend(LogMelTransformerFrontend):
             num_layers=0,
             conv_strides=conv_strides,
             specaug=specaug,
+            normalize=normalize,
             compile_layers=False,
             max_train_crop=max_train_crop,
         )
@@ -745,17 +823,7 @@ class LogMelEncoderFrontend(LogMelTransformerFrontend):
         self, speech: torch.Tensor, speech_lengths: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Encode a batch of waveforms into ``(B, T, d_model)`` frames."""
-        if self.training and self.max_train_crop > 0:
-            shortest = int(speech_lengths.min())
-            if shortest >= (1 - self.max_train_crop) * speech.size(1):
-                speech = speech[:, :shortest]
-                speech_lengths = torch.full_like(speech_lengths, shortest)
-
-        with torch.autocast(device_type=speech.device.type, enabled=False):
-            feats, feat_lengths = self.feature(speech.float(), speech_lengths)
-            if self.specaug is not None and self.training:
-                feats, feat_lengths = self.specaug(feats, feat_lengths)
-            feats = self._standardise(feats, feat_lengths)
+        feats, feat_lengths = self._input_features(speech, speech_lengths)
 
         frames = self.subsample(feats.transpose(1, 2)).transpose(1, 2)
         frame_lengths = feat_lengths

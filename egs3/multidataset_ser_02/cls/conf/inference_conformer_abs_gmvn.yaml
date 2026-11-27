@@ -1,0 +1,12 @@
+# Inference with the frontend of `conf/training_conformer_abs_gmvn.yaml`
+# (`GlobalMVN` on the log-mel statistics of the training set).
+defaults:
+  - inference_conformer_abs
+  - _self_
+
+stats_dir: ${recipe_dir}/exp/stats_logmel
+
+frontend:
+  normalize:
+    _target_: espnet2.layers.global_mvn.GlobalMVN
+    stats_file: ${stats_dir}/train/logmel_stats.npz

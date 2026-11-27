@@ -1,0 +1,13 @@
+# Reverberation: in training, half of the utterances are convolved with a
+# random room impulse response from `${data_dir}/augment/rir.scp`
+# (Kaldi-style `<id> <path>`, e.g. the measured RIRs of BUT ReverbDB),
+# resampled to 16 kHz. Validation and evaluation data are never augmented.
+dataset:
+  preprocessor:
+    fs: 16000
+    rir_scp: ${data_dir}/augment/rir.scp
+    rir_apply_prob: 0.5
+dataloader:
+  train:
+    iter_factory:
+      num_workers: 15

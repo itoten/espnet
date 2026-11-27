@@ -1,0 +1,32 @@
+# A smaller Conformer trained from scratch on log-mel features
+# (`conf/frontend/conformer_m.yaml`: 12 blocks of width 512, 8 heads, FFN 2048; about 75M parameters with the head).
+# Everything else is `conf/training_conformer.yaml`,
+# except the batches: the model is small enough for whole batches of 21
+# minutes of audio, one update each (the same audio per update and the same
+# number of updates as with two half batches).
+defaults:
+  - training_conformer
+  - frontend: conformer_m
+  # Again after the frontend, whose `specaug: null` would otherwise undo
+  # SpecAugment.
+  - augment/${oc.env:MULTIDATASET_SER_03_AUGMENT,none}
+  - _self_
+
+exp_tag: ${oc.env:MULTIDATASET_SER_03_EXP_TAG,train_conformer_m}
+
+# A smaller model takes a larger lr (ESPnet2's LibriSpeech Conformer recipes
+# peak at 2e-3 to 2.5e-3 with their own schedule). Set MULTIDATASET_SER_03_LR
+# to try another value.
+optimizer:
+  lr: ${oc.decode:${oc.env:MULTIDATASET_SER_03_LR,5.0e-4}}
+
+# The step is short (0.15-0.22 s on an H200), so more workers read the audio
+# to keep the GPU busy.
+dataloader:
+  train:
+    iter_factory:
+      num_workers: 14
+      batches:
+        batch_bins: 20160000
+trainer:
+  accumulate_grad_batches: 1

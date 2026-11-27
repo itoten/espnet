@@ -154,6 +154,8 @@ class ClsModel(nn.Module):
         class_weights: Per-class loss weights in ``token_list`` order, or a
             path to a file holding one weight per line. Usually the inverse
             class frequencies that ``prepare_labels`` writes.
+        label_smoothing: Label smoothing of the cross-entropy, as
+            ``lsm_weight`` of ESPnet2's classification model. 0 turns it off.
 
     Examples:
         Selected from a recipe's ``conf/training.yaml``:
@@ -179,11 +181,17 @@ class ClsModel(nn.Module):
         head_layers: int = 1,
         dropout: float = 0.5,
         class_weights: Optional[Union[str, Path, Sequence[float]]] = None,
+        label_smoothing: float = 0.0,
     ) -> None:
         """Assemble the frontend, the pooling layer and the head."""
         super().__init__()
         self.frontend = frontend
         self.num_classes = int(num_classes)
+        if not 0.0 <= label_smoothing < 1.0:
+            raise ValueError(f"label_smoothing must be in [0, 1), got {label_smoothing}")
+        # As `lsm_weight` of ESPnet2's classification model
+        # (`nn.CrossEntropyLoss(label_smoothing=lsm_weight)`).
+        self.label_smoothing = float(label_smoothing)
 
         self.pooling = AttentiveStatisticsPooling(int(frontend.output_size()))
         self.head = ClassificationHead(
@@ -285,7 +293,9 @@ class ClsModel(nn.Module):
             )
 
         logits = self.compute_logits(speech, speech_lengths)
-        loss = F.cross_entropy(logits, target, weight=self.class_weights)
+        loss = F.cross_entropy(
+            logits, target, weight=self.class_weights, label_smoothing=self.label_smoothing
+        )
         accuracy = (logits.argmax(dim=-1) == target).float().mean()
         stats = {"loss": loss.detach(), "acc": accuracy.detach()}
         weight = torch.tensor(speech.size(0), dtype=loss.dtype, device=loss.device)
@@ -301,7 +311,10 @@ class ClsModel(nn.Module):
 
         The stage reads these to write the waveform statistics that
         :class:`WaveformNormalize` applies, and the per-utterance lengths the
-        dataloader batches by.
+        dataloader batches by. A frontend with a ``logmel`` method (the
+        log-mel frontends) also gives its log-mel features as ``logmel``,
+        whose statistics (``logmel_stats.npz``) feed ESPnet2's ``GlobalMVN``,
+        as ``feats_stats.npz`` does in an ESPnet2 ASR recipe.
 
         Args:
             speech: Waveforms of shape ``(B, samples)``.
@@ -309,6 +322,11 @@ class ClsModel(nn.Module):
             **kwargs: Unused extra batch entries.
 
         Returns:
-            Dict[str, torch.Tensor]: The waveforms and their lengths.
+            Dict[str, torch.Tensor]: The waveforms and their lengths, plus
+            the log-mel features and their lengths for a log-mel frontend.
         """
-        return {"feats": speech, "feats_lengths": speech_lengths}
+        feats = {"feats": speech, "feats_lengths": speech_lengths}
+        logmel = getattr(self.frontend, "logmel", None)
+        if callable(logmel):
+            feats["logmel"], feats["logmel_lengths"] = logmel(speech, speech_lengths)
+        return feats

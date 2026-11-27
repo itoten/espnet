@@ -1,0 +1,18 @@
+# Speed perturbation: in training, two thirds of the utterances are played at
+# 0.9 or 1.1 times their speed (pitch changes too), the rest are unchanged.
+# An utterance gets up to 11 % longer, so a batch may hold up to 11 % more
+# samples than `batch_bins`. Validation and evaluation data are never
+# augmented.
+dataset:
+  preprocessor:
+    fs: 16000
+    data_aug_effects:
+      - - 1.0
+        - - [1.0, speed_perturb, {factor: 0.9}]
+          - [1.0, speed_perturb, {factor: 1.1}]
+    data_aug_num: [1, 1]
+    data_aug_prob: 0.667
+dataloader:
+  train:
+    iter_factory:
+      num_workers: 15

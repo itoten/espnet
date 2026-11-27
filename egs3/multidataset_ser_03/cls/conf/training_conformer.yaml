@@ -1,0 +1,45 @@
+# Conformer trained from scratch on log-mel features (`conf/frontend/conformer.yaml`,
+# about 297M parameters, the size of HuBERT Large). Everything not set here
+# comes from `conf/training.yaml`. The smaller sizes are
+# `conf/training_conformer_m.yaml` and `conf/training_conformer_s.yaml`.
+defaults:
+  - training
+  # The lr schedule: `conf/lr_schedule/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_03_LR_SCHEDULE (`tristage` by default).
+  - lr_schedule/${oc.env:MULTIDATASET_SER_03_LR_SCHEDULE,tristage}
+  - frontend: conformer
+  # Data augmentation: `conf/augment/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_03_AUGMENT (none by default).
+  - augment/${oc.env:MULTIDATASET_SER_03_AUGMENT,none}
+  # Training sampler: `conf/sampler/<name>.yaml`, chosen by
+  # MULTIDATASET_SER_03_SAMPLER (`numel`, the length-sorted batches of
+  # `conf/training.yaml`, by default).
+  - sampler/${oc.env:MULTIDATASET_SER_03_SAMPLER,numel}
+  - _self_
+
+# Set MULTIDATASET_SER_03_EXP_TAG to write a run to another directory under
+# `exp/` (give the same value to `infer` and `measure`, which read it here).
+exp_tag: ${oc.env:MULTIDATASET_SER_03_EXP_TAG,train_conformer}
+
+frontend:
+  compile_layers: true
+  max_train_crop: 0.05
+
+# Peak lr, the best of multidataset_ser_02 for this size. Set
+# MULTIDATASET_SER_03_LR to try another value.
+optimizer:
+  lr: ${oc.decode:${oc.env:MULTIDATASET_SER_03_LR,5.0e-5}}
+  betas: [0.9, 0.98]
+
+# The longest batches of 21 minutes of audio need about 140 GB of GPU memory
+# with this encoder, too close to the 141 GB of an H200. Each update instead
+# accumulates the gradients of two batches of half the size: the same 21
+# minutes of audio and the same number of updates (so `lr_schedule.max_steps`
+# is unchanged) as for the other encoders.
+dataloader:
+  train:
+    iter_factory:
+      batches:
+        batch_bins: 10080000
+trainer:
+  accumulate_grad_batches: 2

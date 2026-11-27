@@ -1,0 +1,3 @@
+# No data augmentation (the default). Each file of this directory is one
+# setting of `MULTIDATASET_SER_03_AUGMENT`; see `conf/training.yaml`.
+{}

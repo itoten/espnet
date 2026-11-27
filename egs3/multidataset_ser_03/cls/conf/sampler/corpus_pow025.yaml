@@ -1,0 +1,27 @@
+# Up-sample the small corpora of the training set: each epoch draws its
+# utterances corpus by corpus with probability proportional to the corpus's
+# share of the training audio to the power of β = 0.25 (1 keeps the corpus
+# shares as they are, 0 makes them all equal; ESPnet2's CategoryPowerSampler),
+# then groups them into length-sorted batches as the default `numel` batches
+# (`catpow_numel`). Needs `${data_dir}/corpus2utt`: one line per corpus,
+# its name and then the line numbers (from 0) of its utterances in
+# `manifest_filtered/train.tsv`, which are the keys of the shape files.
+# Each corpus's share is met in audio duration, so an epoch holds as much
+# audio as the training set (`dataset_scaling_factor: 1.0`).
+dataloader:
+  train:
+    iter_factory:
+      batches:
+        type: catpow_numel
+        upsampling_factor: 0.25
+        dataset_scaling_factor: 1.0
+        category2utt_file: ${data_dir}/corpus2utt
+        min_batch_size: 1
+  # The template's validation batches take the training type: keep `numel`.
+  valid:
+    iter_factory:
+      batches:
+        type: numel
+# The drawn epoch holds a few percent more batches than with `numel` (the
+# length buckets leave a little more padding): set
+# MULTIDATASET_SER_03_MAX_STEPS from the count in the readme.

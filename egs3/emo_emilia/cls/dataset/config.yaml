@@ -1,0 +1,77 @@
+builder:
+  # Source layout ---------------------------------------------------------
+  # `<source>/wav/<index>.wav` and `<source>/Emo-Emilia-ALL.jsonl`, one JSON
+  # object per line: {"index", "emotion", "wav", "text"}. The `wav` field
+  # reads `./Emo-Emilia/wav/<index>.wav`, a path from the authors' own
+  # layout; the files sit at `wav/<index>.wav` in the release, so only the
+  # file name of `wav` is used. `index` starts with `EN_` or `ZH_`, the
+  # language of the clip (English or Mandarin Chinese).
+  source_env_var: EMO_EMILIA
+  dataset_path: download
+  annotation_file: Emo-Emilia-ALL.jsonl
+  audio_subdir: wav
+
+  # Download --------------------------------------------------------------
+  # Hugging Face dataset ASLP-lab/Emo-Emilia at a pinned commit (open, no
+  # login; CC BY-NC 4.0).
+  hf_repo: ASLP-lab/Emo-Emilia
+  hf_revision: 519da7a59f4a5a9b9bba5b5c318f1e2ee0eed97a
+  allow_patterns:
+    - wav/*.wav
+    - Emo-Emilia-ALL.jsonl
+    - README.md
+
+  # Labels ----------------------------------------------------------------
+  # The `emotion` field to manifest label. All seven values are emotions and
+  # all are kept; nothing is dropped.
+  emotion_map:
+    angry: angry
+    disgusted: disgust
+    fearful: fear
+    happy: happy
+    neutral: neutral
+    sad: sad
+    surprised: surprise
+
+  # Duplicates ------------------------------------------------------------
+  # Clips with byte-identical content, found while building this recipe. Two
+  # pairs, each with the same label and transcript:
+  # EN_B00017_S08547_W000010 = EN_B00035_S05775_W000010 (disgusted) and
+  # ZH_B00005_S00050_W000006 = ZH_B00005_S00084_W000006 (surprised); the
+  # second of each pair is listed. With `exclude_duplicates: true` they are
+  # left out; `false` uses every clip. Kept duplicates may fall into
+  # different splits.
+  exclude_duplicates: false
+  duplicate_ids:
+    - emo_emilia-EN_B00035_S05775_W000010
+    - emo_emilia-ZH_B00005_S00084_W000006
+
+  # Split -----------------------------------------------------------------
+  # The release is a single evaluation set and publishes no partition.
+  # Utterances are split at random within each label (not within each
+  # language). Speakers are not identified in the release, so the splits
+  # may share speakers.
+  train_ratio: 0.7
+  valid_ratio: 0.1
+  test_ratio: 0.2
+  split_seed: 0
+
+  manifest_paths:
+    train: manifest/train.tsv
+    valid: manifest/valid.tsv
+    test: manifest/test.tsv
+
+  # Build outputs ---------------------------------------------------------
+  # The sampling rate of the release is not stated on the dataset card;
+  # `build()` converts every clip to 16 kHz mono.
+  output_env_var: EMO_EMILIA_OUTPUT
+  data_path: data
+  wav_subdir: wav
+  sampling_rate: 16000
+
+dataset:
+  # Test stays unfiltered so the reported scores cover the whole split.
+  split_manifest_paths:
+    train: manifest_filtered/train.tsv
+    valid: manifest_filtered/valid.tsv
+    test: manifest/test.tsv

@@ -1,0 +1,7 @@
+# The schedule of ESPnet2's Conformer ASR recipes (`WarmupLR`, the Noam
+# schedule): linear warm-up to `lr` over `warmup_steps` updates, then decay in
+# proportion to the inverse square root of the update count. The recipes use
+# 25,000 warm-up updates; MULTIDATASET_SER_03_WARMUP_STEPS sets it.
+lr_schedule:
+  _target_: espnet2.schedulers.warmup_lr.WarmupLR
+  warmup_steps: ${oc.decode:${oc.env:MULTIDATASET_SER_03_WARMUP_STEPS,25000}}

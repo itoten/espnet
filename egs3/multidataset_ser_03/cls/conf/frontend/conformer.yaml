@@ -1,0 +1,49 @@
+# Conformer encoder trained from scratch on 80-dim log-mel features, the
+# size of HuBERT Large (12 blocks of width 1024, 16 heads, FFN 4096, about
+# 297M parameters with the input convolutions and the head). Absolute (sinusoidal)
+# positions and plain self-attention: on SDPA it runs on the flash kernel
+# when a batch has no padding (`LogMelEncoderFrontend` then drops the mask),
+# 3-4 times less memory and about a third faster than relative positions,
+# with the same accuracy in multidataset_ser_02.
+_target_: espnet3.systems.cls.src.frontend.LogMelEncoderFrontend
+fs: 16000
+n_fft: 512
+win_length: 400
+hop_length: 160
+n_mels: 80
+d_model: 1024
+conv_strides: [1, 2]
+specaug: null
+# The log-mel features are normalised with the mean and variance of the
+# training set (ESPnet2's GlobalMVN, after SpecAugment, as in ESPnet2's ASR
+# recipes); `collect_stats` writes the statistics.
+normalize:
+  _target_: espnet2.layers.global_mvn.GlobalMVN
+  stats_file: ${stats_dir}/train/logmel_stats.npz
+encoder:
+  _target_: espnet2.asr.encoder.conformer_encoder.ConformerEncoder
+  _partial_: true
+  output_size: 1024
+  attention_heads: 16
+  linear_units: 4096
+  num_blocks: 12
+  # Dropout of the encoder blocks (0.1 as in ESPnet2's Conformer ASR recipes);
+  # MULTIDATASET_SER_03_ENC_DROPOUT sets all three.
+  dropout_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_ENC_DROPOUT,0.1}}
+  positional_dropout_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_ENC_DROPOUT,0.1}}
+  attention_dropout_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_ENC_DROPOUT,0.1}}
+  # Stochastic depth (ESPnet2's ConformerEncoder `stochastic_depth_rate`): the
+  # probability of skipping each block in training. 0 (off) by default;
+  # MULTIDATASET_SER_03_STOCH_DEPTH sets it.
+  stochastic_depth_rate: ${oc.decode:${oc.env:MULTIDATASET_SER_03_STOCH_DEPTH,0.0}}
+  input_layer: null
+  normalize_before: true
+  macaron_style: true
+  rel_pos_type: latest
+  pos_enc_layer_type: abs_pos
+  selfattention_layer_type: selfattn
+  activation_type: swish
+  use_cnn_module: true
+  cnn_module_kernel: 31
+  use_flash_attn: false
+  use_sdpa: true
