@@ -1,0 +1,4 @@
+##########################################################
+#                 METRIC SCORING SETTING                 #
+##########################################################
+data_dir: ${oc.env:SINHALA_EMOTIONAL_TTS_DATASET_OUTPUT,./data}
