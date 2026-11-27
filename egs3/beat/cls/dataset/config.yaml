@@ -44,7 +44,7 @@ builder:
 
   # Labels ----------------------------------------------------------------
   # First field of the `.csv` to manifest label. `00_netural` is the
-  # release's spelling of neutral. `contempt` stays its own class. A label
+  # release's spelling of neutral. A label
   # not listed here stops the build.
   emotion_map:
     00_netural: neutral
