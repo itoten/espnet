@@ -10,9 +10,18 @@ dataset card, 22 native speakers (11 male, 11 female) read 19 semantically
 neutral sentences in five emotions (anger, happiness, sadness, fear and
 neutral), 936 utterances in all, recorded as 48 kHz mono 16-bit WAV.
 
+How the labels were made (paper, Sec. 3): the label is the emotion the actor was
+asked to perform. About 40 candidates were auditioned by three drama teachers and
+22 were chosen; each recording session was supervised by phoneticians who gave
+instructions and an emotional context before each utterance, every sentence was
+recorded four to five times, and the best take was kept. Five annotators labelled
+the recordings, with a Fleiss' kappa of 0.74 (sadness and fear disagreed most);
+their individual labels are not released, and the released label is the one in
+the file name.
+
 The label comes from the file name, `<speaker>_<sentence>_<emotion>.wav` (for
 example `01_05_ang.wav`); `data/metadata.csv` is not read. All five codes are
-emotions and all are kept:
+kept:
 
 | code in the file name | label |
 |---|---|
@@ -76,7 +85,8 @@ How these were counted: the emotion code of the file name. Hours per label are m
 
 ### Issues in the release
 
-- Speakers 01 to 10 and 22 have no `fea` recordings; speakers 11 to 21 have all five codes. Speakers 01 to 08 and 10 have 36 recordings, 09 has 32, 22 has 30, and 11 to 21 have 50 each.
+- Speakers 01 to 10 and 22 have no `fea` recordings; speakers 11 to 21 have all five codes.
+- No speaker has all 19 sentences of the card: speakers 01 to 10 recorded sentences 01 to 09 (speaker 09 only 8 of them), and speakers 11 to 22 sentences 10 to 19. Speakers 01 to 08 and 10 have 36 recordings, 09 has 32, 22 has 30, and 11 to 21 have 50 each.
 - The recording format differs between speakers: 48 kHz for 16 speakers (650 recordings), 22.05 kHz for speakers 11 to 14 and 17 (250), and 44.1 kHz for speaker 02 (36); 464 recordings are mono and 472 stereo.
 - No two recordings have byte-identical content.
 
