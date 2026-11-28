@@ -181,12 +181,15 @@ class MultiHeadedAttention(nn.Module):
             # which refuses any mask, even one that keeps every frame.
             if getattr(self, "skip_mask", False):
                 mask = None
-            # The shape of mask must be broadcastable to the shape of attention weights
+            # The shape of mask must be broadcastable to the shape of attention
+            # weights. The matmul path reads any mask as 1 = attend, 0 = masked
+            # (forward_attention's mask.eq(0)); SDPA would add a float mask to
+            # the logits and rejects an integer one, so it gets a boolean.
             out = torch.nn.functional.scaled_dot_product_attention(
                 q,
                 k,
                 v,
-                mask.unsqueeze(1) if mask is not None else None,
+                mask.unsqueeze(1).ne(0) if mask is not None else None,
                 dropout_p=self.dropout_rate if self.training else 0.0,
             )  # (batch, head, time1, d_k)
 

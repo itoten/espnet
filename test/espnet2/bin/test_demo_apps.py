@@ -38,6 +38,7 @@ DEMOS = {
     "tts": EGS2 / "ljspeech/tts1/demo",
     "enh": EGS2 / "universal_se_v1/enh1/demo",
     "spk": EGS2 / "voxceleb/spk1/demo",
+    "vad": EGS2 / "frontia_vad_v1/diar1/demo",
     # not hosted: an 8B model whose encoder alone is a 70.5 GB download is
     # not something free Space hardware runs. It is checked like the rest
     # because it is run the same way, locally or from a cluster job.
@@ -218,10 +219,18 @@ def test_spaces_is_imported_before_torch(name):
 def test_the_card_names_the_app_and_the_model_the_app_loads(name):
     front = _front_matter(name)
     assert front.get("app_file") == "app.py", name
-    tag = re.search(
-        r'MODEL_TAG = os\.environ\.get\(\s*"[A-Z_]+_MODEL_TAG",\s*"([^"]+)"',
+    m = re.search(
+        r'MODEL_TAG = os\.environ\.get\(\s*"[A-Z_]+_MODEL_TAG",\s*'
+        r'(?:"([^"]+)"|VAD_MODELS\["(\w+)"\])',
         _source(name),
-    ).group(1)
+    )
+    if m.group(1):
+        tag = m.group(1)
+    else:
+        # the VAD Space reads its default from espnet2.diar.vad_models
+        from espnet2.diar.vad_models import VAD_MODELS
+
+        tag = VAD_MODELS[m.group(2)]
     assert tag in (front.get("models") or []), f"{name}: the card does not list {tag}"
 
 
@@ -259,6 +268,10 @@ UNRELEASED = {
     # `espnet render`, is unreleased: this is the release it is going into,
     # and the Bagpiper Space cannot be uploaded until that one is out.
     "from_server": "202611",
+    # the VAD classes in diar_inference, and with them `espnet detect`, are
+    # unreleased: the VAD Space
+    # waits for the release after 202611.
+    "VoiceActivityDetector": "202612",
 }
 # The extra each front-end needs, by the import that gives it away. RawNet3's
 # asteroid_frontend imports asteroid_filterbanks, which only espnet[spk] has;
@@ -324,3 +337,19 @@ def test_the_task_demos_ask_for_their_extra(name, extra):
         f"{name}: the checkpoint's front-end or criteria come from "
         f"espnet[{extra}], and a Space installs nothing else"
     )
+
+
+def test_the_vad_space_loads_the_models_espnet_vad_loads():
+    """The Space reads VAD_MODELS, and its card lists every model it loads.
+
+    The card's front matter is what Hugging Face reads, so it names the tags
+    itself; this keeps it in step with espnet2.diar.vad_models.
+    """
+    from espnet2.diar.vad_models import VAD_MODELS
+
+    source = _source("vad")
+    for env, mode in (("VAD_MODEL_TAG", "offline"), ("VAD_ONLINE_MODEL_TAG", "online")):
+        assert re.search(rf'"{env}",\s*VAD_MODELS\["{mode}"\]', source), env
+    for tag in VAD_MODELS.values():
+        assert not re.search(rf'"{re.escape(tag)}"', source), tag
+        assert tag in (_front_matter("vad").get("models") or []), tag

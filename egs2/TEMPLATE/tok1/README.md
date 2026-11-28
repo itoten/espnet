@@ -13,11 +13,24 @@ speech tokenizer with ASR and speaker-conditioned reconstruction losses.
 6. Extract one speaker embedding per utterance.
 7. Train offline K-means centroids, or validate an external centroid model.
 8. Collect shapes for speech, text, and speaker embeddings.
-9. Train the speech tokenizer and its downstream losses.
-10. Extract discrete token sequences without loading downstream losses.
+9. Train the speech tokenizer jointly with its ASR and reconstruction branches.
+10. Extract discrete token sequences without loading the jointly trained branches.
+11. Run branch-level inference from the hard token IDs written by stage 10: ASR
+   hypotheses from the ASR branch and waveform resynthesis from the reconstruction
+   branch.
+12. Run branch-level evaluation with ASR WER/CER and VERSA resynthesis metrics.
+13. Export and pack a tokenizer-only checkpoint with `RESULTS.md`.
+14. Upload the packed tokenizer artifact to Hugging Face.
 
 The GAN task uses two optimizers and `GANTrainer`.
 Speaker embeddings are required for reconstruction during training.
+These branch-level metrics provide an initial assessment of the learned tokens,
+but do not fully characterize phonological-token quality.
+
+Stage 11 consumes the saved hard token IDs rather than audio or the
+differentiable straight-through assignments used during joint training. The
+training assignments have hard one-hot forward values and a soft gradient path.
+Evaluating the saved IDs measures what a user of the discrete tokens can obtain.
 
 ## Creating a corpus recipe
 
@@ -35,11 +48,14 @@ names. Common scripts and utilities are shared with the ASR template.
 
 By default, stage 7 extracts `wavlm_large/21` features from ten percent of the
 training data and learns 2000 centroids. To use an existing ESPnet ASR2 K-means
-model instead, specify:
+model instead, set `quantizer_conf.centroid_path` in the training config:
 
-```bash
-./tok.sh --centroid_path /path/to/km_2000.mdl ...
+```yaml
+quantizer_conf:
+    centroid_path: /path/to/km_2000.mdl
 ```
+
+Then set `--use_default_centroid false` to skip the default k-means training.
 
 ## Training
 
@@ -48,10 +64,10 @@ Run joint ASR and GAN reconstruction training:
 ```bash
 ./tok.sh \
     --tok_task gan_tok \
-    --tok_config conf/train_gan.yaml \
+    --tok_config conf/train.yaml \
     ...
 ```
 
 Tokenizer-only inference writes `token` and `token_length` files. It does not
-construct the ASR or reconstruction models and does not require speaker
+construct the ASR or reconstruction branches and does not require speaker
 embeddings at inference time.
